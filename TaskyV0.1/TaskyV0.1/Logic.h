@@ -1,6 +1,12 @@
 #ifndef _LOGIC_H_
 #define _LOGIC_H_
 
+/*
+ *This class is mainly to store tasks and manipulate tasks according to processor's command.
+ *
+ *Main author: Kai Wen
+*/
+
 #include "Essential.h"
 #include "Task.h"
 

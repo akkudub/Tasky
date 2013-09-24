@@ -1,5 +1,9 @@
-﻿Build started 23/9/2013 4:28:30 PM.
+﻿Build started 9/24/2013 11:47:36 AM.
+     1>Project "D:\Mercurial\cs2103-f09-2c\TaskyV0.1\TaskyV0.1\TaskyV0.1.vcxproj" on node 2 (Clean target(s)).
+     1>_PrepareForClean:
+         Deleting file "Debug\TaskyV0.1.lastbuildstate".
+     1>Done Building Project "D:\Mercurial\cs2103-f09-2c\TaskyV0.1\TaskyV0.1\TaskyV0.1.vcxproj" (Clean target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.03
+Time Elapsed 00:00:00.01

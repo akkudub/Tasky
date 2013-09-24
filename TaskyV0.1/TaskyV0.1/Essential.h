@@ -1,6 +1,13 @@
 #ifndef _ESSENTIAL_H_
 #define _ESSENTIAL_H_
 
+/*
+ *This class is mainly for definition of statuc code, it also includes some command header file
+ *names.
+ *
+ *Main Author: Akshat, Kai Wen, Joan, Junchao
+ */
+
 #include <vector>
 #include <string>
 

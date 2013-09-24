@@ -6,7 +6,7 @@
  *names.
  *
  *Main Author: Akshat, Kai Wen, Joan, Junchao
- hello
+ hello world
  */
 
 #include <vector>

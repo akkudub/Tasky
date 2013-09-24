@@ -1,6 +1,15 @@
 #ifndef _TASK_H_
 #define _TASK_H_
 
+/*
+ *This class is mainly to model a task in the real world.
+ *
+ *Additional notice: we use pointer to datetime to avoid problems with initialization. Attention to
+ *memory leak.
+ *
+ *Main author: Kai Wen
+*/
+
 #include "Essential.h"
 
 class Task{
@@ -14,7 +23,8 @@ private:
 	
 public:
 	Task(string, DateTime, DateTime, int, bool, string);
-	
+	bool isEqualTo(const Task&);
+	bool isClashingWith(const Task&);
 };
 
 #endif

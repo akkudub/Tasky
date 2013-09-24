@@ -30,29 +30,44 @@ private:
 	Logic _logic;
 	History _history;
 	FileProcessing _fileProcessing;
+	vector<string> *_wordsList;
+	int _statusFlag;  //0 : last operation has ended;
+	                  //1 : update operation has not ended;
+	                  //2 : remove operation has not ended;
+	                  //3 : mark operation has not ended;
+	                  
 	
 	
 public:
 	Processor();
 	string mainProcessor(string); //processes the string, calls the appropriate logic methods, returns string
 	                              //to UI
+	                              //create a new vector of strings and delete that at the end
+	~Processor();
 
 private:
 	//level 1 abstraction
-	string addCommandProcessor(string);
-	string displayCommandProcessor(string);
-	string updateCommandProcessor(string);
-	string removeCommandProcessor(string);
-	string markCommandProcessor(string);
-	string otherCommandProcessor(string);
+	string addCommandProcessor();  //create an int to keep track of the position of checked vector
+	                               //create two datetime and pass the reference to 
+	string displayCommandProcessor();
+	string updateCommandProcessor(int&);  //change the flag if necessary
+	string removeCommandProcessor(int&);  //change the flag if necessary
+	string markCommandProcessor(int&);  //change the flag if necessary
+	string otherCommandProcessor();
 
 	//level 2 abstraction
+	int findType(int&);
+	int findDate(DateTime&);
+
+    
 
 
 	//additional helper methods
+	int breakIntoStringVector(string);
+	int stringToInt(string);
+	string combineStrings(int,int);
 	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
-	string breakIntoStringVector(string);
 	vector<int> identifyKeyWords(string);
 };
 

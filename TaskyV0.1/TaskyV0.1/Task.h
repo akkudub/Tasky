@@ -23,6 +23,14 @@ private:
 	
 public:
 	Task(string, DateTime, DateTime, int, bool, string);
+	
+	string getTitle();
+	DateTime getStart();
+	DateTime getEnd();
+	int getType();
+	bool getDone(); //true=done, false=pending
+	string getComment();
+
 	bool isEqualTo(const Task&);
 	bool isClashingWith(const Task&);
 };

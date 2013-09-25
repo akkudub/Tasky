@@ -52,13 +52,15 @@ private:
 	string addCommandProcessor();  //create an int to keep track of the position of checked vector
 	                               //create two datetime and pass the reference to 
 	string displayCommandProcessor();
+	
 	string updateCommandProcessor(int&);  //change the flag if necessary
 	string removeCommandProcessor(int&);  //change the flag if necessary
 	string markCommandProcessor(int&);  //change the flag if necessary
+	
 	string otherCommandProcessor();
 
 	//level 2 abstraction
-	void findType(int&);
+	int findType(int&);
 	int findDate(DateTime&);
 
     

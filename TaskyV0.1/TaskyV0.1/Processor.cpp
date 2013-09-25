@@ -7,13 +7,13 @@ Processor::Processor(){
 
 //level 2 abstraction
 
-void Processor::findType(int& type){
+int Processor::findType(int& type){
 	vector<int> positionVector = identifyKeyWords();
 	int endPosition = _wordsList->size()-1;
 	if (positionVector.size() == 0){
 		type=0;
 	}else if(positionVector.size()==1){
-		if (positionVector[0] == endPosition)		{
+		if (positionVector[0] == endPosition){
 			type = 0;
 		}else if(positionVector[0] == endPosition-1){
 			if (dateCheck(_wordsList->at(endPosition))){
@@ -23,14 +23,31 @@ void Processor::findType(int& type){
 			}
 		}else if(positionVector[0] == endPosition-2){
 			if (dateTimeCheck(_wordsList->at(endPosition-1), _wordsList->at(endPosition))){
-				type = 2;
+				type = 1;
 			}
-
 		}
-
-
+	}else if(positionVector.size()==2){
+		int fromPos = positionVector[0];
+		int toPos = positionVector[1];
+		if (toPos == endPosition){
+			type = 0;
+		}else if(toPos == endPosition-1){
+			if (dateCheck(_wordsList->at(endPosition)) && dateCheck(_wordsList->at(fromPos+1))){
+				type=2;
+			}else{
+				type=0;
+			}
+		}else if(toPos == endPosition-2){
+			if (dateTimeCheck(_wordsList->at(endPosition-1), _wordsList->at(endPosition)) && dateTimeCheck(_wordsList->at(fromPos+1), _wordsList->at(fromPos+2))){
+				type=2;
+			}else{
+				type=0;
+			}
+		}
+	}else{
+		return -1;
 	}
-
+	return 0;
 }
 
 int Processor::findDate(DateTime&){

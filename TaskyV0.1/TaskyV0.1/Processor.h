@@ -69,7 +69,7 @@ private:
 	int stringToInt(string);
 	string combineStringsWithSpace(int,int);
 	string combineStringsWithNewLine(int,int);
-	string taskToString(const Task&); // not done
+	string taskToString(const Task&); // not done, stub
 	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
 	vector<int> identifyKeyWords(); // only a basic detection, must type in exact keywords

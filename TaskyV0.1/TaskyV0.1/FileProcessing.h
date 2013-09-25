@@ -11,10 +11,15 @@
 #include <fstream>
 #include "Essential.h"
 
+static const string _LOGNAME = "TaskyLog";
+
 class FileProcessing{
+private:
+	bool emptyFile();
 public:
 	int load(vector<string>&); //reads text file, push into vector
 	int save(vector<string>&); //reads vector, writes to text file
+
 };
 
 #endif

@@ -10,11 +10,14 @@
 
 #include "Essential.h"
 
+static const int CHANGEINHISTORYSIZE = 1;
+
 class History{
 private:
 	vector<string> _historyRecord; //formatted strings from Processor
 	
 public:
+	History();
 	int undo(string&); //takes a string from Processor, reads last historyRecord, writes it into the
 						// string reference.
 	int record(string); //takes string and push into the historyRecord

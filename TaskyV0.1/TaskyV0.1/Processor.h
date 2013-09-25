@@ -58,7 +58,7 @@ private:
 	string otherCommandProcessor();
 
 	//level 2 abstraction
-	int findType(int&);
+	void findType(int&);
 	int findDate(DateTime&);
 
     
@@ -69,10 +69,17 @@ private:
 	int stringToInt(string);
 	string combineStringsWithSpace(int,int);
 	string combineStringsWithNewLine(int,int);
-	string taskToString(const Task&);
+	string taskToString(const Task&); // not done
 	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
-	vector<int> identifyKeyWords(string);
+	vector<int> identifyKeyWords(); // only a basic detection, must type in exact keywords
+	bool fromToCheck(int, int);
+	bool byCheck(int);
+	bool dateCheck(string);
+	bool timeCheck(string);
+	bool dateTimeCheck(string, string);
+	int characterType(char) ;
+	
 };
 
 #endif

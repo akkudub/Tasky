@@ -15,6 +15,8 @@
  *Author: Akshat, Junchao
 */
 
+#include <sstream>
+#include <algorithm>
 #include "Task.h"
 #include "History.h"
 #include "FileProcessing.h"
@@ -23,7 +25,7 @@
 
 class Processor{
 private:
-	vector<Task> _temp; //hold the tasks returned by search and display
+	vector<Task> _tempTaskList; //hold the tasks returned by search and display
 	vector<string> _stringList; //hold the tasks in a string format, pass to FileProcessing and that
 	                            //will read and write accordingly
 	vector<Task>* _taskListPointer;
@@ -65,7 +67,9 @@ private:
 	//additional helper methods
 	int breakIntoStringVector(string);
 	int stringToInt(string);
-	string combineStrings(int,int);
+	string combineStringsWithSpace(int,int);
+	string combineStringsWithNewLine(int,int);
+	string taskToString(const Task&);
 	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
 	vector<int> identifyKeyWords(string);

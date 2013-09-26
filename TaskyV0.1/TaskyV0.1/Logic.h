@@ -16,7 +16,7 @@ private:
 	
 public:
 	Logic();
-	int add(Task, vector<Task>&);
+	int add(Task, vector<Task>&){return 0;}
 	int remove(Task);
 	int update(Task, Task, vector<Task>&);// old Task, new Task, Tasks that clash push into vector.
 	int search(string, vector<Task>&); //search for tasks containing string, pushes into referenced vector

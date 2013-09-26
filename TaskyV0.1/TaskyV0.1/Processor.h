@@ -38,7 +38,30 @@ private:
 	                  //2 : remove operation has not ended;
 	                  //3 : mark operation has not ended;
 	                  
-	
+private:
+	static const string EMPTY_STRING;
+	static const string NEW_LINE_STRING;
+	static const string FROM_KEY_WORD;
+	static const string TO_KEY_WORD;
+	static const string BY_KEY_WORD;
+
+	static const string ADD_TASK_SUCCESS;
+	static const string ADD_TASK_FAILURE_DUPLICATE;
+	static const string ADD_TASK_FAILURE_UNEXPECTED;
+	static const string ADD_TASK_WARNING_CLASH;
+	static const string DISPLAY_TASK_SUCCESS;
+	static const string DISPLAY_TASK_FAILURE_UNEXPECTED;
+	static const string WRONG_INPUT;
+
+	static const char NEW_LINE;
+	static const char SLASH;
+	static const char BACK_SLASH;
+	static const char DOT;
+	static const char COLON;
+	static const char DASH;
+	static const char ZERO;
+	static const char NINE;
+	static const char SPACE;
 	
 public:
 	Processor();
@@ -49,8 +72,7 @@ public:
 
 private:
 	//level 1 abstraction
-	string addCommandProcessor();  //create an int to keep track of the position of checked vector
-	                               //create two datetime and pass the reference to 
+	string addCommandProcessor();
 	string displayCommandProcessor();
 	
 	string updateCommandProcessor(int&);  //change the flag if necessary
@@ -59,29 +81,34 @@ private:
 	
 	string otherCommandProcessor();
 
-	//level 2 abstraction
-	int findType(int&);
-	int findDate(DateTime&);
-
-    
-
-
-	//additional helper methods
-	int breakIntoStringVector(string);
-	int stringToInt(string);
-	string combineStringsWithSpace(int,int);
-	string combineStringsWithNewLine(int,int);
-	string taskToString(const Task&); // not done, stub
-	string toLowCaseString(string);
-	string removeLeadingSpaces(string);
-	vector<int> identifyKeyWords(); // only a basic detection, must type in exact keywords
+	//for add command processing
+	string determineMsgToUI(int);
+	int addFloatingTask(string, string);
+	int addDeadlineTask(string, DateTime, string);
+	int addNormalTask(string, DateTime, DateTime, string);
+	int formatDateTime(DateTime&, int, int);
+	int translateDateTime(DateTime&, string, string);
+	int translateDate(int&, int&, int&, string);
+	int translateTime(int&, int&, int&, string);
+	int determineType(int&, int&, int&, int&, int&);
+	vector<int> identifyKeyWords();
 	bool fromToCheck(int, int);
 	bool byCheck(int);
+	bool dateTimeCheck(string, string);
 	bool dateCheck(string);
 	bool timeCheck(string);
-	bool dateTimeCheck(string, string);
+
+	//additional helper methods
+	int breakIntoStringVectorBySpace(string);
+	int stringToInt(string);
+	string combineStringsWithSpaceOnVector(int,int);
+	string combineStringsWithNewLineOnVector(int,int);
+	string combineStringsWithNewLine(string, string);
+	string taskToString(Task);
+	string toLowCaseString(string);
+	string removeLeadingSpaces(string);
 	int characterType(char) ;
-	
+	string combineStatusMsgWithFeedback(string);
 };
 
 #endif

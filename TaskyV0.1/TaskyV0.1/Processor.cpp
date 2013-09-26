@@ -5,6 +5,60 @@ Processor::Processor(){
 	_statusFlag=0;
 }
 
+string Processor::mainProcessor(string command){
+	command = toLowCaseString(command);
+	breakIntoStringVector(command);
+	if(_statusFlag == 0){
+		string firstWord = _wordsList->at(0);
+		if(firstWord == "add"){
+			return addCommandProcessor();
+		}else if(firstWord == "display"){
+			return displayCommandProcessor();
+		}else if(firstWord == "update"){
+			return updateCommandProcessor(_statusFlag);
+		}else if(firstWord == "remove"){
+			return removeCommandProcessor(_statusFlag);
+		}else if(firstWord == "mark"){
+			return markCommandProcessor(_statusFlag);
+		}else if(firstWord == "other"){
+			return otherCommandProcessor();
+		}
+
+	}else if(_statusFlag == 1){
+		return updateCommandProcessor(_statusFlag);
+	}else if(_statusFlag == 2){
+		removeCommandProcessor(_statusFlag);
+	}else if(_statusFlag == 3){
+		markCommandProcessor(_statusFlag);
+	}
+}
+//level 1 abstraction
+
+string Processor::addCommandProcessor(){
+
+}
+
+string Processor::displayCommandProcessor(){
+
+}
+
+string Processor::updateCommandProcessor(int& _statusFlag){
+
+}
+
+string Processor::removeCommandProcessor(int& _statusFlag){
+
+}
+
+string Processor::markCommandProcessor(int& _statusFlag){
+
+}
+
+string Processor::otherCommandProcessor(){
+
+}
+
+
 //level 2 abstraction
 
 int Processor::findType(int& type){

@@ -31,8 +31,8 @@ public:
 	bool getDone(); //true=done, false=pending
 	string getComment();
 
-	bool isEqualTo(const Task&);
-	bool isClashingWith(const Task&);
+	bool isEqualTo(Task&);
+	bool isClashingWith(Task&);
 };
 
 #endif

@@ -40,6 +40,7 @@ private:
 	                  
 private:
 	static const string EMPTY_STRING;
+	static const string NEW_LINE_STRING;
 	static const string FROM_KEY_WORD;
 	static const string TO_KEY_WORD;
 	static const string BY_KEY_WORD;
@@ -48,7 +49,11 @@ private:
 	static const string ADD_TASK_FAILURE_DUPLICATE;
 	static const string ADD_TASK_FAILURE_UNEXPECTED;
 	static const string ADD_TASK_WARNING_CLASH;
+	static const string DISPLAY_TASK_SUCCESS;
+	static const string DISPLAY_TASK_FAILURE_UNEXPECTED;
+	static const string WRONG_INPUT;
 
+	static const char NEW_LINE;
 	static const char SLASH;
 	static const char BACK_SLASH;
 	static const char DOT;
@@ -56,6 +61,7 @@ private:
 	static const char DASH;
 	static const char ZERO;
 	static const char NINE;
+	static const char SPACE;
 	
 public:
 	Processor();
@@ -98,7 +104,7 @@ private:
 	string combineStringsWithSpaceOnVector(int,int);
 	string combineStringsWithNewLineOnVector(int,int);
 	string combineStringsWithNewLine(string, string);
-	string taskToString(const Task&); // not done, stub
+	string taskToString(Task);
 	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
 	int characterType(char) ;

@@ -4,6 +4,7 @@ const string Processor::EMPTY_STRING = "";
 const string Processor::FROM_KEY_WORD = "from";
 const string Processor::TO_KEY_WORD = "to";
 const string Processor::BY_KEY_WORD = "by";
+const string Processor::NEW_LINE_STRING = "\n";
 
 const string Processor::ADD_TASK_SUCCESS = "Task added successfully: ";
 const string Processor::ADD_TASK_FAILURE_DUPLICATE = "Failed! Task existed: ";
@@ -17,6 +18,8 @@ const char Processor::COLON = ':';
 const char Processor::DASH = '-';
 const char Processor::ZERO = '0';
 const char Processor::NINE = '9';
+const char Processor::SPACE = ' ';
+const char Processor::NEW_LINE = '\n';
 
 Processor::Processor(){
 	_taskListPointer=_logic.returnTaskListPointer();
@@ -33,7 +36,7 @@ string Processor::addCommandProcessor(){
 	determineType(type, dtFormat1, dtFormat2, pos1, pos2);
 	switch (type){
 	case 0:
-		title=combineStringsWithSpaceOnVector(0, _wordsList->size()-1);
+		title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
 		addOperationStatus=addFloatingTask(title, EMPTY_STRING);
 		return determineMsgToUI(addOperationStatus);
 		break;
@@ -60,6 +63,37 @@ string Processor::addCommandProcessor(){
 		return determineMsgToUI(-1);
 		break;
 	}
+}
+
+string Processor::displayCommandProcessor(){
+	string result;
+	if (_wordsList->at(1)=="pending"){
+		if (_logic.display(false, _tempTaskList) == 0){
+			int size=_tempTaskList.size();
+			for (int i=0;i<size;i++){
+				result=combineStringsWithNewLine(result, taskToString(_tempTaskList[i]));
+			}
+		}else{
+			result=DISPLAY_TASK_FAILURE_UNEXPECTED;
+		}
+	}else if (_wordsList->at(1)=="done"){
+		if (_logic.display(true, _tempTaskList) == 0){
+			int size=_tempTaskList.size();
+			for (int i=0;i<size;i++){
+				result=combineStringsWithNewLine(result, taskToString(_tempTaskList[i]));
+			}
+		}else{
+			result=DISPLAY_TASK_FAILURE_UNEXPECTED;
+		}
+	}else{
+		result=WRONG_INPUT;
+	}
+
+	return result;
+}
+
+string Processor::otherCommandProcessor(){
+	return WRONG_INPUT;
 }
 
 string Processor::determineMsgToUI(int statusReturnedFromLogic){
@@ -119,15 +153,77 @@ int Processor::formatDateTime(DateTime& dt, int dtFormat, int pos){
 }
 
 int Processor::translateDateTime(DateTime& dt, string str1, string str2){
+	int year=0, month=0, day=0, hour=0, minute=0, second=0;
+	bool dateFlag=false, timeFlag=true;
+
+	if (str1!=EMPTY_STRING){
+		if (translateDate(year, month, day, str1) != 0){
+			return 1;
+		}else{
+			dateFlag=true;
+		}
+	}
+	if (str2!=EMPTY_STRING){
+		if (translateTime(hour, minute, second,str2) != 0){
+			return 1;
+		}else{
+			timeFlag=true;
+		}
+	}
+	if (dateFlag && timeFlag){
+		try{
+		   dt=DateTime(year, month, day, hour, minute, second);
+		}catch (const exception& e){
+			return 1;
+		}
+	}else if(dateFlag && !timeFlag){
+		try{
+		   dt=DateTime(year, month, day, hour, minute, second);
+		}catch (const exception& e){
+			return 1;
+		}
+	}else{
+		return 1;
+	}
+	
 	return 0;
 }
 
 int Processor::translateDate(int& year, int& month, int& day, string date){
+	DateTime now;
+	year=stringToInt(date.substr(0,4));
+	if (year < now.Year){
+		return 1;
+	}
+	month=stringToInt(date.substr(5,2));
+	if (month>12 || month<1){
+		return 1;
+	}
+	day=stringToInt(date.substr(8,2));
+	if (day>31 || day<1){
+		return 1;
+	}
 
+	return STATUS_CODE_SET::SUCCESS;
 }
 
 int Processor::translateTime(int& hour, int& minute, int& second, string time){
+	hour=stringToInt(time.substr(0,2));
+	if (hour>24 || hour<0){
+		return 1;
+	}
+	minute=stringToInt(time.substr(3,2));
+	if (minute>60 || minute<0){
+		return 1;
+	}
+	if (time.size() == 8){
+		second=stringToInt(time.substr(6,2));
+		if (second>60 || second<0){
+			return 1;
+		}
+	}
 
+	return STATUS_CODE_SET::SUCCESS;
 }
 
 int Processor::determineType(int& type, int& dtFromat1, int& dtFormat2, int& pos1, int& pos2){
@@ -216,24 +312,84 @@ bool Processor::byCheck(int iterator){
 	return (_wordsList->at(iterator) == BY_KEY_WORD);
 }
 
-bool Processor::dateCheck(string test){
-	return true;
-}
-
-bool Processor::timeCheck(string test){
-	return true;
-}
-
 bool Processor::dateTimeCheck(string date, string time){
 	return (dateCheck(date) && timeCheck(time));
 }
 
+bool Processor::dateCheck(string test){
+	int size=test.size();
+	int index=0;
+
+	if(size != 10){
+		return false;
+	}
+	for (;index<4;index++){
+		if (characterType(test[index]) != 0){
+			return false;
+		}
+	}
+	if (characterType(test[index]) != 1){
+		return false;
+	}
+	index++;
+	for (;index<7;index++){
+		if (characterType(test[index]) != 0){
+			return false;
+		}
+	}
+	if (characterType(test[index]) != 1){
+		return false;
+	}
+	index++;
+	for (;index<size;index++){
+		if (characterType(test[index]) != 0){
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Processor::timeCheck(string test){
+	int size=test.size();
+	int index=0;
+	
+	if (size!=5 && size!=8){
+		return false;
+	}
+	for (;index<2;index++){
+		if (characterType(test[index])!=0){
+			return false;
+		}
+	}
+	if (characterType(test[index])!=1){
+		return false;
+	}
+	index++;
+	for (;index<5;index++){
+		if (characterType(test[index])!=0){
+			return false;
+		}
+	}
+	if (size==8){
+	    if (characterType(test[index])!=1){
+		    return false;
+	    }
+		for (;index<8;index++){
+			if (characterType(test[index])!=0){
+			    return false;
+		    }
+		}
+	}
+
+	return true;
+}
 
 int Processor::breakIntoStringVectorBySpace(string longStr){
 	stringstream ss(longStr);
 	string tempStr;
 
-	while (std::getline(ss, tempStr, ' ')){
+	while (std::getline(ss, tempStr, SPACE)){
 		_wordsList->push_back(tempStr);
 	}
 
@@ -268,11 +424,16 @@ string Processor::combineStringsWithNewLineOnVector(int start, int end){
 }
 
 string Processor::combineStringsWithNewLine(string str1, string str2){
-	return str1+"\n"+str2;
+	return str1+NEW_LINE_STRING+str2;
 }
 
-string Processor::taskToString(const Task&){
-	return "";
+string Processor::taskToString(Task t){
+	string result;
+
+	result="title: "+t.getTitle();
+	result=combineStringsWithNewLine(result, "type: ");
+
+	return result;
 }
 
 
@@ -282,12 +443,12 @@ string Processor::toLowCaseString(string str){
 }
 
 string Processor::removeLeadingSpaces(string str){
-	int num=str.find_first_not_of(' ');
+	int num=str.find_first_not_of(SPACE);
 	return str.substr(num);
 }
 
 int Processor::characterType(char ch){
-	if (ch==DOT || ch==BACK_SLASH || ch==SLASH){
+	if (ch==DOT || ch==BACK_SLASH || ch==SLASH || ch==COLON || ch==DASH){
 		return 1;
 	}else if(ch>=ZERO && ch<=NINE){
 		return 0;

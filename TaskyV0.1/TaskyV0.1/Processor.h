@@ -57,6 +57,10 @@ private:
 	static const string DISPLAY_TASK_FAILURE_UNEXPECTED;
 	static const string WRONG_INPUT;
 	static const string UNEXPECTED_ERROR;
+	static const string UPDATE_CHOOSE_TASK;
+	static const string REMOVE_CHOOSE_TASK;
+	static const string MARK_CHOOSE_TASK;
+	static const string NO_SUCH_TASK;
 
 	static const char NEW_LINE;
 	static const char SLASH;
@@ -88,9 +92,9 @@ private:
 
 	//for add command processing
 	string determineMsgToUI(int);
-	int addFloatingTask(string, string);
-	int addDeadlineTask(string, DateTime, string);
-	int addNormalTask(string, DateTime, DateTime, string);
+	int addFloatingTask(string, string);//need to refactor to only create a task
+	int addDeadlineTask(string, DateTime, string);//need to refactor to only create a task
+	int addNormalTask(string, DateTime, DateTime, string);//need to refactor to only create a task
 	int formatDateTime(DateTime&, int, int);
 	int translateDateTime(DateTime&, string, string);
 	int translateDate(int&, int&, int&, string);
@@ -106,7 +110,7 @@ private:
 	//additional helper methods
 	int breakIntoStringVectorBySpace(string);
 	int stringToInt(string);
-	string combineStringsWithSpaceOnVector(int,int);
+	string combineStringsWithSpaceOnVector(int,int);//check size of vector first
 	string combineStringsWithNewLineOnVector(int,int);
 	string combineStringsWithNewLine(string, string);
 	string taskToString(Task);

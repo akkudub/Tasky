@@ -1,5 +1,9 @@
 #include "Task.h"
 
+Task::Task(){
+
+}
+
 Task::Task(string title,DateTime dt1, DateTime dt2, int type, bool done, string comment){
 	_title=title;
 	_type=type;

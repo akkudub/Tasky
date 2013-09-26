@@ -218,22 +218,30 @@ string Processor::determineMsgToUI(int statusReturnedFromLogic){
 
 int Processor::addFloatingTask(string title, string comment){
 	DateTime dt1, dt2;
-	Task t = Task(title, dt1, dt2, 0, false, "");
+	Task t;
+	createTask(t, title, dt1, dt2, 0, false, EMPTY_STRING);
 	_tempTaskList.clear();
 	return _logic.add(t, _tempTaskList);
 }
 
 int Processor::addDeadlineTask(string title, DateTime dt, string comment){
 	DateTime dt1;
-	Task t = Task(title, dt1, dt, 0, false, "");
+	Task t;
+	createTask(t, title, dt1, dt, 1, false, EMPTY_STRING);
 	_tempTaskList.clear();
 	return _logic.add(t, _tempTaskList);
 }
 
 int Processor::addNormalTask(string title, DateTime dt1, DateTime dt2, string comment){
-	Task t = Task(title, dt1, dt2, 0, false, "");
+	Task t;
+	createTask(t, title, dt1, dt2, 2, false, EMPTY_STRING);
 	_tempTaskList.clear();
 	return _logic.add(t, _tempTaskList);
+}
+
+int Processor::createTask(Task& t, string title, DateTime dt1, DateTime dt2, int type, bool done, string comment){
+	t=Task(title, dt1, dt2, type, done, comment);
+	return 0;
 }
 
 int Processor::formatDateTime(DateTime& dt, int dtFormat, int pos){

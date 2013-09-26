@@ -95,6 +95,7 @@ private:
 	int addFloatingTask(string, string);//need to refactor to only create a task
 	int addDeadlineTask(string, DateTime, string);//need to refactor to only create a task
 	int addNormalTask(string, DateTime, DateTime, string);//need to refactor to only create a task
+	int createTask(Task&,string, DateTime, DateTime, int, bool, string);
 	int formatDateTime(DateTime&, int, int);
 	int translateDateTime(DateTime&, string, string);
 	int translateDate(int&, int&, int&, string);

@@ -14,6 +14,10 @@ const string Processor::DISPLAY_TASK_SUCCESS="Task Display success!";
 const string Processor::DISPLAY_TASK_FAILURE_UNEXPECTED="Unexpected task failure";
 const string Processor::WRONG_INPUT="Wrong input";
 const string Processor::UNEXPECTED_ERROR="Unexpected error";
+const string Processor::UPDATE_CHOOSE_TASK="Enter the task number to update: ";
+const string Processor::REMOVE_CHOOSE_TASK="Enter the task number to remove: ";
+const string Processor::MARK_CHOOSE_TASK="Enter the task number to mark: ";
+const string Processor::NO_SUCH_TASK="No such task!";
 
 const char Processor::SLASH = '/';
 const char Processor::BACK_SLASH = '\\';
@@ -45,7 +49,7 @@ string Processor::mainProcessor(string command){
 			return removeCommandProcessor();
 		}else if(firstWord == "mark"){
 			return markCommandProcessor();
-		}else if(firstWord == "other"){
+		}else{
 			return otherCommandProcessor();
 		}
 
@@ -126,12 +130,65 @@ string Processor::displayCommandProcessor(){
 }
 
 string Processor::updateCommandProcessor(){
+	if(_statusFlag == 1){
+		if((stringToInt(_wordsList->at(1))<=_tempTaskList.size()) && (stringToInt(_wordsList->at(1)) < 0)){
+			//refactor and use the method used in addtask to create a task
+			//pass the created task and the task in the vector at position
+			//create a new vector and pass in that for new clashes
+		}
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			_tempTaskList.clear();
+			_logic.search(title, _tempTaskList);
+			if(_tempTaskList.size()>0){
+				_statusFlag = 1;
+				return UPDATE_CHOOSE_TASK;
+			}else if(_tempTaskList.empty()){
+				return NO_SUCH_TASK;
+			}
+		}
+	}
 	return "";
 }
 string Processor::removeCommandProcessor(){
+	if(_statusFlag == 2){
+		if((stringToInt(_wordsList->at(1))<=_tempTaskList.size()) && (stringToInt(_wordsList->at(1)) < 0)){
+
+		}
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			_tempTaskList.clear();
+			_logic.search(title, _tempTaskList);
+			if(_tempTaskList.size()>0){
+				_statusFlag = 2;
+				return REMOVE_CHOOSE_TASK;
+			}else if(_tempTaskList.empty()){
+				return NO_SUCH_TASK;
+			}
+		}
+	}
 	return "";
 }
 string Processor::markCommandProcessor(){
+	if(_statusFlag == 3){
+		if((stringToInt(_wordsList->at(1))<=_tempTaskList.size()) && (stringToInt(_wordsList->at(1)) < 0)){
+
+		}
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			_tempTaskList.clear();
+			_logic.search(title, _tempTaskList);
+			if(_tempTaskList.size()>0){
+				_statusFlag = 3;
+				return MARK_CHOOSE_TASK;
+			}else if(_tempTaskList.empty()){
+				return NO_SUCH_TASK;
+			}
+		}
+	}
 	return "";
 }
 

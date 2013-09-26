@@ -23,6 +23,7 @@ private:
 	
 public:
 	Task(string, DateTime, DateTime, int, bool, string);
+	~Task();
 	
 	string getTitle();
 	DateTime getStart();

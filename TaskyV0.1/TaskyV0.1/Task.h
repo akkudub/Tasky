@@ -29,11 +29,12 @@ public:
 	DateTime getStart();
 	DateTime getEnd();
 	int getType();
-	bool getDone(); //true=done, false=pending
+	bool& getDone(); //true=done, false=pending
 	string getComment();
 
-	bool isEqualTo(const Task&);
-	bool isClashingWith(const Task&);
+
+	bool isEqualTo(Task&);
+	bool isClashingWith(Task&);
 };
 
 #endif

@@ -1,21 +1,7 @@
-#ifndef _LOGIC_H_
-#define _LOGIC_H_
+#include "Logic.h"
 
-/*
- *This class is mainly to store tasks and manipulate tasks according to processor's command.
- *
- *Main author: Kai Wen
-*/
-
-#include "Essential.h"
-#include "Task.h"
-
-class Logic{
-private:
-	vector<Task> _taskList;
-	
-public:
-	Logic();
+class LogicStub:public Logic{
+	public:
 	int add(Task, vector<Task>&);
 	int remove(Task);
 	int update(Task, Task, vector<Task>&);// old Task, new Task, Tasks that clash push into vector.
@@ -23,7 +9,4 @@ public:
 	int display(bool, vector<Task>&); //done=true, pending=false. pushes tasks into referenced vector.
 	int mark(bool, Task);//done=true, pending=false. 
 	vector<Task>* returnTaskListPointer();
-
 };
-
-#endif

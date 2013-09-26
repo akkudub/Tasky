@@ -12,7 +12,7 @@ private:
 	Processor _processor;
 	
 public:
-	void interface(); //takes in user input
+	void UI_interface(); //takes in user input
 };
 
 #endif

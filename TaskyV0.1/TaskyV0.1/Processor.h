@@ -17,11 +17,15 @@
 
 #include <sstream>
 #include <algorithm>
+#include <msclr\marshal_cppstd.h>
 #include "Task.h"
 #include "History.h"
 #include "FileProcessing.h"
 #include "Logic.h"
 #include "Essential.h"
+#include "LogicStub.h"
+
+using namespace msclr::interop;
 
 class Processor{
 private:
@@ -29,7 +33,7 @@ private:
 	vector<string> _stringList; //hold the tasks in a string format, pass to FileProcessing and that
 	                            //will read and write accordingly
 	vector<Task>* _taskListPointer;
-	Logic _logic;
+	LogicStub _logic;
 	History _history;
 	FileProcessing _fileProcessing;
 	vector<string> *_wordsList;
@@ -52,6 +56,7 @@ private:
 	static const string DISPLAY_TASK_SUCCESS;
 	static const string DISPLAY_TASK_FAILURE_UNEXPECTED;
 	static const string WRONG_INPUT;
+	static const string UNEXPECTED_ERROR;
 
 	static const char NEW_LINE;
 	static const char SLASH;
@@ -75,9 +80,9 @@ private:
 	string addCommandProcessor();
 	string displayCommandProcessor();
 	
-	string updateCommandProcessor(int&);  //change the flag if necessary
-	string removeCommandProcessor(int&);  //change the flag if necessary
-	string markCommandProcessor(int&);  //change the flag if necessary
+	string updateCommandProcessor();  //change the flag if necessary
+	string removeCommandProcessor();  //change the flag if necessary
+	string markCommandProcessor();  //change the flag if necessary
 	
 	string otherCommandProcessor();
 
@@ -105,6 +110,10 @@ private:
 	string combineStringsWithNewLineOnVector(int,int);
 	string combineStringsWithNewLine(string, string);
 	string taskToString(Task);
+	string printFloatingTask(Task);
+	string printDeadlineTask(Task);
+	string printTimedTask(Task);
+	string printStatus(bool);
 	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
 	int characterType(char) ;

@@ -22,6 +22,7 @@ private:
 	string _comment;
 	
 public:
+	Task();
 	Task(string, DateTime, DateTime, int, bool, string);
 	
 	string getTitle();

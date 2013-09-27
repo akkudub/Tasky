@@ -4,7 +4,7 @@ int main()
 {
 	
 	UI ui;
-	ui.interface();
+	ui.UI_interface();
 	
 	return 0;
 }

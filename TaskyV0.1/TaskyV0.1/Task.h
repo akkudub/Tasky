@@ -30,9 +30,10 @@ public:
 	DateTime getStart();
 	DateTime getEnd();
 	int getType();
-	bool& getDone(); //true=done, false=pending
+	bool getDone(); //true=done, false=pending
 	string getComment();
 
+	void toggleDone();
 
 	bool isEqualTo(Task&);
 	bool isClashingWith(Task&);

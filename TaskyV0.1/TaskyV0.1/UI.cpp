@@ -1,7 +1,7 @@
 #include "UI.h"
 
 void UI::UI_interface(){
-	displayWelcomeMessage();
+	/*displayWelcomeMessage();*/
 	string command;
 	bool exitTextBuddy = false;
 	while (!exitTextBuddy) {

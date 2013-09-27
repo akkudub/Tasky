@@ -4,8 +4,12 @@ string Task::getTitle(){return _title;}
 DateTime Task::getStart(){return *_start;}
 DateTime Task::getEnd(){return *_end;}
 int Task::getType(){return _type;}
-bool& Task::getDone(){return _done;}
+bool Task::getDone(){return _done;}
 string Task::getComment(){return _comment;}
+
+void Task::toggleDone(){
+	_done=!_done;
+}
 
 Task::Task(){
 

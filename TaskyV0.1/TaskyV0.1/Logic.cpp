@@ -34,6 +34,9 @@ int Logic::remove(Task toRemove){
 int Logic::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
 	_temp.clear();
+	if(existingTask.isEqualTo(newTask)){
+		return UPDATE_WARNING_SAME;
+	}
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
@@ -102,12 +105,11 @@ int Logic::mark(bool mark, Task task){
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
 		if(task.isEqualTo(_taskList[i])){
-			_taskList[i].getDone() = !_taskList[i].getDone();
+			_taskList[i].toggleDone();
 			return SUCCESS;
 		}
 	}
-
-
+	return MARK_FAILURE;
 }
 
 vector<Task>* Logic::returnTaskListPointer(){

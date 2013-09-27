@@ -679,7 +679,3 @@ string Processor::combineStatusMsgWithFeedback(string msg){
 Processor::~Processor(){
 	delete _wordsList;
 }
-
-string Processor::mainProcessor(string s){
-return "processing return";
-}

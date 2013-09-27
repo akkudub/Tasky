@@ -35,10 +35,12 @@ const char Processor::NEW_LINE = '\n';
 Processor::Processor(){
 	_taskListPointer=_logic.returnTaskListPointer();
 	_statusFlag=0;
+	_wordsList = new vector<string>;
 }
 
 string Processor::mainProcessor(string command){
 	command = toLowCaseString(command);
+	_wordsList->clear();
 	breakIntoStringVectorBySpace(command);
 	if(_statusFlag == 0){
 		string firstWord = _wordsList->at(0);
@@ -333,6 +335,7 @@ int Processor::translateDateTime(DateTime& dt, string str1, string str2){
 	if (dateFlag && timeFlag){
 		try{
 			dt=DateTime(year, month, day, hour, minute, second);
+			cout<<marshal_as<std::string>(dt.ToString())<<endl;
 		}catch (const exception& e){
 			return 1;
 		}
@@ -386,7 +389,7 @@ int Processor::translateTime(int& hour, int& minute, int& second, string time){
 	return STATUS_CODE_SET::SUCCESS;
 }
 
-int Processor::determineType(int& type, int& dtFromat1, int& dtFormat2, int& pos1, int& pos2){
+int Processor::determineType(int& type, int& dtFormat1, int& dtFormat2, int& pos1, int& pos2){
 	vector<int> positionVector = identifyKeyWords();
 	int endPosition = _wordsList->size()-1;
 
@@ -423,12 +426,20 @@ int Processor::determineType(int& type, int& dtFromat1, int& dtFormat2, int& pos
 		}else if(toPos == endPosition-1){
 			if (dateCheck(_wordsList->at(endPosition)) && dateCheck(_wordsList->at(fromPos+1))){
 				type=2;
+				dtFormat1 = 1;
+				dtFormat2 = 1;
+				pos1 = positionVector[0];
+				pos2 = positionVector[1];
 			}else{
 				type=0;
 			}
 		}else if(toPos == endPosition-2){
 			if (dateTimeCheck(_wordsList->at(endPosition-1), _wordsList->at(endPosition)) && dateTimeCheck(_wordsList->at(fromPos+1), _wordsList->at(fromPos+2))){
 				type=2;
+				dtFormat1 = 2;
+				dtFormat2 = 2;
+				pos1 = positionVector[0];
+				pos2 = positionVector[1];
 			}else{
 				type=0;
 			}
@@ -440,9 +451,12 @@ int Processor::determineType(int& type, int& dtFromat1, int& dtFormat2, int& pos
 	return 0;
 }
 
-vector<int> Processor::identifyKeyWords(){
+vector<int> Processor::identifyKeyWords(){//fucked up
 	int endPosition = _wordsList->size()-1;
 	vector<int> positionVector;
+	if(_wordsList->size()<=6){
+		return positionVector;
+	}
 	for (int i = endPosition; i > endPosition-6; i--){
 		if(fromToCheck(2, i)){
 			positionVector.push_back(i-2);

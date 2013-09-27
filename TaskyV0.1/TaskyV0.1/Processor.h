@@ -33,7 +33,7 @@ private:
 	vector<string> _stringList; //hold the tasks in a string format, pass to FileProcessing and that
 	//will read and write accordingly
 	vector<Task>* _taskListPointer;
-	LogicStub _logic;
+	Logic _logic;
 	History _history;
 	FileProcessing _fileProcessing;
 	vector<string> *_wordsList;

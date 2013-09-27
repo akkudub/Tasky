@@ -15,8 +15,8 @@
 class Task{
 private:
 	string _title;
-	DateTime *_start;
-	DateTime *_end;
+	DateTime* _start;
+	DateTime* _end;
 	int _type;
 	bool _done; //true=done, false=pending
 	string _comment;

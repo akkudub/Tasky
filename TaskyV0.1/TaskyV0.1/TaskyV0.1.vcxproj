@@ -80,7 +80,6 @@
     <ClInclude Include="Essential.h" />
     <ClInclude Include="FileProcessing.h" />
     <ClInclude Include="History.h" />
-    <ClInclude Include="LogicStub.h" />
     <ClInclude Include="Processor.h" />
     <ClInclude Include="Logic.h" />
     <ClInclude Include="Task.h" />
@@ -89,7 +88,6 @@
   <ItemGroup>
     <ClCompile Include="FileProcessing.cpp" />
     <ClCompile Include="History.cpp" />
-    <ClCompile Include="LogicStub.cpp" />
     <ClCompile Include="Processor.cpp" />
     <ClCompile Include="Logic.cpp" />
     <ClCompile Include="Main.cpp" />

@@ -16,6 +16,7 @@
 */
 
 #include <sstream>
+#include <iostream>
 #include <algorithm>
 #include <msclr\marshal_cppstd.h>
 #include "Task.h"
@@ -23,7 +24,6 @@
 #include "FileProcessing.h"
 #include "Logic.h"
 #include "Essential.h"
-#include "LogicStub.h"
 
 using namespace msclr::interop;
 

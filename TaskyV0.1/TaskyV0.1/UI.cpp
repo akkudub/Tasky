@@ -22,7 +22,7 @@ void UI::displayWelcomeMessage(){
 
 void UI::displayCommandMessage(string& command){
 	cout << MESSAGE_COMMAND;
-	cin >> command;
+	getline(cin, command);
 }
 
 void UI::displayProcessorMessage(string& command){

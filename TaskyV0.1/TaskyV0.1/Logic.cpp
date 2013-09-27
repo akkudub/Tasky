@@ -6,13 +6,27 @@ Logic::Logic(){
 //if temp is empty,it means no tasks exists with same name, add task, return success. Otherwise, add task and return warning clash.
 int Logic::add(Task toAdd, vector<Task>& _temp){
 
-	if(_temp.empty()){
+	for(unsigned int i = 0; i < _taskList.size(); i++){
+
+		if(toAdd.isEqualTo(_taskList[i])){
+			return ADD_FAILURE_DUPLICATE;
+		}
+	}
+
+	for(unsigned int i = 0; i < _taskList.size(); i++){
+
+		if(toAdd.isClashingWith(_taskList[i])){
+			_temp.push_back(_taskList[i]);
+		}
+	}
+
+	if(!_temp.empty()){
 		_taskList.push_back(toAdd);
-		return SUCCESS;
+		return ADD_WARNING_CLASH;
 	}
 	else{
 		_taskList.push_back(toAdd);
-		return ADD_WARNING_CLASH;
+		return SUCCESS;
 	}
 
 }

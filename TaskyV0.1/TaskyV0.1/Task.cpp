@@ -29,8 +29,7 @@ Task::Task(string title, DateTime start, DateTime end, int type, bool done, stri
 
 Task::~Task()
 {
-	delete _start;
-	delete _end;
+	
 }
 
 bool Task::isEqualTo(Task& compare){

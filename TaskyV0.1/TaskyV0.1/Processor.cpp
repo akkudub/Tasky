@@ -15,6 +15,9 @@ const string Processor::DISPLAY_TASK_FAILURE_UNEXPECTED="Unexpected task failure
 const string Processor::WRONG_INPUT="Wrong input";
 const string Processor::UNEXPECTED_ERROR="Unexpected error";
 const string Processor::UPDATE_CHOOSE_TASK="Enter the task number to update: ";
+const string Processor::UPDATE_MESSAGE_WARNING_SAME="Warning! The new data is the same as the old data";
+const string Processor::UPDATE_MESSAGE_WARNING_CLASH="Warning! The new data will make the task clash with the following:";
+const string Processor::UPDATE_MESSAGE_FAILURE="Error! Unable to update task";
 const string Processor::REMOVE_CHOOSE_TASK="Enter the task number to remove: ";
 const string Processor::MARK_CHOOSE_TASK="Enter the task number to mark: ";
 const string Processor::NO_SUCH_TASK="No such task!";
@@ -78,7 +81,7 @@ string Processor::addCommandProcessor(){
 		return determineMsgToUI(addOperationStatus);
 		break;
 	case 1:
-		title=combineStringsWithSpaceOnVector(0, pos2-1);
+		title=combineStringsWithSpaceOnVector(0, pos2-1);//shouldnt the first argument be 1?
 		if (formatDateTime(endingDateTime, dtFormat2, pos2)==0){
 			addOperationStatus=addDeadlineTask(title, endingDateTime, EMPTY_STRING);
 			return determineMsgToUI(addOperationStatus);
@@ -87,7 +90,7 @@ string Processor::addCommandProcessor(){
 		}
 		break;
 	case 2:
-		title=combineStringsWithSpaceOnVector(0, pos1-1);
+		title=combineStringsWithSpaceOnVector(0, pos1-1);//shouldnt the first argument be 1?
 		if (formatDateTime(startingDateTime, dtFormat1, pos1)==0
 			&&formatDateTime(endingDateTime, dtFormat2, pos2)==0){
 				addOperationStatus=addNormalTask(title, startingDateTime, endingDateTime, EMPTY_STRING);
@@ -129,12 +132,55 @@ string Processor::displayCommandProcessor(){
 	return result;
 }
 
+//pass the created task and the task in the vector at position
+//create a new vector and pass in that for new clashes
 string Processor::updateCommandProcessor(){
 	if(_statusFlag == 1){
-		if((stringToInt(_wordsList->at(1))<=_tempTaskList.size()) && (stringToInt(_wordsList->at(1)) < 0)){
-			//refactor and use the method used in addtask to create a task
-			//pass the created task and the task in the vector at position
-			//create a new vector and pass in that for new clashes
+		unsigned int choice = stringToInt(_wordsList->at(1));
+		if((choice <=_tempTaskList.size()) && choice < 0 && _wordsList->size()>2){
+			int type, dtFormat1, dtFormat2, pos1, pos2;
+			int operationStatus;
+			string title;
+			DateTime startingDateTime;
+			DateTime endingDateTime;
+			Task t;
+			vector<Task> clash;
+
+			determineType(type, dtFormat1, dtFormat2, pos1, pos2);
+			switch (type){
+			case 0:
+				title=combineStringsWithSpaceOnVector(2, _wordsList->size()-1);
+				createTask(t, title, startingDateTime, endingDateTime, type, false, EMPTY_STRING);
+				operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
+				break;
+			case 1:
+				title=combineStringsWithSpaceOnVector(2, pos2-1);
+				if (formatDateTime(endingDateTime, dtFormat2, pos2)==0){
+					createTask(t, title, startingDateTime, endingDateTime, type, false, EMPTY_STRING);
+					operationStatus=_logic.update(_tempTaskList[choice-1], t, clash);
+				}else{
+					return determineMsgToUI(-1);
+				}
+				break;
+			case 2:
+				title=combineStringsWithSpaceOnVector(2, pos1-1);
+				if (formatDateTime(startingDateTime, dtFormat1, pos1)==0
+					&&formatDateTime(endingDateTime, dtFormat2, pos2)==0){
+						createTask(t, title, startingDateTime, endingDateTime, type, false, EMPTY_STRING);
+						operationStatus=_logic.update(_tempTaskList[choice-1], t, clash);
+				}else{
+					return determineMsgToUI(-1);
+				}
+				break;
+			default:
+				return determineMsgToUI(-1);
+				break;
+			}
+			return determineMsgToUI(operationStatus);
+			//here i need a separate case for clash to display the clashes,
+			//but i cant use any combineStrings methods.
+			//I wanted to change the combineStringsWithNewLineOnVector method to take in a vector
+			//and convert the contents into strings rather than only using _tempTaskList
 		}
 	}else if(_statusFlag == 0){
 		if(_wordsList->size()>1){
@@ -149,12 +195,15 @@ string Processor::updateCommandProcessor(){
 			}
 		}
 	}
-	return "";
+	return EMPTY_STRING;
 }
 string Processor::removeCommandProcessor(){
 	if(_statusFlag == 2){
-		if((stringToInt(_wordsList->at(1))<=_tempTaskList.size()) && (stringToInt(_wordsList->at(1)) < 0)){
-
+		unsigned int choice = stringToInt(_wordsList->at(1));
+		int operationStatus;
+		if((choice <=_tempTaskList.size()) && choice < 0){
+			operationStatus=_logic.remove(_tempTaskList[choice-1]);
+			return determineMsgToUI(operationStatus);
 		}
 	}else if(_statusFlag == 0){
 		if(_wordsList->size()>1){
@@ -169,27 +218,30 @@ string Processor::removeCommandProcessor(){
 			}
 		}
 	}
-	return "";
+	return EMPTY_STRING;
 }
 string Processor::markCommandProcessor(){
 	if(_statusFlag == 3){
-		if((stringToInt(_wordsList->at(1))<=_tempTaskList.size()) && (stringToInt(_wordsList->at(1)) < 0)){
-
-		}
-	}else if(_statusFlag == 0){
-		if(_wordsList->size()>1){
-			string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-			_tempTaskList.clear();
-			_logic.search(title, _tempTaskList);
-			if(_tempTaskList.size()>0){
-				_statusFlag = 3;
-				return MARK_CHOOSE_TASK;
-			}else if(_tempTaskList.empty()){
-				return NO_SUCH_TASK;
+		unsigned int choice = stringToInt(_wordsList->at(1));
+		int operationStatus;
+		if((choice <=_tempTaskList.size()) && choice < 0){
+			operationStatus=_logic.mark(true, _tempTaskList[choice-1]);
+			return determineMsgToUI(operationStatus);
+		}else if(_statusFlag == 0){
+			if(_wordsList->size()>1){
+				string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+				_tempTaskList.clear();
+				_logic.search(title, _tempTaskList);
+				if(_tempTaskList.size()>0){
+					_statusFlag = 3;
+					return MARK_CHOOSE_TASK;
+				}else if(_tempTaskList.empty()){
+					return NO_SUCH_TASK;
+				}
 			}
 		}
 	}
-	return "";
+	return EMPTY_STRING;
 }
 
 string Processor::otherCommandProcessor(){

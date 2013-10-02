@@ -10,17 +10,17 @@ const string Processor::ADD_TASK_SUCCESS = "Task added successfully: ";
 const string Processor::ADD_TASK_FAILURE_DUPLICATE = "Failed! Task existed: ";
 const string Processor::ADD_TASK_FAILURE_UNEXPECTED = "Failed! Unexpected error during task adding: ";
 const string Processor::ADD_TASK_WARNING_CLASH = "Warning: this task clashes with existing ones";
-const string Processor::DISPLAY_TASK_SUCCESS="Task Display success!";
-const string Processor::DISPLAY_TASK_FAILURE_UNEXPECTED="Unexpected task failure";
-const string Processor::WRONG_INPUT="Wrong input";
-const string Processor::UNEXPECTED_ERROR="Unexpected error";
-const string Processor::UPDATE_CHOOSE_TASK="Enter the task number to update: ";
-const string Processor::UPDATE_MESSAGE_WARNING_SAME="Warning! The new data is the same as the old data";
-const string Processor::UPDATE_MESSAGE_WARNING_CLASH="Warning! The new data will make the task clash with the following:";
-const string Processor::UPDATE_MESSAGE_FAILURE="Error! Unable to update task";
-const string Processor::REMOVE_CHOOSE_TASK="Enter the task number to remove: ";
-const string Processor::MARK_CHOOSE_TASK="Enter the task number to mark: ";
-const string Processor::NO_SUCH_TASK="No such task!";
+const string Processor::DISPLAY_TASK_SUCCESS = "Task Display success!";
+const string Processor::DISPLAY_TASK_FAILURE_UNEXPECTED = "Unexpected task failure";
+const string Processor::WRONG_INPUT = "Wrong input";
+const string Processor::UNEXPECTED_ERROR = "Unexpected error";
+const string Processor::UPDATE_CHOOSE_TASK = "Enter the task number to update: ";
+const string Processor::UPDATE_MESSAGE_WARNING_SAME = "Warning! The new data is the same as the old data";
+const string Processor::UPDATE_MESSAGE_WARNING_CLASH = "Warning! The new data will make the task clash with the following:";
+const string Processor::UPDATE_MESSAGE_FAILURE = "Error! Unable to update task";
+const string Processor::REMOVE_CHOOSE_TASK = "Enter the task number to remove: ";
+const string Processor::MARK_CHOOSE_TASK = "Enter the task number to mark: ";
+const string Processor::NO_SUCH_TASK = "No such task!";
 
 const char Processor::SLASH = '/';
 const char Processor::BACK_SLASH = '\\';
@@ -103,7 +103,7 @@ string Processor::addCommandProcessor(){
 		return determineMsgToUI(addOperationStatus);
 		break;
 	case 1:
-		title=combineStringsWithSpaceOnVector(0, pos2-1);//shouldnt the first argument be 1?
+		title=combineStringsWithSpaceOnVector(1, pos2-1);
 		if (formatDateTime(endingDateTime, dtFormat2, pos2)==0){
 			addOperationStatus=addDeadlineTask(title, endingDateTime, EMPTY_STRING);
 			return determineMsgToUI(addOperationStatus);
@@ -112,7 +112,7 @@ string Processor::addCommandProcessor(){
 		}
 		break;
 	case 2:
-		title=combineStringsWithSpaceOnVector(0, pos1-1);//shouldnt the first argument be 1?
+		title=combineStringsWithSpaceOnVector(1, pos1-1);
 		if (formatDateTime(startingDateTime, dtFormat1, pos1)==0
 			&&formatDateTime(endingDateTime, dtFormat2, pos2)==0){
 				addOperationStatus=addNormalTask(title, startingDateTime, endingDateTime, EMPTY_STRING);
@@ -728,7 +728,7 @@ bool Processor::timeCheck(string test){
 		if (characterType(test[index])!=1){
 			return false;
 		}
-		//need to have index++?
+		index++;
 		for (;index<8;index++){
 			if (characterType(test[index])!=0){
 				return false;

@@ -19,7 +19,7 @@ private:
 	Processor _processor;
 	void displayWelcomeMessage();	//should display welcome messages + task of the day
 	void displayCommandMessage(string&);
-	void displayProcessorMessage(string&);
+	void displayProcessorMessage(string);
 	void displayExitMessage();
 	bool shouldExit(string);
 	void convertLowerCase(string&);

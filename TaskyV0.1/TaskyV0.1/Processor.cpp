@@ -38,6 +38,16 @@ Processor::Processor(){
 	_wordsList = new vector<string>;
 }
 
+/*
+* Purpose: Handle user input based on first keyword
+* and call appropriate functions to handle
+*
+* Param: 
+* command - first keyword of user input
+*
+* Returns: 
+* formatted string of feedback and with user command (including task)
+*/
 string Processor::mainProcessor(string command){
 	command = toLowCaseString(command);
 	_wordsList->clear();
@@ -67,7 +77,17 @@ string Processor::mainProcessor(string command){
 	}
 	return "";
 }
+
 //level 1 abstraction
+/*
+* Purpose: Add tasks according to type
+* 0 - Floating tasks
+* 1 - Deadline tasks
+* 2 - Normal tasks
+*
+* Returns: 
+* Message if task is successfully added (or not with reason)
+*/
 string Processor::addCommandProcessor(){
 	int type, dtFormat1, dtFormat2, pos1, pos2;
 	int addOperationStatus;
@@ -107,6 +127,12 @@ string Processor::addCommandProcessor(){
 	}
 }
 
+/*
+* Purpose: Display to user type of task
+*
+* Returns: 
+* Tasks of type; Unable to display
+*/
 string Processor::displayCommandProcessor(){
 	string result;
 	if (_wordsList->at(1)=="pending"){
@@ -199,6 +225,13 @@ string Processor::updateCommandProcessor(){
 	}
 	return EMPTY_STRING;
 }
+
+/*
+* Purpose: Remove task (from search results)
+*
+* Returns: 
+* Task successfully removed; Ask user to choose task to remove; No such task found
+*/
 string Processor::removeCommandProcessor(){
 	if(_statusFlag == 2){
 		unsigned int choice = stringToInt(_wordsList->at(1));
@@ -222,6 +255,13 @@ string Processor::removeCommandProcessor(){
 	}
 	return EMPTY_STRING;
 }
+
+/*
+* Purpose: Mark Task as Done/Pending (from search results)
+*
+* Returns: 
+* Task is marked; Ask user to choose task to mark from results; No such task found
+*/
 string Processor::markCommandProcessor(){
 	if(_statusFlag == 3){
 		unsigned int choice = stringToInt(_wordsList->at(1));
@@ -250,6 +290,15 @@ string Processor::otherCommandProcessor(){
 	return WRONG_INPUT;
 }
 
+/*
+* Purpose: To get feedback to tell user is command is succesful/unsuccessful
+*
+* Param: 
+* statusReturnedFromLogic - feedback from Logic code 
+*
+* Returns: 
+* formatted string of feedback and with user command (including task)
+*/
 string Processor::determineMsgToUI(int statusReturnedFromLogic){
 	switch (statusReturnedFromLogic){
 	case STATUS_CODE_SET::SUCCESS:
@@ -270,6 +319,14 @@ string Processor::determineMsgToUI(int statusReturnedFromLogic){
 	}
 }
 
+/*
+* Purpose: Add task of type Floating tasks 
+* puts the successfully created task into _tempTaskList
+*
+* Param: 
+* title - name of task
+* comment - additional description
+*/
 int Processor::addFloatingTask(string title, string comment){
 	DateTime dt1, dt2;
 	Task t;
@@ -278,6 +335,15 @@ int Processor::addFloatingTask(string title, string comment){
 	return _logic.add(t, _tempTaskList);
 }
 
+/*
+* Purpose: Add task of type Dealine tasks 
+* puts the successfully created task into _tempTaskList
+*
+* Param: 
+* title - name of task
+* dt - deadline of task in DateTime format
+* comment - additional description
+*/
 int Processor::addDeadlineTask(string title, DateTime dt, string comment){
 	DateTime dt1;
 	Task t;
@@ -286,6 +352,16 @@ int Processor::addDeadlineTask(string title, DateTime dt, string comment){
 	return _logic.add(t, _tempTaskList);
 }
 
+/*
+* Purpose: Add task of type Normal tasks 
+* puts the successfully created task into _tempTaskList
+*
+* Param: 
+* title - name of task
+* dt1 - starting time of task in DateTime format
+* dt2 - ending time of task in DateTime format
+* comment - additional description
+*/
 int Processor::addNormalTask(string title, DateTime dt1, DateTime dt2, string comment){
 	Task t;
 	createTask(t, title, dt1, dt2, 2, false, EMPTY_STRING);
@@ -293,11 +369,29 @@ int Processor::addNormalTask(string title, DateTime dt1, DateTime dt2, string co
 	return _logic.add(t, _tempTaskList);
 }
 
+/*
+* Purpose: Creates a task with the given information(as parameters)
+*
+* Returns: 
+*  0 - successful
+*/
 int Processor::createTask(Task& t, string title, DateTime dt1, DateTime dt2, int type, bool done, string comment){
 	t=Task(title, dt1, dt2, type, done, comment);
 	return 0;
 }
 
+/*
+* Purpose: Passes in the user input which has the position of date(and time)
+* to put it into a DateTime variable dt
+*
+* Param: 
+* dt - DateTime variable stores date and time upon successful convert
+* dtFormat - 1 for date only;2 for date with time
+* pos - starting position of the user input (in form of vector) which has the date
+*
+* Returns: 
+*  0 - successful; 1 - unsuccessful
+*/
 int Processor::formatDateTime(DateTime& dt, int dtFormat, int pos){
 	if (dtFormat == 1){
 		if (translateDateTime(dt, _wordsList->at(pos+1), EMPTY_STRING) != 0){
@@ -314,6 +408,17 @@ int Processor::formatDateTime(DateTime& dt, int dtFormat, int pos){
 	return 0;
 }
 
+/*
+* Purpose: puts the user input of date and time into a DateTime dt
+*
+* Param: 
+* dt - DateTime variable stores date and time upon successful convert
+* str1 - Date from user input
+* str2 - Time from user input (if exists)
+*
+* Returns: 
+* 0 - successful; 1 - unsuccessful
+*/
 int Processor::translateDateTime(DateTime& dt, string str1, string str2){
 	int year=0, month=0, day=0, hour=0, minute=0, second=0;
 	bool dateFlag=false, timeFlag=true;
@@ -352,6 +457,15 @@ int Processor::translateDateTime(DateTime& dt, string str1, string str2){
 	return 0;
 }
 
+/*
+* Purpose: Separates the string containing date into integers
+*
+* Param: 
+* string - user input of date
+*
+* Returns: 
+* SUCCESS; 1 - unsuccessful, wrong date
+*/
 int Processor::translateDate(int& year, int& month, int& day, string date){
 	DateTime now;
 	year=stringToInt(date.substr(0,4));
@@ -370,6 +484,15 @@ int Processor::translateDate(int& year, int& month, int& day, string date){
 	return STATUS_CODE_SET::SUCCESS;
 }
 
+/*
+* Purpose: Separates the string containing time into integers
+*
+* Param: 
+* string - user input of time
+*
+* Returns: 
+* SUCCESS; 1 - unsuccessful, wrong time
+*/
 int Processor::translateTime(int& hour, int& minute, int& second, string time){
 	hour=stringToInt(time.substr(0,2));
 	if (hour>24 || hour<0){
@@ -389,6 +512,22 @@ int Processor::translateTime(int& hour, int& minute, int& second, string time){
 	return STATUS_CODE_SET::SUCCESS;
 }
 
+/*
+* Purpose: Checks the type of task the user is trying to add
+* 0 - Floating Task;
+* 1 - Deadline Task;
+* 2 - Normal Task;
+*
+* Param: 
+* type - stores type of task
+* dtFormat1 - type of datetime format; 1 for date only, 2 for date with time
+* dtFormat2 - type of datetime format; 1 for date only, 2 for date with time
+* pos1 - position of first keyword
+* pos2 - position of 2nd keyword (if exists)
+*
+* Returns: 
+* 0 - successful; -1 - unsuccessful
+*/
 int Processor::determineType(int& type, int& dtFormat1, int& dtFormat2, int& pos1, int& pos2){
 	vector<int> positionVector = identifyKeyWords();
 	int endPosition = _wordsList->size()-1;
@@ -451,6 +590,11 @@ int Processor::determineType(int& type, int& dtFormat1, int& dtFormat2, int& pos
 	return 0;
 }
 
+/*
+* Purpose: identifies the keywords in the user input and stores into positionVector
+*
+* Returns: vector containinig position of keyword 
+*/
 vector<int> Processor::identifyKeyWords(){//fucked up
 	int endPosition = _wordsList->size()-1;
 	vector<int> positionVector;
@@ -463,7 +607,7 @@ vector<int> Processor::identifyKeyWords(){//fucked up
 			positionVector.push_back(i);
 			return positionVector;
 		}else if(fromToCheck(3, i)){
-			positionVector.push_back(i-3);
+			positionVector.push_back(i-3);		//does this become relative position?
 			positionVector.push_back(i);
 			return positionVector;
 		}else if(byCheck(i)){
@@ -474,6 +618,13 @@ vector<int> Processor::identifyKeyWords(){//fucked up
 	return positionVector;
 }
 
+/*
+* Purpose: Checks if user has entered the 'FROM-TO' keyword
+*
+* Param: posDiff - starting point of 'FROM' keyword; iterator - starting point to check from
+*
+* Returns: true - contains the keyword; false - does not contain
+*/
 bool Processor::fromToCheck(int posDiff, int iterator){
 	if (_wordsList->at(iterator) == TO_KEY_WORD){
 		return ((_wordsList->at(iterator-posDiff)) == FROM_KEY_WORD);
@@ -482,14 +633,35 @@ bool Processor::fromToCheck(int posDiff, int iterator){
 	}
 }
 
+/*
+* Purpose: Checks if user has entered the 'BY' keyword
+*
+* Param: iterator - starting point to check from
+*
+* Returns: true - contains the keyword; false - does not contain
+*/
 bool Processor::byCheck(int iterator){
 	return (_wordsList->at(iterator) == BY_KEY_WORD);
 }
 
+/*
+* Purpose: Checks if date and time are correctly formatted
+*
+* Param: date - date in a string form, time - time in a string form
+*
+* Returns: true - correct; false - incorrect
+*/
 bool Processor::dateTimeCheck(string date, string time){
 	return (dateCheck(date) && timeCheck(time));
 }
 
+/*
+* Purpose: Checks if date is correctly formatted in YYYY/XX/XX
+*
+* Param: date in a string form
+*
+* Returns: true - correct; false - incorrect
+*/
 bool Processor::dateCheck(string test){
 	int size=test.size();
 	int index=0;
@@ -524,11 +696,18 @@ bool Processor::dateCheck(string test){
 	return true;
 }
 
+/*
+* Purpose: Checks if time is correctly formatted in XX:XX:XX
+*
+* Param: time in a string form
+*
+* Returns: true - correct; false - incorrect
+*/
 bool Processor::timeCheck(string test){
 	int size=test.size();
 	int index=0;
 
-	if (size!=5 && size!=8){
+	if (size!=5 && size!=8){	//what's this?
 		return false;
 	}
 	for (;index<2;index++){
@@ -549,6 +728,7 @@ bool Processor::timeCheck(string test){
 		if (characterType(test[index])!=1){
 			return false;
 		}
+		//need to have index++?
 		for (;index<8;index++){
 			if (characterType(test[index])!=0){
 				return false;
@@ -559,6 +739,13 @@ bool Processor::timeCheck(string test){
 	return true;
 }
 
+/*
+* Purpose: Separates the user input word by word into vector _wordsList
+*
+* Param: longStr - user input
+*
+* Returns: success
+*/
 int Processor::breakIntoStringVectorBySpace(string longStr){
 	stringstream ss(longStr);
 	string tempStr;
@@ -570,6 +757,13 @@ int Processor::breakIntoStringVectorBySpace(string longStr){
 	return 0;
 }
 
+/*
+* Purpose: converts string into integer
+*
+* Param: str - string to be converted 
+*
+* Returns: integer converted; -1 if unable to convert
+*/
 int Processor::stringToInt(string str){
 	int num;
 	if ((stringstream(str)>>num)){
@@ -579,6 +773,15 @@ int Processor::stringToInt(string str){
 	}
 }
 
+/*
+* Purpose:Formats the user input which was previously separated
+* into vector into a string again
+*
+* Param: start - beginning of word to be combined in vector;
+*		 end - end of word to be combined in vector
+*
+* Returns: formatted string of user input
+*/
 string Processor::combineStringsWithSpaceOnVector(int start, int end){
 	string result=_wordsList->at(start);
 	for (int i=start+1;i<end;i++){
@@ -589,6 +792,14 @@ string Processor::combineStringsWithSpaceOnVector(int start, int end){
 	return removeLeadingSpaces(result);
 }
 
+/*
+* Purpose:Formats all the task between start to end into 1 string
+*
+* Param: start - beginning of task to be combined in vector;
+*		 end - end of task to be combined in vector
+*
+* Returns: formatted task details
+*/
 string Processor::combineStringsWithNewLineOnVector(int start, int end){
 	string result=taskToString(_tempTaskList.at(start));
 	for (int i=start+1;i<end;i++){
@@ -597,10 +808,23 @@ string Processor::combineStringsWithNewLineOnVector(int start, int end){
 	return result;
 }
 
+/*
+* Purpose:Formats 2 strings separated by a new line character
+*
+* Returns: formatted string
+*/
 string Processor::combineStringsWithNewLine(string str1, string str2){
 	return str1+NEW_LINE_STRING+str2;
 }
 
+/*
+* Purpose: Checks the type of the task,
+* and print the details of task according to type 
+*
+* Param: t- task with details
+*
+* Returns: formatted task details
+*/
 string Processor::taskToString(Task t){
 	if(t.getType() == 0)
 	{
@@ -614,6 +838,13 @@ string Processor::taskToString(Task t){
 	}
 }
 
+/*
+* Purpose:Formats the details task into a string to be printed
+*
+* Param: t- task with details
+*
+* Returns: formatted task details
+*/
 string Processor::printFloatingTask(Task t){
 	string result;
 	result="title: "+t.getTitle();
@@ -624,6 +855,13 @@ string Processor::printFloatingTask(Task t){
 	return result;
 }
 
+/*
+* Purpose:Formats the details task into a string to be printed
+*
+* Param: t- task with details
+*
+* Returns: formatted task details
+*/
 string Processor::printDeadlineTask(Task t){
 	string result;
 	result="title: "+t.getTitle();
@@ -636,6 +874,13 @@ string Processor::printDeadlineTask(Task t){
 	return result;
 }
 
+/*
+* Purpose:Formats the details task into a string to be printed
+*
+* Param: t- task with details
+*
+* Returns: formatted task details
+*/
 string Processor::printTimedTask(Task t){
 	string result;
 	result="title: "+t.getTitle();
@@ -650,6 +895,13 @@ string Processor::printTimedTask(Task t){
 	return result;
 }
 
+/*
+* Purpose:Retrieves status of task
+*
+* Param: status - true - done; false - pending
+*
+* Returns: string with status of task
+*/
 string Processor::printStatus(bool status){
 	if(status){
 		return "done";
@@ -658,17 +910,37 @@ string Processor::printStatus(bool status){
 	}
 }
 
-
+/*
+* Purpose:transform the string into lower case
+*
+* Param: str- string to be transformed
+*
+* Returns: string with lower case
+*/
 string Processor::toLowCaseString(string str){
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 	return str;
 }
 
+/*
+* Purpose: trim spaces ahead of the string
+*
+* Param: str- string to be transformed
+*
+* Returns: string without spaces
+*/
 string Processor::removeLeadingSpaces(string str){
 	int num=str.find_first_not_of(SPACE);
 	return str.substr(num);
 }
 
+/*
+* Purpose:checks if the char is symbol/numeric
+*
+* Param: ch - char to be checked
+*
+* Returns: 1 - symbol; 0 - numeric; -1 - others
+*/
 int Processor::characterType(char ch){
 	if (ch==DOT || ch==BACK_SLASH || ch==SLASH || ch==COLON || ch==DASH){
 		return 1;
@@ -679,6 +951,14 @@ int Processor::characterType(char ch){
 	}
 }
 
+/*
+* Purpose: combines the status message of adding task to task
+*(for display and search)
+*
+* Param: str- status message
+*
+* Returns: formatted status message of adding task
+*/
 string Processor::combineStatusMsgWithFeedback(string msg){
 	string feedback=msg;
 	int size=_tempTaskList.size();

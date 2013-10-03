@@ -376,7 +376,10 @@ int Processor::addNormalTask(string title, DateTime dt1, DateTime dt2, string co
 *  0 - successful
 */
 int Processor::createTask(Task& t, string title, DateTime dt1, DateTime dt2, int type, bool done, string comment){
-	t=Task(title, dt1, dt2, type, done, comment);
+	int year=dt1.Year;
+	BasicDateTime bdt1(dt1.Year, dt1.Month, dt1.Day, dt1.Hour, dt1.Minute);
+
+	//t=Task(title, dt1, dt2, type, done, comment);
 	return 0;
 }
 
@@ -870,7 +873,7 @@ string Processor::printDeadlineTask(Task t){
 	result=combineStringsWithNewLine(result, "Type: ");
 	result+="Deadline task";
 	result=combineStringsWithNewLine(result, "Deadline: ");
-	result+= marshal_as<std::string>(t.getEnd().ToString());
+	result+= t.getEnd().getDateTime();
 	return result;
 }
 
@@ -889,9 +892,9 @@ string Processor::printTimedTask(Task t){
 	result=combineStringsWithNewLine(result, "Type: ");
 	result+="Timed task";
 	result=combineStringsWithNewLine(result, "Start Date: ");
-	result+= marshal_as<std::string>(t.getStart().ToString());
+	result+= t.getStart().getDateTime();
 	result=combineStringsWithNewLine(result, "End Date: ");
-	result+= marshal_as<std::string>(t.getEnd().ToString());
+	result+= t.getEnd().getDateTime();
 	return result;
 }
 

@@ -11,24 +11,25 @@
 */
 
 #include "Essential.h"
+#include "BasicDateTime.h"
 
 class Task{
 private:
 	string _title;
-	DateTime* _start;
-	DateTime* _end;
+	BasicDateTime _start;
+	BasicDateTime _end;
 	int _type;
 	bool _done; //true=done, false=pending
 	string _comment;
 	
 public:
 	Task();
-	Task(string, DateTime, DateTime, int, bool, string);
+	Task(string, BasicDateTime, BasicDateTime, int, bool, string);
 	~Task();
 	
 	string getTitle();
-	DateTime getStart();
-	DateTime getEnd();
+	BasicDateTime getStart();
+	BasicDateTime getEnd();
 	int getType();
 	bool getDone(); //true=done, false=pending
 	string getComment();

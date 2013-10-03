@@ -1,8 +1,8 @@
 #include "Task.h"
 
 string Task::getTitle(){return _title;}
-DateTime Task::getStart(){return *_start;}
-DateTime Task::getEnd(){return *_end;}
+BasicDateTime Task::getStart(){return _start;}
+BasicDateTime Task::getEnd(){return _end;}
 int Task::getType(){return _type;}
 bool Task::getDone(){return _done;}
 string Task::getComment(){return _comment;}
@@ -16,11 +16,11 @@ Task::Task(){
 }
 
 
-Task::Task(string title, DateTime start, DateTime end, int type, bool done, string comment){
+Task::Task(string title, BasicDateTime start, BasicDateTime end, int type, bool done, string comment){
 
 	_title = title;
-	_start = &start;
-	_end = &end;
+	_start = start;
+	_end = end;
 	_type = type;
 	_done = done;
 	_comment = comment;
@@ -35,8 +35,8 @@ Task::~Task()
 bool Task::isEqualTo(Task& compare){
 
 	return compare.getTitle() == _title
-		&& compare.getStart() == *_start
-		&& compare.getEnd() == *_end;
+		&& !compare.getStart().compareTo(_start)
+		&& !compare.getEnd().compareTo(_end);
 
 }
 
@@ -44,12 +44,23 @@ bool Task::isEqualTo(Task& compare){
 //clash: if start >= _start && < _end || if end > _start && <= _end
 bool Task::isClashingWith(Task& compare){
 
-	bool startClash = compare.getStart() >= *_start
-		&& compare.getStart() < *_end;
-	bool endClash = compare.getEnd() > *_start
-		&& compare.getEnd() <= *_end;
+	/*bool startClash = compare.getStart() >= _start
+		&& compare.getStart() < _end;
+	bool endClash = compare.getEnd() > _start
+		&& compare.getEnd() <= _end;*/
+	bool startClash;
+	bool endClash;
+
+	if(compare.getStart().compareTo(_start) >= 0 && compare.getStart().compareTo(_end) < 0)
+		startClash = true;
+	else
+		startClash = false;
+
+	if(compare.getEnd().compareTo(_start) > 0 && compare.getEnd().compareTo(_end) <= 0)
+		endClash = true;
+	else
+		endClash = false;
 
 	return startClash || endClash;
 
 }
-

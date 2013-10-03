@@ -12,7 +12,6 @@
 #include <string>
 
 using namespace std;
-using namespace System;
 
 enum STATUS_CODE_SET
 {

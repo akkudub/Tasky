@@ -13,6 +13,8 @@
 #include "Essential.h"
 #include "BasicDateTime.h"
 
+using namespace System;
+
 class Task{
 private:
 	string _title;
@@ -36,8 +38,8 @@ public:
 
 	void toggleDone();
 
-	bool isEqualTo(Task&);
-	bool isClashingWith(Task&);
+	bool isEqualTo(Task);
+	bool isClashingWith(Task);
 };
 
 #endif

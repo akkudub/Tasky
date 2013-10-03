@@ -20,11 +20,13 @@
 #include <algorithm>
 #include <msclr\marshal_cppstd.h>
 #include "Task.h"
+#include "BasicDateTime.h"
 #include "History.h"
 #include "FileProcessing.h"
 #include "Logic.h"
 #include "Essential.h"
 
+using namespace System;
 using namespace msclr::interop;
 
 class Processor{

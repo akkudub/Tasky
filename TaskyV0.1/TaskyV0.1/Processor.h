@@ -30,19 +30,29 @@ using namespace System;
 using namespace msclr::interop;
 
 class Processor{
+	/*
+	*_tempTaskList: hold the tasks returned by logic.search and logic.display
+	*_stringList: hold tasks in string format, used to pass to fileProcessing
+	*            for it to perform read/write file
+	*_taskListPointer: a pointer pointing to logic.tasklist. will only read
+	*_logic: an instance of Logic
+	*_history: an instance of History
+	*_fileProcessing: an instance of FileProcessing
+	*_wordList: a temporary way to help to parse command, will be changed later
+	*_statusFlag: 0--last operation ended properly;
+	*             1--update operation has not ended;
+	*             2--remove operation has not ended;
+	*             3--mard operation has not ended;
+	*/
 private:
-	vector<Task> _tempTaskList; //hold the tasks returned by search and display
-	vector<string> _stringList; //hold the tasks in a string format, pass to FileProcessing and that
-	//will read and write accordingly
+	vector<Task> _tempTaskList; 
+	vector<string> _stringList; 
 	vector<Task>* _taskListPointer;
 	Logic _logic;
 	History _history;
 	FileProcessing _fileProcessing;
 	vector<string> *_wordsList;
-	int _statusFlag;  //0 : last operation has ended;
-	//1 : update operation has not ended;
-	//2 : remove operation has not ended;
-	//3 : mark operation has not ended;
+	int _statusFlag; 
 
 private:
 	static const string EMPTY_STRING;
@@ -88,11 +98,10 @@ private:
 	//level 1 abstraction
 	string addCommandProcessor();
 	string displayCommandProcessor();
-
-	string updateCommandProcessor();  //change the flag if necessary
-	string removeCommandProcessor();  //change the flag if necessary
-	string markCommandProcessor();  //change the flag if necessary
-
+	string updateCommandProcessor();  
+	string removeCommandProcessor();  
+	string markCommandProcessor();  
+	string undoCommandProcessor();
 	string otherCommandProcessor();
 
 	//for add command processing

@@ -1,5 +1,5 @@
-#ifndef BASICDATETIME_H
-#define BASICDATETIME_H
+#ifndef _BASICDATETIME_H_
+#define _BASICDATETIME_H_
 
 #include <iostream>
 #include <string>
@@ -34,6 +34,4 @@ private:
 	int _sec;
 };
 
-
-
-#endif BASICDATETIME_H
+#endif

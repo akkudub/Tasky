@@ -873,7 +873,7 @@ string Processor::printDeadlineTask(Task t){
 	result=combineStringsWithNewLine(result, "Type: ");
 	result+="Deadline task";
 	result=combineStringsWithNewLine(result, "Deadline: ");
-	result+= t.getEnd().getDateTime();
+	result+= t.getEnd().getDateTimeString();
 	return result;
 }
 
@@ -892,9 +892,9 @@ string Processor::printTimedTask(Task t){
 	result=combineStringsWithNewLine(result, "Type: ");
 	result+="Timed task";
 	result=combineStringsWithNewLine(result, "Start Date: ");
-	result+= t.getStart().getDateTime();
+	result+= t.getStart().getDateTimeString();
 	result=combineStringsWithNewLine(result, "End Date: ");
-	result+= t.getEnd().getDateTime();
+	result+= t.getEnd().getDateTimeString();
 	return result;
 }
 

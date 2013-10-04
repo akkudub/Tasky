@@ -17,6 +17,8 @@ private:
 	vector<Task> _taskList;
 	
 public:
+	/*
+	*/
 	Logic();
 	int add(Task, vector<Task>&);
 	int remove(Task);

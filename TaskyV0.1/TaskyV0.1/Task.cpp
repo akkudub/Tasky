@@ -49,26 +49,26 @@ Task::~Task()
 	
 }
 
-bool Task::isEqualTo(Task compare){
+bool Task::isEqualTo(Task another){
 
-	return compare.getTitle() == _title
-		&& !compare.getStart().compareTo(_start)
-		&& !compare.getEnd().compareTo(_end);
+	return another.getTitle() == _title
+		&& !another.getStart().compareTo(_start)
+		&& !another.getEnd().compareTo(_end);
 
 }
 
 
 //clash: if start >= _start && < _end || if end > _start && <= _end
-bool Task::isClashingWith(Task compare){
+bool Task::isClashingWith(Task another){
 	bool startClash=false;
 	bool endClash=false;
 
-	if(compare.getStart().compareTo(_start) >= 0 && compare.getStart().compareTo(_end) < 0)
+	if(another.getStart().compareTo(_start) >= 0 && another.getStart().compareTo(_end) < 0)
 		startClash = true;
 	else
 		startClash = false;
 
-	if(compare.getEnd().compareTo(_start) > 0 && compare.getEnd().compareTo(_end) <= 0)
+	if(another.getEnd().compareTo(_start) > 0 && another.getEnd().compareTo(_end) <= 0)
 		endClash = true;
 	else
 		endClash = false;

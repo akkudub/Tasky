@@ -129,4 +129,3 @@ int Logic::mark(bool mark, Task task){
 vector<Task>* Logic::returnTaskListPointer(){
 	return &(_taskList);
 }
-

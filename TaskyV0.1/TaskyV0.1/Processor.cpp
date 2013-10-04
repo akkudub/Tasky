@@ -376,10 +376,10 @@ int Processor::addNormalTask(string title, DateTime dt1, DateTime dt2, string co
 *  0 - successful
 */
 int Processor::createTask(Task& t, string title, DateTime dt1, DateTime dt2, int type, bool done, string comment){
-	int year=dt1.Year;
 	BasicDateTime bdt1(dt1.Year, dt1.Month, dt1.Day, dt1.Hour, dt1.Minute);
+	BasicDateTime bdt2(dt2.Year, dt2.Month, dt2.Day, dt2.Hour, dt2.Minute);
 
-	//t=Task(title, dt1, dt2, type, done, comment);
+	t=Task(title, bdt1, bdt2, type, done, comment);
 	return 0;
 }
 

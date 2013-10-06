@@ -10,17 +10,21 @@
 
 #include "Essential.h"
 
-static const int CHANGEINHISTORYSIZE = 1;
+///record past sucessful operations and pop the last one when undo called
 
 class History{
+private:
+	static const int CHANGE_IN_HISTORY_SIZE = 1;
 private:
 	vector<string> _historyRecord; //formatted strings from Processor
 	
 public:
+
 	History();
-	int undo(string&); //takes a string from Processor, reads last historyRecord, writes it into the
-						// string reference.
-	int record(string); //takes string and push into the historyRecord
+	///pop out the last sucessful opeartion
+	int undo(string& hist);
+	///push a sucessful operation in history record
+	int record(string hist);
 	
 };
 

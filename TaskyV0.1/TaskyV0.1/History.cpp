@@ -4,7 +4,6 @@
 * Clears the vector containing history actions upon start up
 */
 History::History() {
-	_historyRecord.clear();
 }
 
 /*Purpose:
@@ -22,7 +21,7 @@ int History::undo(string& hist) {
 	if(!_historyRecord.empty()) {
 		hist = _historyRecord.back();
 		_historyRecord.pop_back();
-		if (size - CHANGEINHISTORYSIZE == _historyRecord.size()) {
+		if (size - CHANGE_IN_HISTORY_SIZE == _historyRecord.size()) {
 			return SUCCESS;
 		}
 	} else {
@@ -43,7 +42,7 @@ int History::undo(string& hist) {
 int History::record(string hist) {
 	int size = _historyRecord.size();
 	_historyRecord.push_back(hist);
-	if (size + CHANGEINHISTORYSIZE == _historyRecord.size()) {
+	if (size + CHANGE_IN_HISTORY_SIZE == _historyRecord.size()) {
 		return SUCCESS;
 	}
 	return RECORD_FAILURE;

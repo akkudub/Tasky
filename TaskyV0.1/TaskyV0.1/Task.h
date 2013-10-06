@@ -25,19 +25,20 @@ private:
 	string _comment;
 	
 public:
+
+	///<summary>default constructor</summary>
 	Task();
-	Task(string, BasicDateTime, BasicDateTime, int, bool, string);
-	~Task();
-	
+	///<summary>overloaded constructor</summary>
+	///<value>title, start, end, type, status, comment</value>
+	Task(std::string title, BasicDateTime start, BasicDateTime end, int type, bool status, std::string comment);
+	~Task();	
 	string getTitle();
 	BasicDateTime getStart();
 	BasicDateTime getEnd();
 	int getType();
 	bool getDone(); //true=done, false=pending
 	string getComment();
-
 	void toggleDone();
-
 	bool isEqualTo(Task);
 	bool isClashingWith(Task);
 };

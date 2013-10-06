@@ -89,9 +89,7 @@ private:
 
 public:
 	Processor();
-	string mainProcessor(string); //processes the string, calls the appropriate logic methods, returns string
-	//to UI
-	//create a new vector of strings and delete that at the end
+	string mainProcessor(string); 
 	~Processor();
 
 private:

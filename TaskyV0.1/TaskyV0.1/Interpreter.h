@@ -36,11 +36,25 @@ private:
 public:
 	Interpreter();
 	///return status code
-	int interpreteTaskFromString(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
-	///return status code
-	int interpreteForMark(string str, string& title, bool& done);
+	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
+	///return status code; for search, -1 : failure; 0 : no dates; 2 :  with two dates;
+	int interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end);
+	///return status code; for display, -1 : failure; 0: all; 1 : status; 2 : with 2 datetimes;
+	int interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status);
+	///
+	int interpretUpdate(string str, string& oldTitle, string& newTitle);
+	///
+	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
+	///
+	int interpretMark(string str, string& title, bool& status);
+	///
+	int interpretRemove(string str, string& title);
+	///
+	vector<int> stringToIntVec(string str);
 	///return string in lower case
 	string toLowerCase(const string& input);
+	///return -1 if unable to convert
+	int stringToInt(string);
 	~Interpreter();
 
 private:

@@ -1,119 +1,177 @@
 #include "Interpreter.h"
 #include <assert.h>
+#include <algorithm>
 
 const string Interpreter::EMPTY_STRING = "";
 const string Interpreter::FROM_KEY_WORD = "from";
 const string Interpreter::TO_KEY_WORD = "to";
 const string Interpreter::BY_KEY_WORD = "by";
-const string Interpreter::NEW_LINE_STRING = "\n";
+const string Interpreter::DASH_M = "-m";
 
 const char Interpreter::SLASH = '/';
-const char Interpreter::BACK_SLASH = '\\';
 const char Interpreter::DOT = '.';
-const char Interpreter::COLON = ':';
-const char Interpreter::DASH = '-';
-const char Interpreter::ZERO = '0';
-const char Interpreter::NINE = '9';
+const char Interpreter::COMMA = ',';
+const char Interpreter::SINGLE_QUOTE = '\'';
 const char Interpreter::SPACE = ' ';
-const char Interpreter::NEW_LINE = '\n';
+const char Interpreter::DASH = '-';
 
 Interpreter::Interpreter(){
-	_wordsList=new vector<string>;
 }
 
-int Interpreter::interpreteTaskFromString(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment){
-	breakIntoStringVectorBySpace(str);
-	vector<int> tempVec=identifyKeyWordsCreatingTask();
+int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment){
+	int posDashM=0, posQuote1=0, posQuote2=0;
+	bool fromToFlag=false, byFlag=false;
 
-	if (tempVec.size() == 2){
+	if (!extractComment(str, comment, posDashM)){
+		cleanUpPrivateVariables();
+		return -1;
+	}
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
+		cleanUpPrivateVariables();
+		return -1;
+	}
 
-	}else if(tempVec.size() == 1) {
-
-	}else if(tempVec.size() == 0){
-
+	if (str.find(FROM_KEY_WORD, posQuote2+1)!=std::string::npos){
+		fromToFlag=fromToCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
+	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
+		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
 	}else{
 		cleanUpPrivateVariables();
 		return -1;
 	}
+
+	if (fromToFlag){
+        start=_start;
+		end=_end;
+		type=2;
+	}else if(byFlag){
+		end=_end;
+		type=1;
+	}else{
+		type=0;
+	}
+
 	cleanUpPrivateVariables();
 	return STATUS_CODE_SET::SUCCESS;
 }
 
-vector<int> Interpreter::identifyKeyWordsCreatingTask(){
-	int tempSize=_wordsList->size();
-	int findPattern=0;
-	vector<int> vec;
+int Interpreter::interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end){
+	return STATUS_CODE_SET::SUCCESS;
+}
 
-	for (int i=1;i<tempSize;i++){
-		if (_wordsList->at(i) == FROM_KEY_WORD){
-			for (int j=2;j<=5;j++){
-				if (_wordsList->at(i+j) == TO_KEY_WORD){
-					if (fromToCheck(i, i+j)){
-						findPattern=1;
-						vec.clear();
-						vec.push_back(i);
-						vec.push_back(j);
-					}
-					break;
+int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status){
+    return STATUS_CODE_SET::SUCCESS;
+}
+
+int Interpreter::interpretUpdate(string str, string& oldTitle, string& newTitle){
+	return STATUS_CODE_SET::SUCCESS;
+}
+
+int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
+	return STATUS_CODE_SET::SUCCESS;
+}
+
+int Interpreter::interpretMark(string str, string& title, bool& status){
+	return STATUS_CODE_SET::SUCCESS;
+}
+
+int Interpreter::interpretRemove(string str, string& title){
+	int num1, num2;
+	if (!extractTitle(str, title, num1, num2)){
+        return -1;
+	}
+	return STATUS_CODE_SET::SUCCESS;
+}
+
+int Interpreter::stringToInt(string str){
+	int num;
+	if ((stringstream(str)>>num)){
+		return num;
+	}else{
+		return -1;
+	}
+}
+
+vector<int> Interpreter::stringToIntVec(string str){
+	vector<int> vec;
+	vector<string> vecStr;
+	std::regex reg1("[0-9,]"), reg2("[0-9-]");
+	if (!std::regex_match(str, reg1)){
+		return vec;
+	}else if(std::regex_match(str, reg2)){
+		vecStr=breakStringWithDelim(str, DASH);
+		int size=vecStr.size();
+		if (size!=2){
+			return vec;
+		}else{
+			int num1=stringToInt(vecStr.at(0)), num2=stringToInt(vecStr.at(1));
+			if (num1<=0){
+                return vec;
+			}else if(num1>=num2){
+				return vec;
+			}else{
+				for (int i=num1;i<=num2;i++){
+					vec.push_back(i);
 				}
 			}
-		}else if(_wordsList->at(i) == BY_KEY_WORD && tempSize>i+1){
-			if (byCheck(i)){
-				findPattern=2;
+		}
+    } else{
+		vecStr=breakStringWithDelim(str, COMMA);
+		int size=vecStr.size();
+		for (int i=0;i<size;i++){
+			int tempInt=stringToInt(vecStr.at(i));
+			if (tempInt!=-1){
+				vec.push_back(tempInt);
+			}else{
 				vec.clear();
-				vec.push_back(i);
+				return vec;
 			}
 		}
 	}
-
 	return vec;
 }
 
-bool Interpreter::fromToCheck(int pos1, int pos2){
-	assert((pos2-pos1)>1);
-	bool fromFlag=false, toFlag=false;
-	//assume symemtric input for now
-    if (pos2-pos1 == 2){
-		fromFlag=translateDateTime(_wordsList->at(pos1+1), EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, 1);
-		toFlag=translateDateTime(_wordsList->at(pos2+1), EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, 2);
-	}else if (pos2-pos1 == 3){
-		fromFlag=translateDateTime(_wordsList->at(pos1+1), _wordsList->at(pos1+2), EMPTY_STRING, EMPTY_STRING, 1);
-		toFlag=translateDateTime(_wordsList->at(pos2+1), _wordsList->at(pos2+2), EMPTY_STRING, EMPTY_STRING, 2);
-	}else if (pos2-pos1 == 4){
-		fromFlag=translateDateTime(_wordsList->at(pos1+1), _wordsList->at(pos1+2), _wordsList->at(pos1+3), EMPTY_STRING, 1);
-		toFlag=translateDateTime(_wordsList->at(pos2+1), _wordsList->at(pos2+2), _wordsList->at(pos2+3), EMPTY_STRING, 2);
-	}else if (pos2-pos1 == 5){
-		fromFlag=translateDateTime(_wordsList->at(pos1+1), _wordsList->at(pos1+2), _wordsList->at(pos1+3), _wordsList->at(pos1+4), 1);
-		toFlag=translateDateTime(_wordsList->at(pos2+1), _wordsList->at(pos2+2), _wordsList->at(pos2+3), _wordsList->at(pos2+4), 2);
+string Interpreter::toLowerCase(string str){
+	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+	return str;
+}
+
+bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int& pos2){
+	if (str.find_first_of(SINGLE_QUOTE)!=std::string::npos){
+		pos1=str.find_first_of(SINGLE_QUOTE);
+		pos2=str.find_last_of(SINGLE_QUOTE);
 	}else{
-		return false;  //if reach here, we will have a bug
+		return false;
 	}
+	if (pos1 != pos2){
+		title=str.substr(pos1+1, pos2-pos1-2);
+	}else{
+		return false;
+	}
+	return true;
+}
+
+bool Interpreter::extractComment(const string& str, string& comment, int& pos){
+	if (str.find_last_of(DASH_M)!=std::string::npos){
+		pos=str.find_last_of(DASH_M);
+		comment=str.substr(pos);
+	}else{
+		comment=EMPTY_STRING;
+	}
+	return true;
+}
+
+bool Interpreter::fromToCheck(string str){
+	bool fromFlag=false, toFlag=false;
+	
 
 	return fromFlag&&toFlag;
 }
 
-bool Interpreter::byCheck(int pos){
-	int tempSize=_wordsList->size(), dashM=tempSize;
-	assert(pos+1<tempSize);
-	for (int i=pos;i<tempSize; i++){
-		if (_wordsList->at(i) == "-m"){
-			dashM=i;
-			break;
-		}
-	}
-	if (dashM-pos>5){
-		return false;
-	}else if(dashM-pos==5){
-		return translateDateTime(_wordsList->at(pos+1), _wordsList->at(pos+2), _wordsList->at(pos+3), _wordsList->at(pos+4), 2);
-	}else if(dashM-pos==4){
-		return translateDateTime(_wordsList->at(pos+1), _wordsList->at(pos+2), _wordsList->at(pos+3), EMPTY_STRING, 2);
-	}else if(dashM-pos==3){
-		return translateDateTime(_wordsList->at(pos+1), _wordsList->at(pos+2), EMPTY_STRING, EMPTY_STRING, 2);
-	}else if(dashM-pos==2){
-		return translateDateTime(_wordsList->at(pos+1), EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, 2);
-	}else{
-		return false;
-	}
+bool Interpreter::byCheck(string str){
+	bool byFlag=false;
+
+	return byFlag;
 }
 
 bool Interpreter::translateDateTime(string str1, string str2, string str3, string str4, int either){
@@ -144,15 +202,13 @@ bool Interpreter::translateDate(string str1, string str2, string str3, int eithe
 }
 
 bool Interpreter::translateTime(string str1, int either){
-	regex reg("[0-9.]|[0-9:]");
+	regex reg("[0-9.]");
 
 	if (!std::regex_match(str1, reg)){
 		return false;
 	}else{
 		if (str1.find(DOT)!=std::string::npos){
 			return timeStandardInput(str1, DOT, either);
-		}else if(str1.find(COLON)!=std::string::npos){
-			return timeStandardInput(str1, COLON, either);
 		}else{
 			return false;
 		}
@@ -193,6 +249,18 @@ bool Interpreter::timeStandardInput(string str, char delim, int either){
 	}
 
 	return hourFlag&&minuteFlag&&secondFlag;
+}
+
+vector<string> Interpreter::breakStringWithDelim(string str, char delim){
+	vector<string> vec;
+	stringstream ss(str);
+	string tempStr;
+	while (std::getline(ss, tempStr, delim)){
+		if (tempStr!=EMPTY_STRING){
+			vec.push_back(tempStr);
+		}
+	}
+	return vec;
 }
 
 void Interpreter::setTimeParam(int num1, int value, int either){
@@ -244,35 +312,16 @@ void Interpreter::setTimeParam(int num1, int value, int either){
 	}
 }
 
-int Interpreter::breakIntoStringVectorBySpace(const string& str){
-	stringstream ss(str);
-	string tempStr;
+string Interpreter::removeLeadingSpaces(string str){
+	int num=str.find_first_not_of(SPACE);
 
-	while (std::getline(ss, tempStr, SPACE)){
-		if (tempStr != EMPTY_STRING){
-		    _wordsList->push_back(tempStr);
-		}
-	}
-
-	return 0;
-}
-
-int Interpreter::stringToInt(string str){
-	int num;
-	if ((stringstream(str)>>num)){
-		return num;
-	}else{
-		return -1;
-	}
+	return str.substr(num);
 }
 
 void Interpreter::cleanUpPrivateVariables(){
-	delete _wordsList;
-	_wordsList=new vector<string>;
 	_title=EMPTY_STRING;
-	_type=2;
+	_type=0;
 }
 
 Interpreter::~Interpreter(){
-	delete _wordsList;
 }

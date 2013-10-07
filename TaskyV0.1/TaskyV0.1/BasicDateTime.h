@@ -32,27 +32,39 @@ public:
 	BasicDateTime(int, int, int, int, int, int);
 	///destructor
 	~BasicDateTime();
-	///<summary>void; year, month, day</summary>
+	///setter 1
 	void setDateTime(int year, int month, int day);
-	///<summary>void; year, month, day, hour, minute</summary>
+	///setter 2
 	void setDateTime(int year, int month, int day, int hour, int minute);
-	///<summary>void; year, month, day, hour, minute, sec</summary>
+	///setter 3
 	void setDateTime(int year, int month, int day, int hour, int minute, int sec);
-	///<summary>int; void</summary>
+	///getter for year
 	int getYear();
-	///<summary>int; void</summary>
+	///setter for year
+	void setYear(int year);
+	///getter for month
 	int getMonth();
-	///<summary>int; void</summary>
+	///setter for month
+	void setMonth(int month);
+	///getter for day
 	int getDay();
-	///<summary>int; void</summary>
+	///setter for day
+	void setDay(int day);
+	///getter for hour
 	int getHour();
-	///<summary>int; void</summary>
+	///setter for hour
+	void setHour(int hour);
+	///getter for minute
 	int getMinute();
-	///<summary>int; void</summary>
+	///setter for minute
+	void setMinute(int minute);
+	///getter for sec
 	int getSec();
-	///<summary>String; void</summary>
+	///setter for sec
+	void setSec(int sec);
+	///translate the datetime into string
 	string getDateTimeString();
-	///<summary>int; BasicDateTime</summary>
+	///compare to another BasicDateTime object
 	int compareTo(BasicDateTime another);
 };
 

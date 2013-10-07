@@ -70,23 +70,48 @@ int BasicDateTime::getYear(){
 	return _year;
 }
 
+void BasicDateTime::setYear(int year){
+	_year=year;
+}
+
 int BasicDateTime::getMonth(){ 
 	return _month;
+}
+
+void BasicDateTime::setMonth(int month){
+	_month=month;
 }
 
 int BasicDateTime::getDay(){
 	return _day;
 }
+
+void BasicDateTime::setDay(int day){
+	_day=day;
+}
+
 int BasicDateTime::getHour(){ 
 	return _hour;
+}
+
+void BasicDateTime::setHour(int hour){
+	_hour=hour;
 }
 
 int BasicDateTime::getMinute(){
 	return _minute;
 }
 
+void BasicDateTime::setMinute(int minute){
+	_minute=minute;
+}
+
 int BasicDateTime::getSec(){
 	return _sec;
+}
+
+void BasicDateTime::setSec(int sec){
+	_sec=sec;
 }
 
 string BasicDateTime::getDateTimeString(){

@@ -17,16 +17,28 @@ private:
 	vector<Task> _taskList;
 	
 public:
-	/*
-	*/
+	///
 	Logic();
+	///
 	int add(Task, vector<Task>&);
+	///
 	int remove(Task);
-	int update(Task, Task, vector<Task>&);// old Task, new Task, Tasks that clash push into vector.
-	int search(string, vector<Task>&); //search for tasks containing string, pushes into referenced vector
-	int display(bool, vector<Task>&); //done=true, pending=false. pushes tasks into referenced vector.
+	///
+	int search(string, vector<Task>&); 
+	///search for tasks containing string, pushes into referenced vector
+	int searchKeywords(vector<string>, vector<Task>&);
+	///
+	int searchKeywordsInRange(vector<string>, vector<Task>&, BasicDateTime start, BasicDateTime end);
+	///
+	int displayAll(vector<Task>&);
+	///
+	int displayStatus(bool, vector<Task>&); //done=true, pending=false. pushes tasks into referenced vector.
+	///
+	int displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>&);
+	///
+	int update(Task, Task, vector<Task>&);
+	/// old Task, new Task, Tasks that clash push into vector.
 	int mark(bool, Task);//done=true, pending=false. 
-	vector<Task>* returnTaskListPointer();
 
 };
 

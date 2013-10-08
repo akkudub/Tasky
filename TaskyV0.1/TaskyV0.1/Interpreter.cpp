@@ -11,6 +11,8 @@ const string Interpreter::PENDING_KEY_WORD = "pending";
 const string Interpreter::DONE_KEY_WORD = "done";
 const string Interpreter::UPDATE_KEY_WORD = "' to '";
 const string Interpreter::ALL_KEY_WORD = "all";
+const string Interpreter::TODAY_KEY_WORD = "today";
+const string Interpreter::TOMORROW_KEY_WORD = "tomorrow";
 
 const char Interpreter::SLASH = '/';
 const char Interpreter::DOT = '.';
@@ -18,27 +20,26 @@ const char Interpreter::COMMA = ',';
 const char Interpreter::SINGLE_QUOTE = '\'';
 const char Interpreter::SPACE = ' ';
 const char Interpreter::DASH = '-';
+const char Interpreter::COLON = ':';
 
 Interpreter::Interpreter(){
 }
 
 int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment){
-	int posDashM=0, posQuote1=0, posQuote2=0;
+	int posDashM=str.size(), posQuote1=0, posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
 
 	if (!extractComment(str, comment, posDashM)){
-		cleanUpPrivateVariables();
 		return -1;
 	}
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
-		cleanUpPrivateVariables();
 		return -1;
 	}
 
 	if (str.find(FROM_KEY_WORD, posQuote2+1)!=std::string::npos){
-		fromToFlag=fromToCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
+		fromToFlag=fromToCheck(str.substr(posQuote2+1));
 	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
-		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
+		byFlag=byCheck(str.substr(posQuote2+1));
 	}else{
 		cleanUpPrivateVariables();
 		return -1;
@@ -111,7 +112,7 @@ int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTim
 
 int Interpreter::interpretUpdate(string str, string& oldTitle, string& newTitle){
 	int posQuote1=0, posKey=0, posQuote2=0;
-	if (str.find_first_of(UPDATE_KEY_WORD)==str.find_last_of(UPDATE_KEY_WORD)){
+	if (str.find(UPDATE_KEY_WORD)==str.find(UPDATE_KEY_WORD)){
 		posKey=str.find(UPDATE_KEY_WORD);
 		posQuote1=str.find_first_of(SINGLE_QUOTE);
 		posQuote2=str.find_last_of(SINGLE_QUOTE);
@@ -251,10 +252,11 @@ bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int&
 }
 
 bool Interpreter::extractComment(const string& str, string& comment, int& pos){
-	if (str.find_last_of(DASH_M)!=std::string::npos){
-		pos=str.find_last_of(DASH_M);
+	if (str.find(DASH_M)!=std::string::npos){
+		pos=str.find(DASH_M);
 		comment=str.substr(pos);
 	}else{
+		pos=str.size();
 		comment=EMPTY_STRING;
 	}
 	return true;
@@ -276,7 +278,7 @@ bool Interpreter::fromToCheck(string str){
 	}else{
 		return false;
 	}
-	tempStr=str.substr(pos2+2);
+	tempStr=str.substr(pos2+3);
 	vec=breakStringWithDelim(tempStr, SPACE);
 	if (vec.size()==1){
 		toFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
@@ -319,7 +321,7 @@ bool Interpreter::translateDateTime(string str1, string str2, int either){
 }
 
 bool Interpreter::translateDate(string str1, int either){
-	return dateStandardInput(str1, either) && dateTodayOrTomorrow(str1, either);
+	return dateStandardInput(str1, either) || dateTodayOrTomorrow(str1, either);
 }
 
 bool Interpreter::translateTime(string str1, int either){

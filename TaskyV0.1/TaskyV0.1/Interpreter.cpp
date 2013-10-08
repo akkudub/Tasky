@@ -56,15 +56,26 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	}
 
 	cleanUpPrivateVariables();
-	return STATUS_CODE_SET::SUCCESS;
+	return 0;
 }
 
 int Interpreter::interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end){
-	int size=str.size();
-	vector<string> temp=breakStringWithDelim(str, SPACE);
+	int size=str.size(), pos1;
+	if (str.find(SINGLE_QUOTE)!=std::string::npos){
+		pos1=str.find_last_of(SINGLE_QUOTE);
+	}else{
+		return -1;
+	}
+	vector<string> temp=breakStringWithDelim(str.substr(0,pos1), SPACE);
 	keywords.push_back(removeSpacesFromBothEnds(str));
 	keywords.insert(keywords.end(),temp.begin(), temp.end());
-	return STATUS_CODE_SET::SUCCESS;
+	if (fromToCheck(str.substr(pos1))){
+		start=_start;
+		end=_end;
+	}else{
+		return -1;
+	}
+	return 0;
 }
 
 int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status){
@@ -140,7 +151,7 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 		title=EMPTY_STRING;
 		return -1;
 	}
-	return STATUS_CODE_SET::SUCCESS;
+	return 0;
 }
 
 //additional note here, we may change this method to make it more strict
@@ -160,7 +171,7 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 			return -1;
 		}
 	}
-	return STATUS_CODE_SET::SUCCESS;
+	return 0;
 }
 
 int Interpreter::interpretRemove(string str, string& title){
@@ -251,92 +262,196 @@ bool Interpreter::extractComment(const string& str, string& comment, int& pos){
 
 bool Interpreter::fromToCheck(string str){
 	bool fromFlag=false, toFlag=false;
-	
-
+	int pos1=0, pos2=0;
+	string tempStr;
+	vector<string> vec;
+	pos1=str.find(FROM_KEY_WORD);
+	pos2=str.find(TO_KEY_WORD);
+	tempStr=str.substr(pos1+4, pos2-pos1-4);
+	vec=breakStringWithDelim(tempStr, SPACE);
+	if (vec.size()==1){
+		fromFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
+	}else if (vec.size()==2){
+		fromFlag=translateDateTime(vec.at(0), vec.at(1), 1);
+	}else{
+		return false;
+	}
+	tempStr=str.substr(pos2+2);
+	vec=breakStringWithDelim(tempStr, SPACE);
+	if (vec.size()==1){
+		toFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
+	}else if (vec.size()==2){
+		toFlag=translateDateTime(vec.at(0), vec.at(1), 1);
+	}else{
+		return false;
+	}
 	return fromFlag&&toFlag;
 }
 
 bool Interpreter::byCheck(string str){
 	bool byFlag=false;
-
+	string tempStr;
+	vector<string> vec;
+	tempStr=str.substr(3);
+	vec=breakStringWithDelim(tempStr, SPACE);
+	if (vec.size()==1){
+		byFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
+	}else if (vec.size()==2){
+		byFlag=translateDateTime(vec.at(0), vec.at(1), 1);
+	}else{
+		return false;
+	}
 	return byFlag;
 }
 
-bool Interpreter::translateDateTime(string str1, string str2, string str3, string str4, int either){
+bool Interpreter::translateDateTime(string str1, string str2, int either){
 	bool dateFlag=false, timeFlag=false;
-
-	if (str4!=EMPTY_STRING){
-
-	}else if(str3!=EMPTY_STRING){
-
-	}else if(str2!=EMPTY_STRING){
-		if (str1=="this" || str1=="next"){
-
-		}else{
-			dateFlag=translateDate(str1, EMPTY_STRING, EMPTY_STRING, either);
-			timeFlag=translateTime(str2, either);
-		}
+	if(str2!=EMPTY_STRING){
+		dateFlag=translateDate(str1, either);
+		timeFlag=translateTime(str2, either);
 	}else if(str1!=EMPTY_STRING){
-
+		dateFlag=translateDate(str1, either);
+		setTimeParams(0, 0, 0, either);
 	}else{
 		return false;  //if reach here, a bug found
 	}
-
 	return false;
 }
 
-bool Interpreter::translateDate(string str1, string str2, string str3, int either){
-	return false;
+bool Interpreter::translateDate(string str1, int either){
+	return dateStandardInput(str1, either) && dateTodayOrTomorrow(str1, either);
 }
 
 bool Interpreter::translateTime(string str1, int either){
-	regex reg("[0-9.]");
-
-	if (!std::regex_match(str1, reg)){
-		return false;
+	regex reg1("[0-9.]"), reg2("[0-9:]"), reg3("[0-9]");
+	if (std::regex_match(str1, reg1)){
+		return timeStandardInput(str1, DOT, either);
+	}else if(std::regex_match(str1, reg2)){
+		return timeStandardInput(str1, COLON, either);
+	}else if(std::regex_match(str1, reg3)){
+		return timeSpecialNumsOnly(str1, either);
 	}else{
-		if (str1.find(DOT)!=std::string::npos){
-			return timeStandardInput(str1, DOT, either);
-		}else{
+		return false;
+	}
+}
+
+bool Interpreter::dateStandardInput(string str, int either){
+	vector<string> vec=breakStringWithDelim(str, SLASH);
+	bool yearFlag=false, monthFlag=false, dayFlag=false;
+	int year=0, month=0, day=0;
+	int size=vec.size();
+	if (size<=1 || size>=4){
+		return false;
+	}else if(size==3){
+		year=stringToInt(vec.at(2));
+		month=stringToInt(vec.at(1));
+		day=stringToInt(vec.at(0));
+		if (year>=2000 && year<=9999){
+			yearFlag=true;
+		}else if(year>=0 && year<=99){ //short cut input for 20xx
+			yearFlag=true;
+		}
+		if (month>=1 && month<=12){
+			monthFlag=true;
+		}
+		if (day>=1 && day<=31){
+			dayFlag=true;
+		}
+	}else if(size==2){
+		month=stringToInt(vec.at(1));
+		day=stringToInt(vec.at(0));
+		if (month>=1 && month<=12){
+			monthFlag=true;
+		}
+		if (day>=1 && day<=31){
+			dayFlag=true;
+		}
+		year=DateTime::Now.Year;
+		yearFlag=true;
+	}
+	if (yearFlag&&monthFlag&&dayFlag){
+		try{
+			DateTime dt(year, month, day, 0, 0, 0);
+		}catch (const exception& e){
 			return false;
 		}
+		setDateParams(year, month, day, either);
+		return true;
+	}else{
+		return false;
 	}
+}
+
+bool Interpreter::dateTodayOrTomorrow(string str, int either){
+	DateTime dt=DateTime::Now;
+	str=removeSpacesFromBothEnds(str);
+	if (str==TODAY_KEY_WORD){
+		setDateParams(dt.Year, dt.Month, dt.Day, either);
+		return true;
+	}else if(str==TOMORROW_KEY_WORD){
+		dt=dt.AddDays(1);
+		setDateParams(dt.Year, dt.Month, dt.Day, either);
+		return true;
+	}
+	return false;
 }
 
 bool Interpreter::timeStandardInput(string str, char delim, int either){
 	bool hourFlag=false, minuteFlag=false, secondFlag=false;
 	int hour, minute, second;
-	int pos1=str.find(delim);
-	int pos2=str.find_last_of(delim);
-			
-	hour=stringToInt(str.substr(0, pos1-0));
+	vector<string> vec=breakStringWithDelim(str, delim);
+	int size=vec.size();
+	if (size<=1 || size>=3){
+		return false;
+	}else if(size==2){
+		hour=stringToInt(vec.at(0));
+		minute=stringToInt(vec.at(1));
+		if (hour>=0 && hour<=23){
+			hourFlag=true;
+		}
+		if (minute>=0 && minute<=59){
+			minuteFlag=true;
+		}
+		second=0;
+		secondFlag=true;
+	}else if(size==3){
+		hour=stringToInt(vec.at(0));
+		minute=stringToInt(vec.at(1));
+		second=stringToInt(vec.at(2));
+		if (hour>=0 && hour<=23){
+			hourFlag=true;
+		}
+		if (minute>=0 && minute<=59){
+			minuteFlag=true;
+		}
+		if (second>=0 && second<=59){
+			secondFlag=true;
+		}
+	}
+	if (hourFlag&&minuteFlag&&secondFlag){
+		setTimeParams(hour, minute, second, either);
+		return true;
+	}else{
+		return false;
+	}	
+}
+
+bool Interpreter::timeSpecialNumsOnly(string str, int either){
+	int num=stringToInt(str);
+	int hour=num/100, minute=num%100;
+	bool hourFlag=false, minuteFlag=false;
 	if (hour>=0 && hour<=23){
 		hourFlag=true;
-		setTimeParam(3, hour, either);
 	}
-
-	if (pos1 == pos2){
-		minute=stringToInt(str.substr(pos1+1, str.size()-pos1));
-		if (minute>=0 && minute<=59){
-	   	   minuteFlag=true;
-		   secondFlag=true;
-		   setTimeParam(4, minute, either);
-		   setTimeParam(5, 0, either);
-		}
+	if (minute>=0 && minute<=60){
+		minuteFlag=true;
+	}
+	if (hourFlag&&minuteFlag){
+		setTimeParams(hour, minute, 0, either);
+		return true;
 	}else{
-		minute=stringToInt(str.substr(pos1+1, str.size()-pos1));
-		if (minute>=0 && minute<=59){
-	   	   minuteFlag=true;
-		   setTimeParam(4, minute, either);
-		}
-		second=stringToInt(str.substr(pos2+1, str.size()-pos2));
-		if (second>=0 && second<=59){
-		    secondFlag=true;
-			setTimeParam(5, second, either);
-	    }
+		return false;
 	}
-
-	return hourFlag&&minuteFlag&&secondFlag;
 }
 
 int Interpreter::extractDateTimeForReschdule(string str){
@@ -355,59 +470,42 @@ vector<string> Interpreter::breakStringWithDelim(string str, char delim){
 	return vec;
 }
 
-void Interpreter::setTimeParam(int num1, int value, int either){
-	switch(num1){
-	case 0:
-		if (either==1){
-			_start.setYear(value);
-		}else{
-			_start.setYear(value);
-		}
-		break;
-	case 1:
-		if (either==1){
-			_start.setMonth(value);
-		}else{
-			_start.setMonth(value);
-		}
-		break;
-	case 2:
-		if (either==1){
-			_start.setDay(value);
-		}else{
-			_start.setDay(value);
-		}
-		break;
-	case 3:
-		if (either==1){
-			_start.setHour(value);
-		}else{
-			_start.setHour(value);
-		}
-		break;
-	case 4:
-		if (either==1){
-			_start.setMinute(value);
-		}else{
-			_start.setMinute(value);
-		}
-		break;
-	case 5:
-		if (either==1){
-			_start.setSec(value);
-		}else{
-			_start.setSec(value);
-		}
-		break;
-	default:
-		break; //a bug
+void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int either){
+	if (either==1){
+		_start.setYear(yearValue);
+		_start.setMonth(monthValue);
+		_start.setDay(dayValue);
+	}else{
+		_end.setYear(yearValue);
+		_end.setMonth(monthValue);
+		_end.setDay(dayValue);
+	}
+}
+
+void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue, int either){
+	if (either==1){
+		_start.setHour(hourValue);
+		_start.setMinute(minuteValue);
+		_start.setSec(secondValue);
+	}else{
+		_end.setHour(hourValue);
+		_end.setMinute(minuteValue);
+		_end.setSec(secondValue);
 	}
 }
 
 string Interpreter::removeLeadingSpaces(string str){
 	int num=str.find_first_not_of(SPACE);
-
 	return str.substr(num);
+}
+
+string Interpreter::removeTailSpaces(string str){
+	int num=str.find_last_not_of(SPACE);
+	return str.substr(0,num+1);
+}
+
+string Interpreter::removeSpacesFromBothEnds(string str){
+	return removeTailSpaces(removeLeadingSpaces(str));
 }
 
 void Interpreter::cleanUpPrivateVariables(){

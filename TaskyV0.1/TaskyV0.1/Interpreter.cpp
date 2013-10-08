@@ -7,6 +7,10 @@ const string Interpreter::FROM_KEY_WORD = "from";
 const string Interpreter::TO_KEY_WORD = "to";
 const string Interpreter::BY_KEY_WORD = "by";
 const string Interpreter::DASH_M = "-m";
+const string Interpreter::PENDING_KEY_WORD = "pending";
+const string Interpreter::DONE_KEY_WORD = "done";
+const string Interpreter::UPDATE_KEY_WORD = "' to '";
+const string Interpreter::ALL_KEY_WORD = "all";
 
 const char Interpreter::SLASH = '/';
 const char Interpreter::DOT = '.';
@@ -56,22 +60,106 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 }
 
 int Interpreter::interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end){
+	int size=str.size();
+	vector<string> temp=breakStringWithDelim(str, SPACE);
+	keywords.push_back(removeSpacesFromBothEnds(str));
+	keywords.insert(keywords.end(),temp.begin(), temp.end());
 	return STATUS_CODE_SET::SUCCESS;
 }
 
 int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status){
-    return STATUS_CODE_SET::SUCCESS;
+	bool statusFlag=false;
+	int pos=0, size=str.size();
+	if (str.find(ALL_KEY_WORD)!=std::string::npos){
+		return 0;
+	}else{
+		if (str.find(PENDING_KEY_WORD)!=std::string::npos){
+			statusFlag=true;
+			pos=str.find(PENDING_KEY_WORD);
+		}else if(str.find(DONE_KEY_WORD)!=std::string::npos){
+			statusFlag=true;
+			pos=str.find(DONE_KEY_WORD);
+		}
+		if (pos>=size-1){
+			return -1;
+		}else{
+			if (fromToCheck(str.substr(pos))){
+				start=_start;
+				end=_end;
+			}else{
+				return -1;
+			}
+		}
+	}
+	if (statusFlag){
+		return 1;
+	}else{
+		return 2;
+	}
 }
 
 int Interpreter::interpretUpdate(string str, string& oldTitle, string& newTitle){
+	int posQuote1=0, posKey=0, posQuote2=0;
+	if (str.find_first_of(UPDATE_KEY_WORD)==str.find_last_of(UPDATE_KEY_WORD)){
+		posKey=str.find(UPDATE_KEY_WORD);
+		posQuote1=str.find_first_of(SINGLE_QUOTE);
+		posQuote2=str.find_last_of(SINGLE_QUOTE);
+		if (posQuote2-posQuote1<=5){
+			return -1;
+		}else{
+			oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
+			newTitle=str.substr(posKey+6,posQuote2-posKey);
+		}
+	}else{
+		return -1;
+	}
 	return STATUS_CODE_SET::SUCCESS;
 }
 
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
+	int posQuote1=0, posQuote2=0;
+	if (extractTitle(str, title, posQuote1, posQuote2)){
+		if (str.size()==posQuote2){
+			type=0;
+		}else if (str.find(TO_KEY_WORD, posQuote2+1)!=std::string::npos){
+			type=extractDateTimeForReschdule(str.substr(posQuote2+1));
+			if (type==1){
+				end=_end;
+			}else if(type==2){
+				start=_start;
+				end=_end;
+			}else if(type!=0){
+				title=EMPTY_STRING;
+				return -1;
+			}
+		}else{
+			title=EMPTY_STRING;
+			return -1;
+		}
+	}else{
+		title=EMPTY_STRING;
+		return -1;
+	}
 	return STATUS_CODE_SET::SUCCESS;
 }
 
+//additional note here, we may change this method to make it more strict
 int Interpreter::interpretMark(string str, string& title, bool& status){
+	int posQuote1=0, posQuote2=0;
+	if (extractTitle(str, title, posQuote1, posQuote2)){
+		if (str.size()==posQuote2+1){
+			title=EMPTY_STRING;
+			return -1;
+		}
+		if (str.find(DONE_KEY_WORD, posQuote2+1)!=std::string::npos){
+			status=true;
+		}else if(str.find(PENDING_KEY_WORD, posQuote2+1)!=std::string::npos){
+			status=false;
+		}else{
+			title=EMPTY_STRING;
+			return -1;
+		}
+	}
 	return STATUS_CODE_SET::SUCCESS;
 }
 
@@ -144,7 +232,7 @@ bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int&
 		return false;
 	}
 	if (pos1 != pos2){
-		title=str.substr(pos1+1, pos2-pos1-2);
+		title=str.substr(pos1+1, pos2-pos1-1);
 	}else{
 		return false;
 	}
@@ -249,6 +337,10 @@ bool Interpreter::timeStandardInput(string str, char delim, int either){
 	}
 
 	return hourFlag&&minuteFlag&&secondFlag;
+}
+
+int Interpreter::extractDateTimeForReschdule(string str){
+	return 0;
 }
 
 vector<string> Interpreter::breakStringWithDelim(string str, char delim){

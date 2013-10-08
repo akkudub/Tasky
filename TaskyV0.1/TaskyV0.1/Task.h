@@ -21,7 +21,7 @@ private:
 	BasicDateTime _start;
 	BasicDateTime _end;
 	int _type;
-	bool _done; //true=done, false=pending
+	bool _done;
 	string _comment;
 	
 public:
@@ -32,14 +32,23 @@ public:
 	///<value>title, start, end, type, status, comment</value>
 	Task(std::string title, BasicDateTime start, BasicDateTime end, int type, bool status, std::string comment);
 	~Task();	
+	///getter for title
 	string getTitle();
+	///getter for start
 	BasicDateTime getStart();
+	///getter for end
 	BasicDateTime getEnd();
+	///getter for type
 	int getType();
-	bool getDone(); //true=done, false=pending
+	///getter for status; done: true; pending: false;
+	bool getDone();
+	///getter for comment
 	string getComment();
+	///toggles the status
 	void toggleDone();
+	///checks if a task is equal to another task
 	bool isEqualTo(Task);
+	///checks if a task clashes with another task.
 	bool isClashingWith(Task);
 };
 

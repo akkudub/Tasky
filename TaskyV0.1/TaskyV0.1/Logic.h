@@ -10,8 +10,6 @@
 #include "Essential.h"
 #include "Task.h"
 
-using namespace System;
-
 class Logic{
 private:
 	vector<Task> _taskList;

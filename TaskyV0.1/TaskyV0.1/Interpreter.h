@@ -88,7 +88,8 @@ private:
 	string removeLeadingSpaces(string str);
 	string removeTailSpaces(string str);
 	string removeSpacesFromBothEnds(string str);
-	void cleanUpPrivateVariables();
+	int findFirstOfWord(const string& source, const string& word);
+	int findLastOfWord(const string& source, const string& word);
 };
 
 #endif

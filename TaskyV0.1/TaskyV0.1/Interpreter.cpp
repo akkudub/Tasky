@@ -41,7 +41,6 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
 		byFlag=byCheck(str.substr(posQuote2+1));
 	}else{
-		cleanUpPrivateVariables();
 		return -1;
 	}
 
@@ -55,8 +54,6 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	}else{
 		type=0;
 	}
-
-	cleanUpPrivateVariables();
 	return 0;
 }
 
@@ -253,10 +250,9 @@ bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int&
 
 bool Interpreter::extractComment(const string& str, string& comment, int& pos){
 	if (str.find(DASH_M)!=std::string::npos){
-		pos=str.find(DASH_M);
+		pos=findLastOfWord(str, DASH_M);
 		comment=str.substr(pos);
 	}else{
-		pos=str.size();
 		comment=EMPTY_STRING;
 	}
 	return true;
@@ -313,11 +309,12 @@ bool Interpreter::translateDateTime(string str1, string str2, int either){
 		timeFlag=translateTime(str2, either);
 	}else if(str1!=EMPTY_STRING){
 		dateFlag=translateDate(str1, either);
+		timeFlag=true;
 		setTimeParams(0, 0, 0, either);
 	}else{
 		return false;  //if reach here, a bug found
 	}
-	return false;
+	return dateFlag&&timeFlag;
 }
 
 bool Interpreter::translateDate(string str1, int either){
@@ -325,7 +322,7 @@ bool Interpreter::translateDate(string str1, int either){
 }
 
 bool Interpreter::translateTime(string str1, int either){
-	regex reg1("[0-9.]"), reg2("[0-9:]"), reg3("[0-9]");
+	/*regex reg1("[0-9.]"), reg2("[0-9:]"), reg3("[0-9]");
 	if (std::regex_match(str1, reg1)){
 		return timeStandardInput(str1, DOT, either);
 	}else if(std::regex_match(str1, reg2)){
@@ -334,7 +331,8 @@ bool Interpreter::translateTime(string str1, int either){
 		return timeSpecialNumsOnly(str1, either);
 	}else{
 		return false;
-	}
+	}*/
+	return timeStandardInput(str1, DOT, either);
 }
 
 bool Interpreter::dateStandardInput(string str, int either){
@@ -510,9 +508,18 @@ string Interpreter::removeSpacesFromBothEnds(string str){
 	return removeTailSpaces(removeLeadingSpaces(str));
 }
 
-void Interpreter::cleanUpPrivateVariables(){
-	_title=EMPTY_STRING;
-	_type=0;
+int Interpreter::findFirstOfWord(const string& source, const string& word){
+	int num=source.find(word);
+	return num;
+}
+
+int Interpreter::findLastOfWord(const string& source, const string& word){
+	int num=source.find(word), prev=num;
+	while(num!=-1){
+		prev=num;
+		num=source.find(word, num+1);
+	}
+	return prev;
 }
 
 Interpreter::~Interpreter(){

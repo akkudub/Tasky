@@ -58,7 +58,6 @@ bool Task::isEqualTo(Task another){
 }
 
 
-//clash: if start >= _start && < _end || if end > _start && <= _end
 bool Task::isClashingWith(Task another){
 	bool startClash=false;
 	bool endClash=false;

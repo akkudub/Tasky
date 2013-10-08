@@ -4,7 +4,7 @@
 Logic::Logic(){
 }
 
-//if temp is empty,it means no tasks exists with same name, add task, return success. Otherwise, add task and return warning clash.
+
 int Logic::add(Task toAdd, vector<Task>& _temp){
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
@@ -32,7 +32,7 @@ int Logic::add(Task toAdd, vector<Task>& _temp){
 
 }
 
-// finds a task in the vector that isEqual to the task to be removed and removes it.
+
 int Logic::remove(Task toRemove){
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
@@ -47,7 +47,7 @@ int Logic::remove(Task toRemove){
 
 
 
-//clears temp, then pushes tasks that that has the same title as searchLine into temp.
+
 int Logic::search(string searchLine, vector<Task>& _temp){
 
 	_temp.clear();
@@ -80,6 +80,15 @@ int Logic::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 		}
 	}
 
+	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
+
+		if(duplicateTaskList[i].getTitle().find(keywords[0]) != std::string::npos){
+			_temp.push_back(duplicateTaskList[i]);
+			duplicateTaskList.erase(duplicateTaskList.begin()+i);
+			i--;
+		}
+	}
+
 	for(unsigned int i = 1; i < keywords.size(); i++){
 
 		for(unsigned int j = 0; j < duplicateTaskList.size(); j++)
@@ -88,6 +97,8 @@ int Logic::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 				duplicateTaskList.erase(duplicateTaskList.begin()+j);
 				j--;
 			}
+			if(i == 6)
+				break;
 	}
 
 	return SUCCESS;
@@ -108,21 +119,33 @@ int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, B
 
 	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
 
-		if(duplicateTaskList[i].getTitle() == keywords[0] && duplicateTaskList[i].isClashingWith(tempTask)){
+		if(duplicateTaskList[i].getTitle() == keywords[0] && tempTask.isClashingWith(duplicateTaskList[i])){
 			_temp.push_back(duplicateTaskList[i]);
 			duplicateTaskList.erase(duplicateTaskList.begin()+i);
 			i--;
 		}
 	}
 
+	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
+
+		if(duplicateTaskList[i].getTitle().find(keywords[0]) != std::string::npos && tempTask.isClashingWith(duplicateTaskList[i])){
+			_temp.push_back(duplicateTaskList[i]);
+			duplicateTaskList.erase(duplicateTaskList.begin()+i);
+			i--;
+		}
+	}
+
+
 	for(unsigned int i = 1; i < keywords.size(); i++){
 
 		for(unsigned int j = 0; j < duplicateTaskList.size(); j++)
-			if(duplicateTaskList[j].getTitle().find(keywords[i]) != std::string::npos && duplicateTaskList[i].isClashingWith(tempTask)){
+			if(duplicateTaskList[j].getTitle().find(keywords[i]) != std::string::npos && tempTask.isClashingWith(duplicateTaskList[j])){
 				_temp.push_back(duplicateTaskList[j]);
 				duplicateTaskList.erase(duplicateTaskList.begin()+j);
 				j--;
 			}
+			if(i == 6)
+				break;
 	}
 
 	return SUCCESS;
@@ -170,7 +193,7 @@ int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& 
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
-		if(_taskList[i].isClashingWith(tempTask)){
+		if(tempTask.isClashingWith(_taskList[i])){
 			_temp.push_back(_taskList[i]);
 		}
 	}
@@ -179,7 +202,7 @@ int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& 
 }
 
 
-// old Task, new Task, Tasks that clash push into vector. **is it only tasks that time clash push into vector? or include tasks that same title, tasks that are equal?
+
 int Logic::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
 	_temp.clear();

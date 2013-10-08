@@ -1,4 +1,5 @@
 #include "Logic.h"
+#include <assert.h>
 
 Logic::Logic(){
 }
@@ -15,7 +16,7 @@ int Logic::add(Task toAdd, vector<Task>& _temp){
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
-		if(toAdd.isClashingWith(_taskList[i])){
+		if(_taskList[i].isClashingWith(toAdd)){
 			_temp.push_back(_taskList[i]);
 		}
 	}
@@ -44,37 +45,7 @@ int Logic::remove(Task toRemove){
 	return REMOVE_FAILURE;
 }
 
-// old Task, new Task, Tasks that clash push into vector. **is it only tasks that time clash push into vector? or include tasks that same title, tasks that are equal?
-int Logic::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
-	_temp.clear();
-	if(existingTask.isEqualTo(newTask)){
-		return UPDATE_WARNING_SAME;
-	}
-
-	for(unsigned int i = 0; i < _taskList.size(); i++){
-
-		if(existingTask.isEqualTo(_taskList[i])){
-			_taskList.erase(_taskList.begin()+i);
-			break;
-		}
-	}
-
-	for(unsigned int i = 0; i < _taskList.size(); i++){
-
-		if(newTask.isClashingWith(_taskList[i])){
-			_temp.push_back(_taskList[i]);
-		}
-	}
-
-	_taskList.push_back(newTask);
-
-	if(!_temp.empty())
-		return UPDATE_WARNING_CLASH;
-
-	return SUCCESS;
-
-}
 
 //clears temp, then pushes tasks that that has the same title as searchLine into temp.
 int Logic::search(string searchLine, vector<Task>& _temp){
@@ -94,7 +65,55 @@ int Logic::search(string searchLine, vector<Task>& _temp){
 
 }
 
-int Logic::display(bool done, vector<Task>& _temp){
+int Logic::searchKeywords(vector<string> keywords, vector<Task>& _temp){
+
+	assert(!keywords.empty());
+
+	vector<Task> duplicateTaskList = _taskList;
+
+	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
+
+		if(duplicateTaskList[i].getTitle() == keywords[0]){
+			_temp.push_back(duplicateTaskList[i]);
+			duplicateTaskList.erase(duplicateTaskList.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 1; i < keywords.size(); i++){
+
+		for(unsigned int j = 0; j < duplicateTaskList.size(); j++)
+			if(duplicateTaskList[j].getTitle().find(keywords[i]) != std::string::npos){
+				_temp.push_back(duplicateTaskList[j]);
+				duplicateTaskList.erase(duplicateTaskList.begin()+j);
+				j--;
+			}
+
+	}
+
+}
+
+int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
+
+
+}
+
+int Logic::displayAll(vector<Task>& _temp){
+
+	_temp.clear();
+
+	for(unsigned int i = 0; i < _taskList.size(); i++){
+		_temp.push_back(_taskList[i]);
+	}
+
+	if(_temp.empty())
+		return DISPLAY_WARNING_NO_RESULT;
+	else
+		return SUCCESS;
+
+}
+
+int Logic::displayStatus(bool done, vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -108,6 +127,47 @@ int Logic::display(bool done, vector<Task>& _temp){
 		return DISPLAY_WARNING_NO_RESULT;
 	else
 		return SUCCESS;
+
+}
+
+int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	_temp.clear();
+
+
+
+}
+
+
+// old Task, new Task, Tasks that clash push into vector. **is it only tasks that time clash push into vector? or include tasks that same title, tasks that are equal?
+int Logic::update(Task existingTask, Task newTask, vector<Task>& _temp){
+
+	_temp.clear();
+	if(existingTask.isEqualTo(newTask)){
+		return UPDATE_WARNING_SAME;
+	}
+
+	for(unsigned int i = 0; i < _taskList.size(); i++){
+
+		if(existingTask.isEqualTo(_taskList[i])){
+			_taskList.erase(_taskList.begin()+i);
+			break;
+		}
+	}
+
+	for(unsigned int i = 0; i < _taskList.size(); i++){
+
+		if(_taskList[i].isClashingWith(newTask)){
+			_temp.push_back(_taskList[i]);
+		}
+	}
+
+	_taskList.push_back(newTask);
+
+	if(!_temp.empty())
+		return UPDATE_WARNING_CLASH;
+
+	return SUCCESS;
 
 }
 
@@ -126,6 +186,9 @@ int Logic::mark(bool mark, Task task){
 	return MARK_FAILURE;
 }
 
+
+/*
 vector<Task>* Logic::returnTaskListPointer(){
-	return &(_taskList);
+return &(_taskList);
 }
+*/

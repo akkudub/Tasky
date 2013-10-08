@@ -21,6 +21,10 @@ private:
 	static const string TO_KEY_WORD;
 	static const string BY_KEY_WORD;
 	static const string DASH_M;
+	static const string PENDING_KEY_WORD;
+	static const string DONE_KEY_WORD;
+	static const string UPDATE_KEY_WORD;
+	static const string ALL_KEY_WORD;
 
 	static const char SLASH;
 	static const char DOT;
@@ -65,9 +69,12 @@ private:
 	bool dateStandardInput(string str, int either);
 	bool timeStandardInput(string str, char delim, int either);
 	bool timeSpecialNumsOnly(string str, int either);
+	int extractDateTimeForReschdule(string str);
 	vector<string> breakStringWithDelim(string str, char delim);
 	void setTimeParam(int num1, int value, int either);
-	string removeLeadingSpaces(string);
+	string removeLeadingSpaces(string str);
+	string removeTailSpaces(string str);
+	string removeSpacesFromBothEnds(string str);
 	void cleanUpPrivateVariables();
 };
 

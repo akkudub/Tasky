@@ -3,8 +3,6 @@
 
 #include <sstream>
 #include <regex>
-#include "Essential.h"
-#include "Task.h"
 #include "BasicDateTime.h"
 
 class Interpreter {
@@ -25,6 +23,17 @@ private:
 	static const string DONE_KEY_WORD;
 	static const string UPDATE_KEY_WORD;
 	static const string ALL_KEY_WORD;
+	static const string THIS_KEY_WORD;
+	static const string NEXT_KEY_WORD;
+	static const string MON_KEY_WORD;
+	static const string TUE_KEY_WORD;
+	static const string WED_KEY_WORD;
+	static const string THU_KEY_WORD;
+	static const string FRI_KEY_WORD;
+	static const string SAT_KEY_WORD;
+	static const string SUN_KEY_WORD;
+	static const string TODAY_KEY_WORD;
+	static const string TOMORROW_KEY_WORD;
 
 	static const char SLASH;
 	static const char DOT;
@@ -32,6 +41,7 @@ private:
 	static const char SINGLE_QUOTE;
 	static const char SPACE;
 	static const char DASH;
+	static const char COLON;
 
 public:
 	Interpreter();
@@ -63,15 +73,18 @@ private:
 	bool extractComment(const string& str, string& comment, int& pos);
 	bool fromToCheck(string str);
 	bool byCheck(string str);
-	bool translateDateTime(string str1, string str2, string str3, string str4, int either);
-	bool translateDate(string str1, string str2, string str3, int either);
+	bool translateDateTime(string str1, string str2, int either);  //will take in more strings as we progress
+	int extractDateTimeForReschdule(string str);
+	bool translateDate(string str1, int either);  //will take in more strings as we progress
 	bool translateTime(string str1, int either);
 	bool dateStandardInput(string str, int either);
+	bool dateTodayOrTomorrow(string str, int either);
+	bool dateNextDateFormat(string str1, string str2, int either);  //not allowed for now
 	bool timeStandardInput(string str, char delim, int either);
 	bool timeSpecialNumsOnly(string str, int either);
-	int extractDateTimeForReschdule(string str);
 	vector<string> breakStringWithDelim(string str, char delim);
-	void setTimeParam(int num1, int value, int either);
+	void setDateParams(int yearValue, int monthValue, int dayValue, int either);
+	void setTimeParams(int hourValue, int minuteValue, int secondValue, int either);
 	string removeLeadingSpaces(string str);
 	string removeTailSpaces(string str);
 	string removeSpacesFromBothEnds(string str);

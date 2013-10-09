@@ -136,16 +136,16 @@ int Interpreter::interpretUpdate(string str, string& oldTitle, string& newTitle)
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
 	int posQuote1=0, posQuote2=0;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
-		if (str.size()==posQuote2){
+		if (str.size()==posQuote2+1){
 			type=0;
 		}else if (str.find(TO_KEY_WORD, posQuote2+1)!=std::string::npos){
-			type=extractDateTimeForReschdule(str.substr(posQuote2+1));
+			type=extractDateTimeForReschdule(str.substr(posQuote2+4));
 			if (type==1){
 				end=_end;
 			}else if(type==2){
 				start=_start;
 				end=_end;
-			}else if(type==0){
+			}else if(type!=0){
 				title=EMPTY_STRING;
 				return -1;
 			}
@@ -462,17 +462,18 @@ int Interpreter::extractDateTimeForReschdule(string str){
 	}else if(size==4){
 		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
 		dateTimeFlag2=translateDateTime(vec.at(2), vec.at(3), 2);
-	}else if(size==3){
+	}else if(size==3){  //not allowed for now
 		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
 		dateTimeFlag2=translateDateTime(vec.at(2), EMPTY_STRING, 2);
 	}else if(size==2){
-		dateTimeFlag1=translateDateTime(vec.at(0), EMPTY_STRING, 1);
-		dateTimeFlag2=translateDateTime(vec.at(1), EMPTY_STRING, 2);
+		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
 	}
 	if (dateTimeFlag1&&dateTimeFlag2){
+		return 2;
+	}else if(dateTimeFlag1){
+	    return 1;
+    }else{
 		return 0;
-	}else{
-		return -1;
 	}
 }
 

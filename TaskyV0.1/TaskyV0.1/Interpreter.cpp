@@ -3,9 +3,9 @@
 #include <algorithm>
 
 const string Interpreter::EMPTY_STRING = "";
-const string Interpreter::FROM_KEY_WORD = "from";
-const string Interpreter::TO_KEY_WORD = "to";
-const string Interpreter::BY_KEY_WORD = "by";
+const string Interpreter::FROM_KEY_WORD = "from ";
+const string Interpreter::TO_KEY_WORD = "to ";
+const string Interpreter::BY_KEY_WORD = "by ";
 const string Interpreter::DASH_M = "-m";
 const string Interpreter::PENDING_KEY_WORD = "pending";
 const string Interpreter::DONE_KEY_WORD = "done";
@@ -37,9 +37,9 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	}
 
 	if (str.find(FROM_KEY_WORD, posQuote2+1)!=std::string::npos){
-		fromToFlag=fromToCheck(str.substr(posQuote2+1));
+		fromToFlag=fromToCheck(str.substr(posQuote2+1, posDashM-posQuote2-2));
 	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
-		byFlag=byCheck(str.substr(posQuote2+1));
+		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-2));
 	}else{
 		return -1;
 	}
@@ -279,7 +279,7 @@ bool Interpreter::fromToCheck(string str){
 	if (vec.size()==1){
 		toFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
 	}else if (vec.size()==2){
-		toFlag=translateDateTime(vec.at(0), vec.at(1), 1);
+		toFlag=translateDateTime(vec.at(0), vec.at(1), 2);
 	}else{
 		return false;
 	}
@@ -350,6 +350,7 @@ bool Interpreter::dateStandardInput(string str, int either){
 			yearFlag=true;
 		}else if(year>=0 && year<=99){ //short cut input for 20xx
 			yearFlag=true;
+			year=year+2000;
 		}
 		if (month>=1 && month<=12){
 			monthFlag=true;

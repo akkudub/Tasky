@@ -332,7 +332,7 @@ bool Interpreter::translateTime(string str1, int either){
 	}else{
 		return false;
 	}*/
-	return timeStandardInput(str1, DOT, either);
+	return timeStandardInput(str1, DOT, either)||timeSpecialNumsOnly(str1, either);
 }
 
 bool Interpreter::dateStandardInput(string str, int either){

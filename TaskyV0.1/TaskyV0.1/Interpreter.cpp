@@ -58,20 +58,26 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 }
 
 int Interpreter::interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end){
-	int size=str.size(), pos1;
+	int size=str.size(), pos1, pos2;
+	keywords.clear();
 	if (str.find(SINGLE_QUOTE)!=std::string::npos){
-		pos1=str.find_last_of(SINGLE_QUOTE);
+		pos1=str.find_first_of(SINGLE_QUOTE);
+		pos2=str.find_last_of(SINGLE_QUOTE);
+		if (pos1==pos2){
+			return -1;
+		}
 	}else{
 		return -1;
 	}
-	vector<string> temp=breakStringWithDelim(str.substr(0,pos1), SPACE);
-	keywords.push_back(removeSpacesFromBothEnds(str));
+	vector<string> temp=breakStringWithDelim(str.substr(pos1+1,pos2-pos1-1), SPACE);
+	keywords.push_back(str.substr(pos1+1,pos2-pos1-1));
 	keywords.insert(keywords.end(),temp.begin(), temp.end());
 	if (fromToCheck(str.substr(pos1))){
 		start=_start;
 		end=_end;
+		return 2;
 	}else{
-		return -1;
+		return 0;
 	}
 	return 0;
 }
@@ -84,9 +90,11 @@ int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTim
 	}else{
 		if (str.find(PENDING_KEY_WORD)!=std::string::npos){
 			statusFlag=true;
+			status=false;
 			pos=str.find(PENDING_KEY_WORD);
 		}else if(str.find(DONE_KEY_WORD)!=std::string::npos){
 			statusFlag=true;
+			status=true;
 			pos=str.find(DONE_KEY_WORD);
 		}
 		if (pos>=size-1){
@@ -117,7 +125,7 @@ int Interpreter::interpretUpdate(string str, string& oldTitle, string& newTitle)
 			return -1;
 		}else{
 			oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
-			newTitle=str.substr(posKey+6,posQuote2-posKey);
+			newTitle=str.substr(posKey+6, posQuote2-posKey-6);
 		}
 	}else{
 		return -1;
@@ -137,7 +145,7 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 			}else if(type==2){
 				start=_start;
 				end=_end;
-			}else if(type!=0){
+			}else if(type==0){
 				title=EMPTY_STRING;
 				return -1;
 			}
@@ -322,17 +330,7 @@ bool Interpreter::translateDate(string str1, int either){
 }
 
 bool Interpreter::translateTime(string str1, int either){
-	/*regex reg1("[0-9.]"), reg2("[0-9:]"), reg3("[0-9]");
-	if (std::regex_match(str1, reg1)){
-		return timeStandardInput(str1, DOT, either);
-	}else if(std::regex_match(str1, reg2)){
-		return timeStandardInput(str1, COLON, either);
-	}else if(std::regex_match(str1, reg3)){
-		return timeSpecialNumsOnly(str1, either);
-	}else{
-		return false;
-	}*/
-	return timeStandardInput(str1, DOT, either)||timeSpecialNumsOnly(str1, either);
+	return timeStandardInput(str1, DOT, either)||timeSpecialNumsOnly(str1, either)||timeStandardInput(str1, COLON, either);
 }
 
 bool Interpreter::dateStandardInput(string str, int either){
@@ -402,7 +400,7 @@ bool Interpreter::timeStandardInput(string str, char delim, int either){
 	int hour, minute, second;
 	vector<string> vec=breakStringWithDelim(str, delim);
 	int size=vec.size();
-	if (size<=1 || size>=3){
+	if (size<=1 || size>=4){
 		return false;
 	}else if(size==2){
 		hour=stringToInt(vec.at(0));
@@ -456,7 +454,26 @@ bool Interpreter::timeSpecialNumsOnly(string str, int either){
 }
 
 int Interpreter::extractDateTimeForReschdule(string str){
-	return 0;
+	bool dateTimeFlag1=false, dateTimeFlag2=false;
+	vector<string> vec=breakStringWithDelim(str, SPACE);
+	int size=vec.size();
+	if (size>=5 || size<=1){
+		return -1;
+	}else if(size==4){
+		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
+		dateTimeFlag2=translateDateTime(vec.at(2), vec.at(3), 2);
+	}else if(size==3){
+		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
+		dateTimeFlag2=translateDateTime(vec.at(2), EMPTY_STRING, 2);
+	}else if(size==2){
+		dateTimeFlag1=translateDateTime(vec.at(0), EMPTY_STRING, 1);
+		dateTimeFlag2=translateDateTime(vec.at(1), EMPTY_STRING, 2);
+	}
+	if (dateTimeFlag1&&dateTimeFlag2){
+		return 0;
+	}else{
+		return -1;
+	}
 }
 
 vector<string> Interpreter::breakStringWithDelim(string str, char delim){

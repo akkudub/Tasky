@@ -77,16 +77,17 @@ bool Task::isClashingWith(Task another){
 }
 
 void Task::setTitle(string title){
-
 	_title = title;
 }
 	
 void Task::setStartDate(BasicDateTime start){
-
 	_start = start;
 }
 	
 void Task::setEndDate(BasicDateTime end){
-
 	_end = end;
+}
+
+void Task::setType(int type){
+	_type = type;
 }

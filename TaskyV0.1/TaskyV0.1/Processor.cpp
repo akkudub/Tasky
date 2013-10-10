@@ -33,7 +33,6 @@ const char Processor::SPACE = ' ';
 const char Processor::NEW_LINE = '\n';
 
 Processor::Processor(){
-	_taskListPointer=_logic.returnTaskListPointer();
 	_statusFlag=0;
 	_wordsList = new vector<string>;
 }
@@ -60,6 +59,8 @@ string Processor::mainProcessor(string command){
 			return displayCommandProcessor();
 		}else if(firstWord == "update"){
 			return updateCommandProcessor();
+		}else if(firstWord == "reschedule"){
+			return rescheduleCommandProcessor();
 		}else if(firstWord == "remove"){
 			return removeCommandProcessor();
 		}else if(firstWord == "mark"){
@@ -89,41 +90,29 @@ string Processor::mainProcessor(string command){
 * Message if task is successfully added (or not with reason)
 */
 string Processor::addCommandProcessor(){
-	int type, dtFormat1, dtFormat2, pos1, pos2;
-	int addOperationStatus;
-	string title;
-	DateTime startingDateTime;
-	DateTime endingDateTime;
+	int addOperationStatus, type;
+	string title, comment;
+	BasicDateTime startingDateTime;
+	BasicDateTime endingDateTime;
 
-	determineType(type, dtFormat1, dtFormat2, pos1, pos2);
+	string user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+	_interpreter.interpretAdd(user_command, title, type, startingDateTime, endingDateTime, comment);
+
 	switch (type){
 	case 0:
-		title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-		addOperationStatus=addFloatingTask(title, EMPTY_STRING);
+		addOperationStatus=addFloatingTask(title, comment);
 		return determineMsgToUI(addOperationStatus);
 		break;
 	case 1:
-		title=combineStringsWithSpaceOnVector(1, pos2-1);
-		if (formatDateTime(endingDateTime, dtFormat2, pos2)==0){
-			addOperationStatus=addDeadlineTask(title, endingDateTime, EMPTY_STRING);
-			return determineMsgToUI(addOperationStatus);
-		}else{
-			return determineMsgToUI(-1);
-		}
+		addOperationStatus=addDeadlineTask(title, endingDateTime, comment);
+		return determineMsgToUI(addOperationStatus);
 		break;
 	case 2:
-		title=combineStringsWithSpaceOnVector(1, pos1-1);
-		if (formatDateTime(startingDateTime, dtFormat1, pos1)==0
-			&&formatDateTime(endingDateTime, dtFormat2, pos2)==0){
-				addOperationStatus=addNormalTask(title, startingDateTime, endingDateTime, EMPTY_STRING);
-				return determineMsgToUI(addOperationStatus);
-		}else{
-			return determineMsgToUI(-1);
-		}
+		addOperationStatus=addNormalTask(title, startingDateTime, endingDateTime, comment);
+		return determineMsgToUI(addOperationStatus);
 		break;
 	default:
 		return determineMsgToUI(-1);
-		break;
 	}
 }
 
@@ -134,30 +123,25 @@ string Processor::addCommandProcessor(){
 * Tasks of type; Unable to display
 */
 string Processor::displayCommandProcessor(){
-	string result;
-	if (_wordsList->at(1)=="pending"){
-		if (_logic.display(false, _tempTaskList) == 0){
-			int size=_tempTaskList.size();
-			for (int i=0;i<size;i++){
-				result=combineStringsWithNewLine(result, taskToString(_tempTaskList[i]));
-			}
-		}else{
-			result=DISPLAY_TASK_FAILURE_UNEXPECTED;
-		}
-	}else if (_wordsList->at(1)=="done"){
-		if (_logic.display(true, _tempTaskList) == 0){
-			int size=_tempTaskList.size();
-			for (int i=0;i<size;i++){
-				result=combineStringsWithNewLine(result, taskToString(_tempTaskList[i]));
-			}
-		}else{
-			result=DISPLAY_TASK_FAILURE_UNEXPECTED;
-		}
+	string result, user_command;
+	BasicDateTime start, end;
+	bool status;
+	int displayOperationStatus;
+	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+	int return_code = _interpreter.interpretDisplay(user_command, start, end, status);
+	if (return_code == 0){
+		displayOperationStatus = _logic.displayAll(_tempTaskList);
+		return determineMsgToUI(displayOperationStatus);
+	}else if (return_code == 1){
+		displayOperationStatus = _logic.displayStatus(status, _tempTaskList);
+		return determineMsgToUI(displayOperationStatus);
+	}else if(return_code == 2){
+		displayOperationStatus = _logic.displayInRange(start, end, _tempTaskList);
+		return determineMsgToUI(displayOperationStatus);
 	}else{
-		result=WRONG_INPUT;
+		return determineMsgToUI(-1);
 	}
 
-	return result;
 }
 
 //pass the created task and the task in the vector at position
@@ -165,61 +149,32 @@ string Processor::displayCommandProcessor(){
 string Processor::updateCommandProcessor(){
 	if(_statusFlag == 1){
 		unsigned int choice = stringToInt(_wordsList->at(1));
-		if((choice <=_tempTaskList.size()) && choice < 0 && _wordsList->size()>2){
-			int type, dtFormat1, dtFormat2, pos1, pos2;
+		if((choice <=_tempTaskList.size()) && choice > 0 && _wordsList->size()==2){
 			int operationStatus;
-			string title;
-			DateTime startingDateTime;
-			DateTime endingDateTime;
-			Task t;
+			string title, comment;
+			BasicDateTime startingDateTime;
+			BasicDateTime endingDateTime;
+			Task t = _tempTaskList[choice-1];
 			vector<Task> clash;
 
-			determineType(type, dtFormat1, dtFormat2, pos1, pos2);
-			switch (type){
-			case 0:
-				title=combineStringsWithSpaceOnVector(2, _wordsList->size()-1);
-				createTask(t, title, startingDateTime, endingDateTime, type, false, EMPTY_STRING);
-				operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
-				break;
-			case 1:
-				title=combineStringsWithSpaceOnVector(2, pos2-1);
-				if (formatDateTime(endingDateTime, dtFormat2, pos2)==0){
-					createTask(t, title, startingDateTime, endingDateTime, type, false, EMPTY_STRING);
-					operationStatus=_logic.update(_tempTaskList[choice-1], t, clash);
-				}else{
-					return determineMsgToUI(-1);
-				}
-				break;
-			case 2:
-				title=combineStringsWithSpaceOnVector(2, pos1-1);
-				if (formatDateTime(startingDateTime, dtFormat1, pos1)==0
-					&&formatDateTime(endingDateTime, dtFormat2, pos2)==0){
-						createTask(t, title, startingDateTime, endingDateTime, type, false, EMPTY_STRING);
-						operationStatus=_logic.update(_tempTaskList[choice-1], t, clash);
-				}else{
-					return determineMsgToUI(-1);
-				}
-				break;
-			default:
-				return determineMsgToUI(-1);
-				break;
-			}
+			t.setTitle(_tempTitle); //need a setter!
+			operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
+			_tempTaskList = clash;
 			return determineMsgToUI(operationStatus);
-			//here i need a separate case for clash to display the clashes,
-			//but i cant use any combineStrings methods.
-			//I wanted to change the combineStringsWithNewLineOnVector method to take in a vector
-			//and convert the contents into strings rather than only using _tempTaskList
-		}
-	}else if(_statusFlag == 0){
-		if(_wordsList->size()>1){
-			string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-			_tempTaskList.clear();
-			_logic.search(title, _tempTaskList);
-			if(_tempTaskList.size()>0){
-				_statusFlag = 1;
-				return UPDATE_CHOOSE_TASK;
-			}else if(_tempTaskList.empty()){
-				return NO_SUCH_TASK;
+
+		}else if(_statusFlag == 0){
+			if(_wordsList->size()>1){
+				string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+				string oldTitle;
+				_interpreter.interpretUpdate(user_command, oldTitle, _tempTitle);
+				_tempTaskList.clear();
+				_logic.search(oldTitle, _tempTaskList);
+				if(_tempTaskList.size()>0){
+					_statusFlag = 1;
+					return UPDATE_CHOOSE_TASK;
+				}else if(_tempTaskList.empty()){
+					return NO_SUCH_TASK;
+				}
 			}
 		}
 	}
@@ -236,15 +191,16 @@ string Processor::removeCommandProcessor(){
 	if(_statusFlag == 2){
 		unsigned int choice = stringToInt(_wordsList->at(1));
 		int operationStatus;
-		if((choice <=_tempTaskList.size()) && choice < 0){
+		if((choice <=_tempTaskList.size()) && choice > 0){
 			operationStatus=_logic.remove(_tempTaskList[choice-1]);
 			return determineMsgToUI(operationStatus);
 		}
 	}else if(_statusFlag == 0){
 		if(_wordsList->size()>1){
-			string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			_interpreter.interpretRemove(user_command, _tempTitle);
 			_tempTaskList.clear();
-			_logic.search(title, _tempTaskList);
+			_logic.search(_tempTitle, _tempTaskList);
 			if(_tempTaskList.size()>0){
 				_statusFlag = 2;
 				return REMOVE_CHOOSE_TASK;
@@ -264,16 +220,20 @@ string Processor::removeCommandProcessor(){
 */
 string Processor::markCommandProcessor(){
 	if(_statusFlag == 3){
-		unsigned int choice = stringToInt(_wordsList->at(1));
+		vector<int> choice = _interpreter.stringToIntVec(_wordsList->at(1));
 		int operationStatus;
-		if((choice <=_tempTaskList.size()) && choice < 0){
-			operationStatus=_logic.mark(true, _tempTaskList[choice-1]);
+
+		if(choiceIsValid(choice)){
+			for (unsigned int i = 0; i < choice.size(); i++){
+				operationStatus=_logic.mark(_tempStatus, _tempTaskList[choice[i]]);
+			}
 			return determineMsgToUI(operationStatus);
 		}else if(_statusFlag == 0){
 			if(_wordsList->size()>1){
-				string title=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+				string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+				_interpreter.interpretMark(user_command, _tempTitle, _tempStatus);
 				_tempTaskList.clear();
-				_logic.search(title, _tempTaskList);
+				_logic.search(_tempTitle, _tempTaskList);
 				if(_tempTaskList.size()>0){
 					_statusFlag = 3;
 					return MARK_CHOOSE_TASK;
@@ -286,10 +246,58 @@ string Processor::markCommandProcessor(){
 	return EMPTY_STRING;
 }
 
+string Processor::rescheduleCommandProcessor(){
+	if(_statusFlag == 4){
+		unsigned int choice = stringToInt(_wordsList->at(1));
+		if((choice <=_tempTaskList.size()) && choice > 0 && _wordsList->size()==2){
+			int operationStatus;
+			string title, comment;
+			BasicDateTime startingDateTime;
+			BasicDateTime endingDateTime;
+			Task t = _tempTaskList[choice-1];
+			vector<Task> clash;
+
+			t.setStartDate(_tempStart); //need a setter!
+			t.setEndDate(_tempEnd);
+			t.setType(_tempType);
+			operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
+			_tempTaskList = clash;		
+			return determineMsgToUI(operationStatus);
+		}else if(_statusFlag == 0){
+			if(_wordsList->size()>1){
+				string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+				_interpreter.interpretReschedule(user_command, _tempTitle, _tempType, _tempStart, _tempEnd);
+				_tempTaskList.clear();
+				_logic.search(_tempTitle, _tempTaskList);
+				if(_tempTaskList.size()>0){
+					_statusFlag = 1;
+					return UPDATE_CHOOSE_TASK;
+				}else if(_tempTaskList.empty()){
+					return NO_SUCH_TASK;
+				}
+			}
+		}
+		return EMPTY_STRING;
+	}
+}
+
 string Processor::otherCommandProcessor(){
 	return WRONG_INPUT;
 }
 
+bool Processor::choiceIsValid(vector<int> choice){
+	if(choice.empty()){
+		return false;
+	}else{
+		for (unsigned int i = 0; i < choice.size(); i++){
+			unsigned int curr_choice = choice[i];
+			if(curr_choice>=_tempTaskList.size() || choice[i]<1){
+				return false;
+			}
+		}
+		return true;
+	}
+}
 /*
 * Purpose: To get feedback to tell user is command is succesful/unsuccessful
 *
@@ -328,9 +336,9 @@ string Processor::determineMsgToUI(int statusReturnedFromLogic){
 * comment - additional description
 */
 int Processor::addFloatingTask(string title, string comment){
-	DateTime dt1, dt2;
+	BasicDateTime dt1, dt2;
 	Task t;
-	createTask(t, title, dt1, dt2, 0, false, EMPTY_STRING);
+	t = Task(title, dt1, dt2, 2, false, comment);
 	_tempTaskList.clear();
 	return _logic.add(t, _tempTaskList);
 }
@@ -344,10 +352,10 @@ int Processor::addFloatingTask(string title, string comment){
 * dt - deadline of task in DateTime format
 * comment - additional description
 */
-int Processor::addDeadlineTask(string title, DateTime dt, string comment){
-	DateTime dt1;
+int Processor::addDeadlineTask(string title, BasicDateTime dt, string comment){
+	BasicDateTime dt1;
 	Task t;
-	createTask(t, title, dt1, dt, 1, false, EMPTY_STRING);
+	t = Task(title, dt1, dt, 2, false, comment);
 	_tempTaskList.clear();
 	return _logic.add(t, _tempTaskList);
 }
@@ -362,9 +370,9 @@ int Processor::addDeadlineTask(string title, DateTime dt, string comment){
 * dt2 - ending time of task in DateTime format
 * comment - additional description
 */
-int Processor::addNormalTask(string title, DateTime dt1, DateTime dt2, string comment){
+int Processor::addNormalTask(string title, BasicDateTime dt1, BasicDateTime dt2, string comment){
 	Task t;
-	createTask(t, title, dt1, dt2, 2, false, EMPTY_STRING);
+	t = Task(title, dt1, dt2, 2, false, comment);
 	_tempTaskList.clear();
 	return _logic.add(t, _tempTaskList);
 }
@@ -375,13 +383,13 @@ int Processor::addNormalTask(string title, DateTime dt1, DateTime dt2, string co
 * Returns: 
 *  0 - successful
 */
-int Processor::createTask(Task& t, string title, DateTime dt1, DateTime dt2, int type, bool done, string comment){
-	BasicDateTime bdt1(dt1.Year, dt1.Month, dt1.Day, dt1.Hour, dt1.Minute);
-	BasicDateTime bdt2(dt2.Year, dt2.Month, dt2.Day, dt2.Hour, dt2.Minute);
-
-	t=Task(title, bdt1, bdt2, type, done, comment);
-	return 0;
-}
+//int Processor::createTask(Task& t, string title, DateTime dt1, DateTime dt2, int type, bool done, string comment){
+//	BasicDateTime bdt1(dt1.Year, dt1.Month, dt1.Day, dt1.Hour, dt1.Minute);
+//	BasicDateTime bdt2(dt2.Year, dt2.Month, dt2.Day, dt2.Hour, dt2.Minute);
+//
+//	t=Task(title, bdt1, bdt2, type, done, comment);
+//	return 0;
+//}
 
 /*
 * Purpose: Passes in the user input which has the position of date(and time)
@@ -395,7 +403,7 @@ int Processor::createTask(Task& t, string title, DateTime dt1, DateTime dt2, int
 * Returns: 
 *  0 - successful; 1 - unsuccessful
 */
-int Processor::formatDateTime(DateTime& dt, int dtFormat, int pos){
+int Processor::formatDateTime(BasicDateTime& dt, int dtFormat, int pos){
 	if (dtFormat == 1){
 		if (translateDateTime(dt, _wordsList->at(pos+1), EMPTY_STRING) != 0){
 			return -1;
@@ -422,7 +430,7 @@ int Processor::formatDateTime(DateTime& dt, int dtFormat, int pos){
 * Returns: 
 * 0 - successful; 1 - unsuccessful
 */
-int Processor::translateDateTime(DateTime& dt, string str1, string str2){
+int Processor::translateDateTime(BasicDateTime& dt, string str1, string str2){
 	int year=0, month=0, day=0, hour=0, minute=0, second=0;
 	bool dateFlag=false, timeFlag=true;
 
@@ -442,14 +450,14 @@ int Processor::translateDateTime(DateTime& dt, string str1, string str2){
 	}
 	if (dateFlag && timeFlag){
 		try{
-			dt=DateTime(year, month, day, hour, minute, second);
-			cout<<marshal_as<std::string>(dt.ToString())<<endl;
+			dt=BasicDateTime(year, month, day, hour, minute, second);
+			cout<< dt.getDateTimeString() <<endl;
 		}catch (const exception& e){
 			return 1;
 		}
 	}else if(dateFlag && !timeFlag){
 		try{
-			dt=DateTime(year, month, day, hour, minute, second);
+			dt=BasicDateTime(year, month, day, hour, minute, second);
 		}catch (const exception& e){
 			return 1;
 		}

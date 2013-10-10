@@ -24,6 +24,7 @@
 #include "History.h"
 #include "FileProcessing.h"
 #include "Logic.h"
+#include "Interpreter.h"
 #include "Essential.h"
 
 using namespace System;
@@ -43,13 +44,21 @@ class Processor{
 	*             1--update operation has not ended;
 	*             2--remove operation has not ended;
 	*             3--mard operation has not ended;
+	*			  4--rescedule operation has not ended;
 	*/
 private:
 	vector<Task> _tempTaskList; 
+	string _tempTitle;
+	bool _tempStatus;
+	int _tempType;
+	BasicDateTime _tempStart;
+	BasicDateTime _tempEnd;
+
 	vector<string> _stringList; 
 	vector<Task>* _taskListPointer;
 	Logic _logic;
 	History _history;
+	Interpreter _interpreter;
 	FileProcessing _fileProcessing;
 	vector<string> *_wordsList;
 	int _statusFlag; 
@@ -97,19 +106,21 @@ private:
 	string addCommandProcessor();
 	string displayCommandProcessor();
 	string updateCommandProcessor();  
+	string rescheduleCommandProcessor();
 	string removeCommandProcessor();  
 	string markCommandProcessor();  
 	string undoCommandProcessor();
 	string otherCommandProcessor();
 
 	//for add command processing
+	bool choiceIsValid(vector<int> choice);
 	string determineMsgToUI(int);
 	int addFloatingTask(string, string);//need to refactor to only create a task
-	int addDeadlineTask(string, DateTime, string);//need to refactor to only create a task
-	int addNormalTask(string, DateTime, DateTime, string);//need to refactor to only create a task
-	int createTask(Task&,string, DateTime, DateTime, int, bool, string);
-	int formatDateTime(DateTime&, int, int);
-	int translateDateTime(DateTime&, string, string);
+	int addDeadlineTask(string, BasicDateTime, string);//need to refactor to only create a task
+	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task
+	//int createTask(Task&,string, BasicDateTime, BasicDateTime, int, bool, string);
+	int formatDateTime(BasicDateTime&, int, int);
+	int translateDateTime(BasicDateTime&, string, string);
 	int translateDate(int&, int&, int&, string);
 	int translateTime(int&, int&, int&, string);
 	int determineType(int&, int&, int&, int&, int&);

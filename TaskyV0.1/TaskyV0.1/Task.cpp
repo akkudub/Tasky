@@ -46,15 +46,27 @@ Task::Task(string title, BasicDateTime start, BasicDateTime end, int type, bool 
 
 Task::~Task()
 {
-	
+
 }
 
 bool Task::isEqualTo(Task another){
 
-	return another.getTitle() == _title
-		&& !another.getStart().compareTo(_start)
-		&& !another.getEnd().compareTo(_end);
+	switch(another.getType()){
 
+	case 0:
+		return another.getTitle() == _title
+			&& another.getType() == _type;
+		break;
+	case 1:
+		return another.getTitle() == _title
+			&& !another.getEnd().compareTo(_end);
+	case 2:
+		return another.getTitle() == _title
+			&& !another.getStart().compareTo(_start)
+			&& !another.getEnd().compareTo(_end);
+		break;
+
+	}
 }
 
 
@@ -79,11 +91,11 @@ bool Task::isClashingWith(Task another){
 void Task::setTitle(string title){
 	_title = title;
 }
-	
+
 void Task::setStartDate(BasicDateTime start){
 	_start = start;
 }
-	
+
 void Task::setEndDate(BasicDateTime end){
 	_end = end;
 }

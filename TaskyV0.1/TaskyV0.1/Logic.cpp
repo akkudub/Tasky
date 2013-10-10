@@ -7,6 +7,8 @@ Logic::Logic(){
 
 int Logic::add(Task toAdd, vector<Task>& _temp){
 
+	_temp.clear();
+
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
 		if(toAdd.isEqualTo(_taskList[i])){
@@ -14,10 +16,12 @@ int Logic::add(Task toAdd, vector<Task>& _temp){
 		}
 	}
 
-	for(unsigned int i = 0; i < _taskList.size(); i++){
+	if(toAdd.getType() == 2){
+		for(unsigned int i = 0; i < _taskList.size(); i++){
 
-		if(_taskList[i].isClashingWith(toAdd)){
-			_temp.push_back(_taskList[i]);
+			if(_taskList[i].isClashingWith(toAdd)){
+				_temp.push_back(_taskList[i]);
+			}
 		}
 	}
 
@@ -69,6 +73,8 @@ int Logic::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 
 	assert(!keywords.empty());
 
+	_temp.clear();
+
 	vector<Task> duplicateTaskList = _taskList;
 
 	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
@@ -119,33 +125,69 @@ int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, B
 
 	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
 
-		if(duplicateTaskList[i].getTitle() == keywords[0] && tempTask.isClashingWith(duplicateTaskList[i])){
-			_temp.push_back(duplicateTaskList[i]);
-			duplicateTaskList.erase(duplicateTaskList.begin()+i);
-			i--;
+		if(duplicateTaskList[i].getType() == 2){
+			if(duplicateTaskList[i].getTitle() == keywords[0] && tempTask.isClashingWith(duplicateTaskList[i])){
+				_temp.push_back(duplicateTaskList[i]);
+				duplicateTaskList.erase(duplicateTaskList.begin()+i);
+				i--;
+			}
+		}
+
+		if(duplicateTaskList[i].getType() == 1){
+
+			if(duplicateTaskList[i].getTitle() == keywords[0] && duplicateTaskList[i].getEnd().compareTo(start) >= 0 
+				&& duplicateTaskList[i].getEnd().compareTo(end) <= 0){
+
+					_temp.push_back(duplicateTaskList[i]);
+					duplicateTaskList.erase(duplicateTaskList.begin()+i);
+					i--;
+			}
 		}
 	}
 
 	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
 
-		if(duplicateTaskList[i].getTitle().find(keywords[0]) != std::string::npos && tempTask.isClashingWith(duplicateTaskList[i])){
-			_temp.push_back(duplicateTaskList[i]);
-			duplicateTaskList.erase(duplicateTaskList.begin()+i);
-			i--;
+		if(duplicateTaskList[i].getType() == 2){
+			if(duplicateTaskList[i].getTitle().find(keywords[0]) != std::string::npos && tempTask.isClashingWith(duplicateTaskList[i])){
+				_temp.push_back(duplicateTaskList[i]);
+				duplicateTaskList.erase(duplicateTaskList.begin()+i);
+				i--;
+			}
+		}
+
+		if(duplicateTaskList[i].getType() == 1){
+			if(duplicateTaskList[i].getTitle().find(keywords[0]) != std::string::npos && duplicateTaskList[i].getEnd().compareTo(start) >= 0 
+				&& duplicateTaskList[i].getEnd().compareTo(end) <= 0){
+					_temp.push_back(duplicateTaskList[i]);
+					duplicateTaskList.erase(duplicateTaskList.begin()+i);
+					i--;
+			}
 		}
 	}
 
-
 	for(unsigned int i = 1; i < keywords.size(); i++){
 
-		for(unsigned int j = 0; j < duplicateTaskList.size(); j++)
-			if(duplicateTaskList[j].getTitle().find(keywords[i]) != std::string::npos && tempTask.isClashingWith(duplicateTaskList[j])){
-				_temp.push_back(duplicateTaskList[j]);
-				duplicateTaskList.erase(duplicateTaskList.begin()+j);
-				j--;
+		for(unsigned int j = 0; j < duplicateTaskList.size(); j++){
+
+			if(duplicateTaskList[j].getType() == 2){
+				if(duplicateTaskList[j].getTitle().find(keywords[i]) != std::string::npos && tempTask.isClashingWith(duplicateTaskList[j])){
+					_temp.push_back(duplicateTaskList[j]);
+					duplicateTaskList.erase(duplicateTaskList.begin()+j);
+					j--;
+				}
+			}
+			if(duplicateTaskList[j].getType() == 1){
+				if(duplicateTaskList[j].getTitle().find(keywords[0]) != std::string::npos && duplicateTaskList[j].getEnd().compareTo(start) >= 0 
+					&& duplicateTaskList[j].getEnd().compareTo(end) <= 0){
+						_temp.push_back(duplicateTaskList[j]);
+						duplicateTaskList.erase(duplicateTaskList.begin()+j);
+						j--;
+				}
+
 			}
 			if(i == 6)
 				break;
+		}
 	}
 
 	return SUCCESS;
@@ -191,8 +233,15 @@ int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& 
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
-		if(tempTask.isClashingWith(_taskList[i])){
-			_temp.push_back(_taskList[i]);
+		if(_taskList[i].getType() == 2){
+			if(tempTask.isClashingWith(_taskList[i])){
+				_temp.push_back(_taskList[i]);
+			}
+		}
+		if(_taskList[i].getType() == 1){
+			if(_taskList[i].getEnd().compareTo(start) >= 0 && _taskList[i].getEnd().compareTo(end) <= 0){
+				_temp.push_back(_taskList[i]);
+			}
 		}
 	}
 
@@ -204,6 +253,7 @@ int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& 
 int Logic::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
 	_temp.clear();
+
 	if(existingTask.isEqualTo(newTask)){
 		return UPDATE_WARNING_SAME;
 	}

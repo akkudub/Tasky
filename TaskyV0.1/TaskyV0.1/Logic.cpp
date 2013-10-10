@@ -155,9 +155,7 @@ int Logic::displayAll(vector<Task>& _temp){
 
 	_temp.clear();
 
-	for(unsigned int i = 0; i < _taskList.size(); i++){
-		_temp.push_back(_taskList[i]);
-	}
+	_temp = _taskList;
 
 	if(_temp.empty())
 		return DISPLAY_WARNING_NO_RESULT;

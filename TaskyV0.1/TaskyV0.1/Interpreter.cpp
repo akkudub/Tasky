@@ -37,9 +37,9 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	}
 
 	if (str.find(FROM_KEY_WORD, posQuote2+1)!=std::string::npos){
-		fromToFlag=fromToCheck(str.substr(posQuote2+1, posDashM-posQuote2-2));
+		fromToFlag=fromToCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
 	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
-		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-2));
+		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
 	}else{
 		return -1;
 	}
@@ -285,7 +285,7 @@ bool Interpreter::fromToCheck(string str){
 	tempStr=str.substr(pos2+3);
 	vec=breakStringWithDelim(tempStr, SPACE);
 	if (vec.size()==1){
-		toFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
+		toFlag=translateDateTime(vec.at(0), EMPTY_STRING, 2);
 	}else if (vec.size()==2){
 		toFlag=translateDateTime(vec.at(0), vec.at(1), 2);
 	}else{

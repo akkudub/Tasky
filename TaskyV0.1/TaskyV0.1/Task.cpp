@@ -1,5 +1,9 @@
 #include "Task.h"
 
+static const int FLOATING_TASK = 0;
+static const int DEADLINE_TASK = 1;
+static const int NORMAL_TASK = 2;
+
 string Task::getTitle(){
 	return _title;
 }
@@ -53,17 +57,18 @@ bool Task::isEqualTo(Task another){
 
 	switch(another.getType()){
 
-	case 0:
+	case FLOATING_TASK:
 		return another.getTitle() == _title
 			&& another.getType() == _type;
 		break;
-	case 1:
+	case DEADLINE_TASK:
 		return another.getTitle() == _title
-			&& !another.getEnd().compareTo(_end);
-	case 2:
+			&& another.getEnd().compareTo(_end) == 0;
+		break;
+	case NORMAL_TASK:
 		return another.getTitle() == _title
-			&& !another.getStart().compareTo(_start)
-			&& !another.getEnd().compareTo(_end);
+			&& another.getStart().compareTo(_start) == 0
+			&& another.getEnd().compareTo(_end) == 0;
 		break;
 
 	}
@@ -71,20 +76,21 @@ bool Task::isEqualTo(Task another){
 
 
 bool Task::isClashingWith(Task another){
-	bool startClash=false;
-	bool endClash=false;
+
+	bool startClash = false;
+	bool endClash = false;
+	bool spanClash = false;
 
 	if(another.getStart().compareTo(_start) >= 0 && another.getStart().compareTo(_end) < 0)
 		startClash = true;
-	else
-		startClash = false;
 
 	if(another.getEnd().compareTo(_start) > 0 && another.getEnd().compareTo(_end) <= 0)
 		endClash = true;
-	else
-		endClash = false;
 
-	return startClash || endClash;
+	if(another.getStart().compareTo(_start) <= 0 && another.getEnd().compareTo(_end) >= 0)
+		spanClash = true;
+
+	return startClash || endClash || spanClash;
 
 }
 

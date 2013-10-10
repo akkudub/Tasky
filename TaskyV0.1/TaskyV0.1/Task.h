@@ -56,7 +56,7 @@ public:
 	void setStartDate(BasicDateTime start);
 	///set end
 	void setEndDate(BasicDateTime end);
-	///set typr
+	///set type
 	void setType(int type);
 };
 

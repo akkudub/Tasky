@@ -19,11 +19,18 @@ private:
 	vector<string> _historyRecord; //formatted strings from Processor
 	
 public:
-
+	////Purpose:
+	///Clears the vector containing history actions upon start up
 	History();
-	///pop out the last sucessful opeartion
+	////Purpose:
+	///Retrieves the last action from vector of history records
+	///@param hist - last action done will be passed back to calling function via this referenced string
+	///@return Success in retrival; Empty records, nothing to be undone; Failure
 	int undo(string& hist);
-	///push a sucessful operation in history record
+	///Purpose:
+	///saves the successful action into vectory of history records
+	///@param hist - string containing successful user action preformed
+	///@return Success in putting the record into history; Failure
 	int record(string hist);
 	
 };

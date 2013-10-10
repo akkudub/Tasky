@@ -44,26 +44,77 @@ private:
 	static const char COLON;
 
 public:
+	///construtor: quite dummy for now
 	Interpreter();
-	///return status code
+	/**
+	 *@param str (string) input from processor
+	 *@param title (string reference) will change the content of the string if the input format is correct, contain the title
+	 *@param type (string reference) will change the content of the innt if the input format is correct, stating 0--floating; 1--deadline; 2--timed
+	 *@param start (BasicDateTime reference) will change the value of start if format is correct
+	 *@param start (BasicDateTime reference) will change the value of end if format is correct
+	 *@param start (BasicDateTime reference) will change the value of comment if format is correct, will be empty string not input
+	 *@return int status code, will be further defined later
+	 */
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
-	///return status code; for search, -1 : failure; 0 : no dates; 2 :  with two dates;
+	/**
+	 *@param str input string from processor
+	 *@param keywords (vector<string> reference) will push the orignal quoted content into the vector first and will break the content into  separate words and push in
+	 *@param start (BasicDateTime reference) will have the new value if the input format is right
+	 *@param end (BasicDateTime reference) will have the new value if the input format is right
+	 *@return int status code, -1: failue; 0: no dates; 2: with two dates;
+	 */
 	int interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end);
-	///return status code; for display, -1 : failure; 0: all; 1 : status; 2 : with 2 datetimes;
+	/**
+	 *@param str (string) input from processor
+	 *@param start (BasicDateTime reference) will have the new value if the input format is right
+	 *@param end (BasicDateTime reference) will have the new value if the input format is right
+	 *@param status (bool refernce) will have true--done false pending if the user has specified
+	 */
 	int interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status);
-	///return status code; for update, -1: failure; 0 : success
+	/**
+	 *@param str (string) input from processor
+	 *@param oldTitle (string reference) will have the extracted the first qouted string
+	 *@param newTitle (string reference) will have the extracted the second quoted string
+	 *@return int status code--will be further defined later, right now -1 means failure and 0 means success
+	 */
 	int interpretUpdate(string str, string& oldTitle, string& newTitle);
-	///return status code; for reschedule, -1 : failue; 0 : sucess
+	/**
+	 *@param str (string) input from processor
+	 *@param title (string reference) will have the value of the extracted quoted string
+	 *@param type (int reference) will be changed according to input: 0--floating; 1--deadline task; 2--timed task;
+	 *@param start (BasicDateTime reference) will be changed if the input date time format is right
+	 *@param end (BasicDateTime reference) will be changed if the input date time format is right
+	 *@return int status code--0: success; -1: failure
+	 */
 	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
-	///return status code; for mark, -1 : failue; 0 : sucess
+	/**
+	 *@param str (string) input from processor
+	 *@param title (string reference) will have the value of the extracted quoted string
+	 *@param status (bool reference) will set the value of status: true--done; false--pending
+	 *@return int status code--0: success; -1: failure
+	 */
 	int interpretMark(string str, string& title, bool& status);
-	///return status code; for remove, -1 : failue; 0 : sucess
+	/**
+	 *@param str (string) input from processor
+	 *@param title (string reference) will have the value of the extracted quoted string
+	 *@return int status code--0: success; -1: failure
+	 */
 	int interpretRemove(string str, string& title);
-	///return -1 if unable to convert
-	int stringToInt(string);
-	///return vector of integers based interpretation of the input
+	/**
+	 *@param str (string) input string
+	 *@return try to parse the string to int, if failure then return -1
+	 */
+	int stringToInt(string str);
+	/**
+	 * 1, 3, 4, 5--return <1, 3, 4, 5>;  1-5--return <1, 2, 3, 4, 5>
+	 *@param str (string) input string
+	 *@return a vector of integers
+	 */
 	vector<int> stringToIntVec(string str);
-	///return string in lower case
+	/**
+	 *@param input (string)
+	 *@return string of the input string 
+	 */
 	string toLowerCase(string input);
 	///destructor
 	~Interpreter();

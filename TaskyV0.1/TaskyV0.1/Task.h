@@ -2,12 +2,12 @@
 #define _TASK_H_
 
 /*
- *This class is mainly to model a task in the real world.
- *
- *Additional notice: we use pointer to datetime to avoid problems with initialization. Attention to
- *memory leak.
- *
- *Main author: Kai Wen
+*This class is mainly to model a task in the real world.
+*
+*Additional notice: we use pointer to datetime to avoid problems with initialization. Attention to
+*memory leak.
+*
+*Main author: Kai Wen
 */
 
 #include "Essential.h"
@@ -23,7 +23,7 @@ private:
 	int _type;
 	bool _done;
 	string _comment;
-	
+
 public:
 
 	///<summary>default constructor</summary>
@@ -50,6 +50,12 @@ public:
 	bool isEqualTo(Task);
 	///checks if a task clashes with another task.
 	bool isClashingWith(Task);
+	///set title
+	void setTitle(string title);
+	///set start
+	void setStartDate(BasicDateTime start);
+	///set end
+	void setEndDate(BasicDateTime end);
 };
 
 #endif

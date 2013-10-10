@@ -28,7 +28,7 @@ private:
 	* Takes in user command & put into string command
 	* @param command - stores the user input 
 	*/
-	void displayCommandMessage(string& command);
+	void displayCommandMessage(string& command, HANDLE hConsole);
 	/**
 	* Purpose:
 	* Send the user's command to the Processor

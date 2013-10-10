@@ -118,12 +118,10 @@ private:
 	int addFloatingTask(string, string);//need to refactor to only create a task
 	int addDeadlineTask(string, BasicDateTime, string);//need to refactor to only create a task
 	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task
-	//int createTask(Task&,string, BasicDateTime, BasicDateTime, int, bool, string);
 	int formatDateTime(BasicDateTime&, int, int);
 	int translateDateTime(BasicDateTime&, string, string);
 	int translateDate(int&, int&, int&, string);
 	int translateTime(int&, int&, int&, string);
-	int determineType(int&, int&, int&, int&, int&);
 	vector<int> identifyKeyWords();
 	bool fromToCheck(int, int);
 	bool byCheck(int);
@@ -132,7 +130,7 @@ private:
 	bool timeCheck(string);
 
 	//additional helper methods
-	int breakIntoStringVectorBySpace(string);
+	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
 	int stringToInt(string);
 	string combineStringsWithSpaceOnVector(int,int);//check size of vector first
 	string combineStringsWithNewLineOnVector(int,int);

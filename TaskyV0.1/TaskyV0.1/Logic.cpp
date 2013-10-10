@@ -6,7 +6,7 @@ Logic::Logic(){
 
 
 int Logic::add(Task toAdd, vector<Task>& _temp){
-
+	_temp.clear();
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
 		if(toAdd.isEqualTo(_taskList[i])){
@@ -68,6 +68,8 @@ int Logic::search(string searchLine, vector<Task>& _temp){
 int Logic::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 
 	assert(!keywords.empty());
+
+	_temp.clear();
 
 	vector<Task> duplicateTaskList = _taskList;
 

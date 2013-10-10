@@ -1,9 +1,9 @@
 #include "BasicDateTime.h"
 
 BasicDateTime::BasicDateTime(){
-	_year=0;
-	_month=0;
-	_day=0;
+	_year=1;
+	_month=1;
+	_day=1;
 	_hour=0;
 	_minute=0;
 	_sec=0;

@@ -7,7 +7,7 @@ void UI::UI_interface(){
 	string command;
 	bool exitTextBuddy = false;
 	while (!exitTextBuddy) {
-		displayCommandMessage(command);
+		displayCommandMessage(command, hConsole);
 		SetConsoleTextAttribute(hConsole,FOREGROUND_INTENSITY);
 		if (shouldExit(command)) {
 			exitTextBuddy = true;
@@ -26,7 +26,8 @@ void UI::displayWelcomeMessage(){
 }
 
 
-void UI::displayCommandMessage(string& command){
+void UI::displayCommandMessage(string& command, HANDLE hConsole){
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 	cout << MESSAGE_COMMAND;
 	getline(cin, command);
 }

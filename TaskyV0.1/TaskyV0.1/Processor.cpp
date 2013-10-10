@@ -257,7 +257,7 @@ string Processor::rescheduleCommandProcessor(){
 			Task t = _tempTaskList[choice-1];
 			vector<Task> clash;
 
-			t.setStartDate(_tempStart); //need a setter!
+			t.setStartDate(_tempStart);
 			t.setEndDate(_tempEnd);
 			t.setType(_tempType);
 			operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
@@ -277,8 +277,9 @@ string Processor::rescheduleCommandProcessor(){
 				}
 			}
 		}
-		return EMPTY_STRING;
 	}
+
+		return EMPTY_STRING;
 }
 
 string Processor::otherCommandProcessor(){

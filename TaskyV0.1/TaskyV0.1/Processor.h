@@ -114,25 +114,14 @@ private:
 	string otherCommandProcessor();
 
 	//for add command processing
-	bool choiceIsValid(vector<int> choice);
 	string determineMsgToUI(int);
 	int addFloatingTask(string, string);//need to refactor to only create a task
 	int addDeadlineTask(string, BasicDateTime, string);//need to refactor to only create a task
 	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task
-	//int formatDateTime(BasicDateTime&, int, int);
-	//int translateDateTime(BasicDateTime&, string, string);
-	//int translateDate(int&, int&, int&, string);
-	//int translateTime(int&, int&, int&, string);
-	//vector<int> identifyKeyWords();
-	//bool fromToCheck(int, int);
-	//bool byCheck(int);
-	//bool dateTimeCheck(string, string);
-	//bool dateCheck(string);
-	//bool timeCheck(string);
 
 	//additional helper methods
 	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
-	int stringToInt(string);
+	bool choiceIsValid(vector<int> choice);
 	string combineStringsWithSpaceOnVector(int,int);//check size of vector first
 	string combineStringsWithNewLineOnVector(int,int);
 	string combineStringsWithNewLine(string, string);
@@ -141,9 +130,7 @@ private:
 	string printDeadlineTask(Task);
 	string printTimedTask(Task);
 	string printStatus(bool);
-	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
-	//int characterType(char) ;
 	string combineStatusMsgWithFeedback(string);
 };
 

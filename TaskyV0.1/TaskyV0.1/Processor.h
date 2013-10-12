@@ -85,6 +85,8 @@ private:
 	static const string REMOVE_CHOOSE_TASK;
 	static const string MARK_CHOOSE_TASK;
 	static const string NO_SUCH_TASK;
+	static const string FILE_SAVE_SUCCESS;
+	static const string FILE_SAVE_FAILURE;
 
 	static const char NEW_LINE;
 	static const char SLASH;
@@ -112,6 +114,7 @@ private:
 	string searchCommandProcessor();
 	string undoCommandProcessor();
 	string otherCommandProcessor();
+	int saveFile();
 
 	//for add command processing
 	string determineMsgToUI(int);

@@ -21,6 +21,8 @@ const string Processor::UPDATE_MESSAGE_FAILURE = "Error! Unable to update task";
 const string Processor::REMOVE_CHOOSE_TASK = "Enter the task number to remove: ";
 const string Processor::MARK_CHOOSE_TASK = "Enter the task number to mark: ";
 const string Processor::NO_SUCH_TASK = "No such task!";
+const string Processor::FILE_SAVE_SUCCESS = "File Saved successfully!";
+const string Processor::FILE_SAVE_FAILURE = "File COULD NOT BE SAVED!! LOL GG";
 
 const char Processor::SLASH = '/';
 const char Processor::BACK_SLASH = '\\';
@@ -51,34 +53,36 @@ string Processor::mainProcessor(string command){
 	command = _interpreter.toLowerCase(command);
 	_wordsList->clear();
 	breakIntoStringVectorBySpace(command, *_wordsList);
-	if(_statusFlag == 0){
-		string firstWord = _wordsList->at(0);
-		if(firstWord == "add"){
-			return addCommandProcessor();
-		}else if(firstWord == "remove"){
-			return removeCommandProcessor();
-		}else if(firstWord == "display"){
-			return displayCommandProcessor();
-		}else if(firstWord == "update"){
-			return updateCommandProcessor();
-		}else if(firstWord == "reschedule"){
-			return rescheduleCommandProcessor();
-		}else if(firstWord == "mark"){
-			return markCommandProcessor();
-		}else if(firstWord == "search"){
-			return searchCommandProcessor();
-		}else{
-			return otherCommandProcessor();
-		}
+	string firstWord = _wordsList->at(0);
+	//while (firstWord != "exit"){
+		if(_statusFlag == 0){
+			if(firstWord == "add"){
+				return addCommandProcessor();
+			}else if(firstWord == "remove"){
+				return removeCommandProcessor();
+			}else if(firstWord == "display"){
+				return displayCommandProcessor();
+			}else if(firstWord == "update"){
+				return updateCommandProcessor();
+			}else if(firstWord == "reschedule"){
+				return rescheduleCommandProcessor();
+			}else if(firstWord == "mark"){
+				return markCommandProcessor();
+			}else if(firstWord == "search"){
+				return searchCommandProcessor();
+			}else{
+				return otherCommandProcessor();
+			}
 
-	}else if(_statusFlag == 1){
-		return updateCommandProcessor();
-	}else if(_statusFlag == 2){
-		return removeCommandProcessor();
-	}else if(_statusFlag == 3){
-		return markCommandProcessor();
-	}
-	return "";
+		}else if(_statusFlag == 1){
+			return updateCommandProcessor();
+		}else if(_statusFlag == 2){
+			return removeCommandProcessor();
+		}else if(_statusFlag == 3){
+			return markCommandProcessor();
+		}
+	//}statusFlag = false;
+	return 	determineMsgToUI(saveFile());
 }
 
 //level 1 abstraction
@@ -125,21 +129,21 @@ string Processor::addCommandProcessor(){
 * Tasks of type; Unable to display
 */
 string Processor::displayCommandProcessor(){
-	string result, user_command;
+	string user_command;
 	BasicDateTime start, end;
 	bool status;
-	int displayOperationStatus;
+	int OperationStatus;
 	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
 	int return_code = _interpreter.interpretDisplay(user_command, start, end, status);
 	if (return_code == 0){
-		displayOperationStatus = _logic.displayAll(_tempTaskList);
-		return determineMsgToUI(displayOperationStatus);
+		OperationStatus = _logic.displayAll(_tempTaskList);
+		return determineMsgToUI(OperationStatus);
 	}else if (return_code == 1){
-		displayOperationStatus = _logic.displayStatus(status, _tempTaskList);
-		return determineMsgToUI(displayOperationStatus);
+		OperationStatus = _logic.displayStatus(status, _tempTaskList);
+		return determineMsgToUI(OperationStatus);
 	}else if(return_code == 2){
-		displayOperationStatus = _logic.displayInRange(start, end, _tempTaskList);
-		return determineMsgToUI(displayOperationStatus);
+		OperationStatus = _logic.displayInRange(start, end, _tempTaskList);
+		return determineMsgToUI(OperationStatus);
 	}else{
 		return determineMsgToUI(-1);
 	}
@@ -295,12 +299,15 @@ string Processor::rescheduleCommandProcessor(){
 
 	}else if(_statusFlag == 0){
 		if(_wordsList->size()>1){
+			vector<string> keywords;
 			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
 
 			//problem in extractDateTimeForReschdule, pos2+4 should be pos2+7
 			_interpreter.interpretReschedule(user_command, _tempTitle, _tempType, _tempStart, _tempEnd);
 			_tempTaskList.clear();
-			_logic.search(_tempTitle, _tempTaskList);
+			breakIntoStringVectorBySpace(_tempTitle, keywords);
+			_logic.searchKeywords(keywords, _tempTaskList);
+
 			if (_tempTaskList.size() == 1){
 				Task t = _tempTaskList[0];
 				vector<Task> clash;
@@ -320,12 +327,43 @@ string Processor::rescheduleCommandProcessor(){
 	return EMPTY_STRING;
 }
 string Processor::searchCommandProcessor(){
-	return "";
+	vector<string> keywords;
+	string user_command;
+	BasicDateTime start, end;
+	int operationStatus;
+
+	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+	_tempTaskList.clear();
+	breakIntoStringVectorBySpace(_tempTitle, keywords);
+	int return_code = _interpreter.interpretSearch(user_command, keywords, start, end);
+
+	if (return_code == 0){
+		operationStatus = _logic.searchKeywords(keywords, _tempTaskList);
+		return determineMsgToUI(operationStatus);
+	}else if(return_code == 2){
+		//problem 1: interpreter returning 2 copies of the keyword
+		//problem 2: logic has a vector subscript out of range exception
+		operationStatus = _logic.searchKeywordsInRange(keywords, _tempTaskList, start, end);
+		return determineMsgToUI(operationStatus);
+	}else{
+		return determineMsgToUI(-1);
+	}
+
 }
 
 
 string Processor::otherCommandProcessor(){
 	return WRONG_INPUT;
+}
+
+int Processor::saveFile(){
+		vector<Task> allTasks;
+		vector<string> allTasksString;
+		_logic.displayAll(allTasks);
+		for (unsigned int i = 0; i < allTasks.size(); i++){
+			allTasksString.push_back(taskToString(allTasks[i]));
+		}
+		return _fileProcessing.save(allTasksString);
 }
 
 bool Processor::choiceIsValid(vector<int> choice){

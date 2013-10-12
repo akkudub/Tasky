@@ -4,16 +4,13 @@
 void UI::UI_interface(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	/*displayWelcomeMessage();*/
+	char buf[] = "I am Blinking!!!!\n";
+    setBlinkingText(0, 1, buf, 5, 1000);
 	string command;
-	bool exitTextBuddy = false;
-	while (!exitTextBuddy) {
+	bool statusFlag = false;
+	while (!statusFlag) {
 		displayCommandMessage(command, hConsole);
-		SetConsoleTextAttribute(hConsole,FOREGROUND_INTENSITY);
-		if (shouldExit(command)) {
-			exitTextBuddy = true;
-		} else {
-			displayProcessorMessage(command, hConsole);
-		}
+		displayProcessorMessage(command, hConsole, statusFlag);
 	}
 	displayExitMessage();
 }
@@ -33,33 +30,35 @@ void UI::displayCommandMessage(string& command, HANDLE hConsole){
 }
 
 
-void UI::displayProcessorMessage(string command, HANDLE hConsole){
+void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFlag){
 	string output = _processor.mainProcessor(command);
 	//DO SOME COLOR PROCESSING HERE
-	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+	SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 	cout << output << endl;
 }
 
 
 void UI::displayExitMessage(){
 	cout << MESSAGE_GOODBYE <<endl;
-	//should save again before closing program?
 }
 
+void UI::setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs){
+    ::system("cls");
+    COORD ord;
+    ord.X = x;
+    ord.Y = y; 
 
-bool UI::shouldExit(string command){
-	string lowerCaseCommand = command;
-	convertLowerCase(lowerCaseCommand);
-	if (COMMAND_EXIT.compare(lowerCaseCommand) == 0)
-		return true;
+    int len = strlen(buf);
+    char *p = new char[len + 1];
+    memset(p, 32, len);
+    p[len] = '\0';
+    for(int i = 0; i < timestoBlink; i++){
 
-	return false;
-}
-
-
-void UI::convertLowerCase(string& str){
-	const int length = str.length();
-	for(int i=0; i < length; ++i){
-		str[i] = tolower(str[i]);
-	}
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
+        std::cout << p;
+        ::Sleep(300);
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
+        std::cout << buf;
+        ::Sleep(delayMilliSecs);
+    }
 }

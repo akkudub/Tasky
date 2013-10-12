@@ -109,6 +109,7 @@ private:
 	string rescheduleCommandProcessor();
 	string removeCommandProcessor();  
 	string markCommandProcessor();  
+	string searchCommandProcessor();
 	string undoCommandProcessor();
 	string otherCommandProcessor();
 
@@ -118,16 +119,16 @@ private:
 	int addFloatingTask(string, string);//need to refactor to only create a task
 	int addDeadlineTask(string, BasicDateTime, string);//need to refactor to only create a task
 	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task
-	int formatDateTime(BasicDateTime&, int, int);
-	int translateDateTime(BasicDateTime&, string, string);
-	int translateDate(int&, int&, int&, string);
-	int translateTime(int&, int&, int&, string);
-	vector<int> identifyKeyWords();
-	bool fromToCheck(int, int);
-	bool byCheck(int);
-	bool dateTimeCheck(string, string);
-	bool dateCheck(string);
-	bool timeCheck(string);
+	//int formatDateTime(BasicDateTime&, int, int);
+	//int translateDateTime(BasicDateTime&, string, string);
+	//int translateDate(int&, int&, int&, string);
+	//int translateTime(int&, int&, int&, string);
+	//vector<int> identifyKeyWords();
+	//bool fromToCheck(int, int);
+	//bool byCheck(int);
+	//bool dateTimeCheck(string, string);
+	//bool dateCheck(string);
+	//bool timeCheck(string);
 
 	//additional helper methods
 	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
@@ -142,7 +143,7 @@ private:
 	string printStatus(bool);
 	string toLowCaseString(string);
 	string removeLeadingSpaces(string);
-	int characterType(char) ;
+	//int characterType(char) ;
 	string combineStatusMsgWithFeedback(string);
 };
 

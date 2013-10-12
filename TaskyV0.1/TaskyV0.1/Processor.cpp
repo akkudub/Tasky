@@ -55,16 +55,18 @@ string Processor::mainProcessor(string command){
 		string firstWord = _wordsList->at(0);
 		if(firstWord == "add"){
 			return addCommandProcessor();
+		}else if(firstWord == "remove"){
+			return removeCommandProcessor();
 		}else if(firstWord == "display"){
 			return displayCommandProcessor();
 		}else if(firstWord == "update"){
 			return updateCommandProcessor();
 		}else if(firstWord == "reschedule"){
 			return rescheduleCommandProcessor();
-		}else if(firstWord == "remove"){
-			return removeCommandProcessor();
 		}else if(firstWord == "mark"){
 			return markCommandProcessor();
+		}else if(firstWord == "search"){
+			return searchCommandProcessor();
 		}else{
 			return otherCommandProcessor();
 		}
@@ -160,29 +162,31 @@ string Processor::updateCommandProcessor(){
 			t.setTitle(_tempTitle);
 			operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
 			_tempTaskList = clash;
-			return determineMsgToUI(operationStatus);
+		}
 
-		}else if(_statusFlag == 0){
-			if(_wordsList->size()>1){
-				string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-				string oldTitle;
-				vector<string> keywords;
-				vector<Task> clash;
-				_interpreter.interpretUpdate(user_command, oldTitle, _tempTitle);
-				_tempTaskList.clear();
-				breakIntoStringVectorBySpace(oldTitle, keywords);
-				_logic.searchKeywords(keywords, _tempTaskList);
-				if (_tempTaskList.size() == 1){
-					Task t = _tempTaskList[0];
-					t.setTitle(_tempTitle);
-					operationStatus=_logic.update(_tempTaskList[0], t, clash);
-					return determineMsgToUI(operationStatus);
-				}else if(!_tempTaskList.empty()){
-					_statusFlag = 1;
-					return UPDATE_CHOOSE_TASK;
-				}else if(_tempTaskList.empty()){
-					return NO_SUCH_TASK;
-				}
+		_statusFlag = 0;
+		return determineMsgToUI(operationStatus);
+
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			string oldTitle;
+			vector<string> keywords;
+			vector<Task> clash;
+			_interpreter.interpretUpdate(user_command, oldTitle, _tempTitle);
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(oldTitle, keywords);
+			_logic.searchKeywords(keywords, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				Task t = _tempTaskList[0];
+				t.setTitle(_tempTitle);
+				operationStatus=_logic.update(_tempTaskList[0], t, clash);
+				return determineMsgToUI(operationStatus);
+			}else if(!_tempTaskList.empty()){
+				_statusFlag = 1;
+				return UPDATE_CHOOSE_TASK;
+			}else if(_tempTaskList.empty()){
+				return NO_SUCH_TASK;
 			}
 		}
 	}
@@ -201,8 +205,9 @@ string Processor::removeCommandProcessor(){
 		unsigned int choice = stringToInt(_wordsList->at(1));
 		if((choice <=_tempTaskList.size()) && choice > 0){
 			operationStatus=_logic.remove(_tempTaskList[choice-1]);
-			return determineMsgToUI(operationStatus);
 		}
+		_statusFlag = 0;
+		return determineMsgToUI(operationStatus);
 	}else if(_statusFlag == 0){
 		if(_wordsList->size()>1){
 			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
@@ -234,29 +239,33 @@ string Processor::removeCommandProcessor(){
 string Processor::markCommandProcessor(){
 	int operationStatus;
 	if(_statusFlag == 3){
+		//stringtointvec doenst seem to be working
 		vector<int> choice = _interpreter.stringToIntVec(_wordsList->at(1));
 
 		if(choiceIsValid(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
 				operationStatus=_logic.mark(_tempStatus, _tempTaskList[choice[i]]);
 			}
-			return determineMsgToUI(operationStatus);
-		}else if(_statusFlag == 0){
-			if(_wordsList->size()>1){
-				string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-				_interpreter.interpretMark(user_command, _tempTitle, _tempStatus);
-				_tempTaskList.clear();
-				_logic.search(_tempTitle, _tempTaskList);
-				if (_tempTaskList.size() == 1){
-					operationStatus=_logic.mark(_tempStatus, _tempTaskList[0]);
-					return determineMsgToUI(operationStatus);
-				}	
-				else if(!_tempTaskList.empty()){
-					_statusFlag = 3;
-					return MARK_CHOOSE_TASK;
-				}else if(_tempTaskList.empty()){
-					return NO_SUCH_TASK;
-				}
+		}
+		_statusFlag = 0;
+		return determineMsgToUI(operationStatus);
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			vector<string> keywords;
+			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			_interpreter.interpretMark(user_command, _tempTitle, _tempStatus);
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(_tempTitle, keywords);
+			_logic.searchKeywords(keywords, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				operationStatus=_logic.mark(_tempStatus, _tempTaskList[0]);
+				return determineMsgToUI(operationStatus);
+			}	
+			else if(!_tempTaskList.empty()){
+				_statusFlag = 3;
+				return MARK_CHOOSE_TASK;
+			}else if(_tempTaskList.empty()){
+				return NO_SUCH_TASK;
 			}
 		}
 	}
@@ -278,34 +287,42 @@ string Processor::rescheduleCommandProcessor(){
 			t.setEndDate(_tempEnd);
 			t.setType(_tempType);
 			operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
-			_tempTaskList = clash;		
-			return determineMsgToUI(operationStatus);
-		}else if(_statusFlag == 0){
-			if(_wordsList->size()>1){
-				string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-				_interpreter.interpretReschedule(user_command, _tempTitle, _tempType, _tempStart, _tempEnd);
-				_tempTaskList.clear();
-				_logic.search(_tempTitle, _tempTaskList);
-				if (_tempTaskList.size() == 1){
-					Task t = _tempTaskList[0];
-					vector<Task> clash;
-					t.setStartDate(_tempStart);
-					t.setEndDate(_tempEnd);
-					t.setType(_tempType);
-					operationStatus=_logic.update(_tempTaskList[0], t, clash);
-					return determineMsgToUI(operationStatus);
-				}else if(!_tempTaskList.empty()){
-					_statusFlag = 1;
-					return UPDATE_CHOOSE_TASK;
-				}else if(_tempTaskList.empty()){
-					return NO_SUCH_TASK;
-				}
+			_tempTaskList = clash;
+		}
+
+		_statusFlag = 0;
+		return determineMsgToUI(operationStatus);
+
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+
+			//problem in extractDateTimeForReschdule, pos2+4 should be pos2+7
+			_interpreter.interpretReschedule(user_command, _tempTitle, _tempType, _tempStart, _tempEnd);
+			_tempTaskList.clear();
+			_logic.search(_tempTitle, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				Task t = _tempTaskList[0];
+				vector<Task> clash;
+				t.setStartDate(_tempStart);
+				t.setEndDate(_tempEnd);
+				t.setType(_tempType);
+				operationStatus=_logic.update(_tempTaskList[0], t, clash);
+				return determineMsgToUI(operationStatus);
+			}else if(!_tempTaskList.empty()){
+				_statusFlag = 1;
+				return UPDATE_CHOOSE_TASK;
+			}else if(_tempTaskList.empty()){
+				return NO_SUCH_TASK;
 			}
 		}
 	}
-
 	return EMPTY_STRING;
 }
+string Processor::searchCommandProcessor(){
+	return "";
+}
+
 
 string Processor::otherCommandProcessor(){
 	return WRONG_INPUT;
@@ -402,288 +419,6 @@ int Processor::addNormalTask(string title, BasicDateTime dt1, BasicDateTime dt2,
 	_tempTaskList.clear();
 	return _logic.add(t, _tempTaskList);
 }
-
-/*
-* Purpose: Passes in the user input which has the position of date(and time)
-* to put it into a DateTime variable dt
-*
-* Param: 
-* dt - DateTime variable stores date and time upon successful convert
-* dtFormat - 1 for date only;2 for date with time
-* pos - starting position of the user input (in form of vector) which has the date
-*
-* Returns: 
-*  0 - successful; 1 - unsuccessful
-*/
-int Processor::formatDateTime(BasicDateTime& dt, int dtFormat, int pos){
-	if (dtFormat == 1){
-		if (translateDateTime(dt, _wordsList->at(pos+1), EMPTY_STRING) != 0){
-			return -1;
-		}
-	}else if(dtFormat == 2){
-		if (translateDateTime(dt, _wordsList->at(pos+1),_wordsList->at(pos+2)) !=0){
-			return -1;
-		}
-	}else{
-		return -1;
-	}
-
-	return 0;
-}
-
-/*
-* Purpose: puts the user input of date and time into a DateTime dt
-*
-* Param: 
-* dt - DateTime variable stores date and time upon successful convert
-* str1 - Date from user input
-* str2 - Time from user input (if exists)
-*
-* Returns: 
-* 0 - successful; 1 - unsuccessful
-*/
-int Processor::translateDateTime(BasicDateTime& dt, string str1, string str2){
-	int year=0, month=0, day=0, hour=0, minute=0, second=0;
-	bool dateFlag=false, timeFlag=true;
-
-	if (str1!=EMPTY_STRING){
-		if (translateDate(year, month, day, str1) != 0){
-			return 1;
-		}else{
-			dateFlag=true;
-		}
-	}
-	if (str2!=EMPTY_STRING){
-		if (translateTime(hour, minute, second,str2) != 0){
-			return 1;
-		}else{
-			timeFlag=true;
-		}
-	}
-	if (dateFlag && timeFlag){
-		try{
-			dt=BasicDateTime(year, month, day, hour, minute, second);
-			cout<< dt.getDateTimeString() <<endl;
-		}catch (const exception& e){
-			return 1;
-		}
-	}else if(dateFlag && !timeFlag){
-		try{
-			dt=BasicDateTime(year, month, day, hour, minute, second);
-		}catch (const exception& e){
-			return 1;
-		}
-	}else{
-		return 1;
-	}
-
-	return 0;
-}
-
-/*
-* Purpose: Separates the string containing date into integers
-*
-* Param: 
-* string - user input of date
-*
-* Returns: 
-* SUCCESS; 1 - unsuccessful, wrong date
-*/
-int Processor::translateDate(int& year, int& month, int& day, string date){
-	DateTime now;
-	year=stringToInt(date.substr(0,4));
-	if (year < now.Year){
-		return 1;
-	}
-	month=stringToInt(date.substr(5,2));
-	if (month>12 || month<1){
-		return 1;
-	}
-	day=stringToInt(date.substr(8,2));
-	if (day>31 || day<1){
-		return 1;
-	}
-
-	return STATUS_CODE_SET::SUCCESS;
-}
-
-/*
-* Purpose: Separates the string containing time into integers
-*
-* Param: 
-* string - user input of time
-*
-* Returns: 
-* SUCCESS; 1 - unsuccessful, wrong time
-*/
-int Processor::translateTime(int& hour, int& minute, int& second, string time){
-	hour=stringToInt(time.substr(0,2));
-	if (hour>24 || hour<0){
-		return 1;
-	}
-	minute=stringToInt(time.substr(3,2));
-	if (minute>60 || minute<0){
-		return 1;
-	}
-	if (time.size() == 8){
-		second=stringToInt(time.substr(6,2));
-		if (second>60 || second<0){
-			return 1;
-		}
-	}
-
-	return STATUS_CODE_SET::SUCCESS;
-}
-
-/*
-* Purpose: identifies the keywords in the user input and stores into positionVector
-*
-* Returns: vector containinig position of keyword 
-*/
-vector<int> Processor::identifyKeyWords(){//fucked up
-	int endPosition = _wordsList->size()-1;
-	vector<int> positionVector;
-	if(_wordsList->size()<=6){
-		return positionVector;
-	}
-	for (int i = endPosition; i > endPosition-6; i--){
-		if(fromToCheck(2, i)){
-			positionVector.push_back(i-2);
-			positionVector.push_back(i);
-			return positionVector;
-		}else if(fromToCheck(3, i)){
-			positionVector.push_back(i-3);		//does this become relative position?
-			positionVector.push_back(i);
-			return positionVector;
-		}else if(byCheck(i)){
-			positionVector.push_back(i);
-			return positionVector;
-		}
-	}
-	return positionVector;
-}
-
-/*
-* Purpose: Checks if user has entered the 'FROM-TO' keyword
-*
-* Param: posDiff - starting point of 'FROM' keyword; iterator - starting point to check from
-*
-* Returns: true - contains the keyword; false - does not contain
-*/
-bool Processor::fromToCheck(int posDiff, int iterator){
-	if (_wordsList->at(iterator) == TO_KEY_WORD){
-		return ((_wordsList->at(iterator-posDiff)) == FROM_KEY_WORD);
-	}else{
-		return false;
-	}
-}
-
-/*
-* Purpose: Checks if user has entered the 'BY' keyword
-*
-* Param: iterator - starting point to check from
-*
-* Returns: true - contains the keyword; false - does not contain
-*/
-bool Processor::byCheck(int iterator){
-	return (_wordsList->at(iterator) == BY_KEY_WORD);
-}
-
-/*
-* Purpose: Checks if date and time are correctly formatted
-*
-* Param: date - date in a string form, time - time in a string form
-*
-* Returns: true - correct; false - incorrect
-*/
-bool Processor::dateTimeCheck(string date, string time){
-	return (dateCheck(date) && timeCheck(time));
-}
-
-/*
-* Purpose: Checks if date is correctly formatted in YYYY/XX/XX
-*
-* Param: date in a string form
-*
-* Returns: true - correct; false - incorrect
-*/
-bool Processor::dateCheck(string test){
-	int size=test.size();
-	int index=0;
-
-	if(size != 10){
-		return false;
-	}
-	for (;index<4;index++){
-		if (characterType(test[index]) != 0){
-			return false;
-		}
-	}
-	if (characterType(test[index]) != 1){
-		return false;
-	}
-	index++;
-	for (;index<7;index++){
-		if (characterType(test[index]) != 0){
-			return false;
-		}
-	}
-	if (characterType(test[index]) != 1){
-		return false;
-	}
-	index++;
-	for (;index<size;index++){
-		if (characterType(test[index]) != 0){
-			return false;
-		}
-	}
-
-	return true;
-}
-
-/*
-* Purpose: Checks if time is correctly formatted in XX:XX:XX
-*
-* Param: time in a string form
-*
-* Returns: true - correct; false - incorrect
-*/
-bool Processor::timeCheck(string test){
-	int size=test.size();
-	int index=0;
-
-	if (size!=5 && size!=8){	//what's this?
-		return false;
-	}
-	for (;index<2;index++){
-		if (characterType(test[index])!=0){
-			return false;
-		}
-	}
-	if (characterType(test[index])!=1){
-		return false;
-	}
-	index++;
-	for (;index<5;index++){
-		if (characterType(test[index])!=0){
-			return false;
-		}
-	}
-	if (size==8){
-		if (characterType(test[index])!=1){
-			return false;
-		}
-		index++;
-		for (;index<8;index++){
-			if (characterType(test[index])!=0){
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
 /*
 * Purpose: Separates the user input word by word into vector _wordsList
 *
@@ -694,11 +429,15 @@ bool Processor::timeCheck(string test){
 int Processor::breakIntoStringVectorBySpace(string longStr, vector<string>& outputVector){
 	stringstream ss(longStr);
 	string tempStr;
-
+	bool noSpace = true;
 	while (std::getline(ss, tempStr, SPACE)){
 		outputVector.push_back(tempStr);
+		noSpace = false;
 	}
 
+	if (noSpace){
+		outputVector.push_back(longStr);
+	}
 	return 0;
 }
 
@@ -877,23 +616,6 @@ string Processor::toLowCaseString(string str){
 string Processor::removeLeadingSpaces(string str){
 	int num=str.find_first_not_of(SPACE);
 	return str.substr(num);
-}
-
-/*
-* Purpose:checks if the char is symbol/numeric
-*
-* Param: ch - char to be checked
-*
-* Returns: 1 - symbol; 0 - numeric; -1 - others
-*/
-int Processor::characterType(char ch){
-	if (ch==DOT || ch==BACK_SLASH || ch==SLASH || ch==COLON || ch==DASH){
-		return 1;
-	}else if(ch>=ZERO && ch<=NINE){
-		return 0;
-	}else{
-		return -1;
-	}
 }
 
 /*

@@ -48,7 +48,7 @@ Processor::Processor(){
 * formatted string of feedback and with user command (including task)
 */
 string Processor::mainProcessor(string command){
-	command = toLowCaseString(command);
+	command = _interpreter.toLowerCase(command);
 	_wordsList->clear();
 	breakIntoStringVectorBySpace(command, *_wordsList);
 	if(_statusFlag == 0){
@@ -151,7 +151,7 @@ string Processor::displayCommandProcessor(){
 string Processor::updateCommandProcessor(){
 	int operationStatus;
 	if(_statusFlag == 1){
-		unsigned int choice = stringToInt(_wordsList->at(1));
+		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
 		if((choice <=_tempTaskList.size()) && choice > 0 && _wordsList->size()==2){
 			string title, comment;
 			BasicDateTime startingDateTime;
@@ -202,7 +202,7 @@ string Processor::updateCommandProcessor(){
 string Processor::removeCommandProcessor(){
 	int operationStatus;
 	if(_statusFlag == 2){
-		unsigned int choice = stringToInt(_wordsList->at(1));
+		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
 		if((choice <=_tempTaskList.size()) && choice > 0){
 			operationStatus=_logic.remove(_tempTaskList[choice-1]);
 		}
@@ -275,7 +275,7 @@ string Processor::markCommandProcessor(){
 string Processor::rescheduleCommandProcessor(){
 	int operationStatus;
 	if(_statusFlag == 4){
-		unsigned int choice = stringToInt(_wordsList->at(1));
+		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
 		if((choice <=_tempTaskList.size()) && choice > 0 && _wordsList->size()==2){
 			string title, comment;
 			BasicDateTime startingDateTime;
@@ -442,22 +442,6 @@ int Processor::breakIntoStringVectorBySpace(string longStr, vector<string>& outp
 }
 
 /*
-* Purpose: converts string into integer
-*
-* Param: str - string to be converted 
-*
-* Returns: integer converted; -1 if unable to convert
-*/
-int Processor::stringToInt(string str){
-	int num;
-	if ((stringstream(str)>>num)){
-		return num;
-	}else{
-		return -1;
-	}
-}
-
-/*
 * Purpose:Formats the user input which was previously separated
 * into vector into a string again
 *
@@ -592,18 +576,6 @@ string Processor::printStatus(bool status){
 	}else{
 		return "pending";
 	}
-}
-
-/*
-* Purpose:transform the string into lower case
-*
-* Param: str- string to be transformed
-*
-* Returns: string with lower case
-*/
-string Processor::toLowCaseString(string str){
-	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-	return str;
 }
 
 /*

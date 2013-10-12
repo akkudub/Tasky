@@ -34,26 +34,14 @@ private:
 	* Send the user's command to the Processor
 	*@param command - user input to be passed to Processor
 	*/
-	void displayProcessorMessage(string command,HANDLE hConsole);
+	void displayProcessorMessage(string command,HANDLE hConsole,bool& statusFlag);
 	/**
 	* Purpose:
 	* Display Closing Message before exiting the program
 	* Possible to save the tasks to the Log before exiting
 	*/
 	void displayExitMessage();
-	/** 
-	* Purpose:
-	* Checks if the user wishes to exit
-	* @param command - stores the user input 
-	* @return True- Exit, False - Do Not Exit
-	*/
-	bool shouldExit(string command);
-	/**
-	* Purpose:
-	* Converts the user command to lower casing
-	*@param str - string to be converted to lower case
-	*/
-	void convertLowerCase(string& str);
+	void setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs);
 public:
 	/**
 	* Purpose:

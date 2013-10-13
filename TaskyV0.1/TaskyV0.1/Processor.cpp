@@ -49,39 +49,40 @@ Processor::Processor(){
 * Returns: 
 * formatted string of feedback and with user command (including task)
 */
-string Processor::mainProcessor(string command){
-	command = _interpreter.toLowerCase(command);
+int Processor::UImainProcessor(string input, string& message, vector<string>& list){
+	input = _interpreter.toLowerCase(input);
 	_wordsList->clear();
-	breakIntoStringVectorBySpace(command, *_wordsList);
+	breakIntoStringVectorBySpace(input, *_wordsList);
 	string firstWord = _wordsList->at(0);
-	//while (firstWord != "exit"){
+	int statusCode = 0;
+	while (firstWord != "exit"){
 		if(_statusFlag == 0){
 			if(firstWord == "add"){
-				return addCommandProcessor();
+				statusCode = addCommandProcessor();
 			}else if(firstWord == "remove"){
-				return removeCommandProcessor();
+				statusCode = removeCommandProcessor();
 			}else if(firstWord == "display"){
-				return displayCommandProcessor();
+				statusCode = displayCommandProcessor();
 			}else if(firstWord == "update"){
-				return updateCommandProcessor();
+				statusCode = updateCommandProcessor();
 			}else if(firstWord == "reschedule"){
-				return rescheduleCommandProcessor();
+				statusCode = rescheduleCommandProcessor();
 			}else if(firstWord == "mark"){
-				return markCommandProcessor();
+				statusCode = markCommandProcessor();
 			}else if(firstWord == "search"){
-				return searchCommandProcessor();
+				statusCode = searchCommandProcessor();
 			}else{
-				return otherCommandProcessor();
+				statusCode = otherCommandProcessor();
 			}
 
 		}else if(_statusFlag == 1){
-			return updateCommandProcessor();
+			statusCode = updateCommandProcessor();
 		}else if(_statusFlag == 2){
-			return removeCommandProcessor();
+			statusCode = removeCommandProcessor();
 		}else if(_statusFlag == 3){
-			return markCommandProcessor();
+			statusCode = markCommandProcessor();
 		}
-	//}statusFlag = false;
+	}
 	return 	determineMsgToUI(saveFile());
 }
 
@@ -341,7 +342,6 @@ string Processor::searchCommandProcessor(){
 		operationStatus = _logic.searchKeywords(keywords, _tempTaskList);
 		return determineMsgToUI(operationStatus);
 	}else if(return_code == 2){
-		//problem 1: interpreter returning 2 copies of the keyword
 		//problem 2: logic has a vector subscript out of range exception
 		operationStatus = _logic.searchKeywordsInRange(keywords, _tempTaskList, start, end);
 		return determineMsgToUI(operationStatus);

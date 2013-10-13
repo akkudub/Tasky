@@ -209,6 +209,9 @@ vector<int> Interpreter::stringToIntVec(string str){
 			int temp=stringToInt(vecStr.at(i));
 			if (temp>=0){
 				vec.push_back(temp);
+			}else{
+				vec.clear();
+				return vec;
 			}
 		}
 	}else if(containChar(str, DASH)){
@@ -219,11 +222,12 @@ vector<int> Interpreter::stringToIntVec(string str){
 		}else{
 			int temp1=stringToInt(vecStr.at(0));
 			int temp2=stringToInt(vecStr.at(1));
-			if (temp1>=0 && temp2>temp1){
+			if (temp1>=0 && temp2>=temp1){
 				for (int i=temp1;i<=temp2; i++){
 					vec.push_back(i);
 				}
 			}else{
+				vec.clear();
 				return vec;
 			}
 		}

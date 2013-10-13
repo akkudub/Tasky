@@ -1,5 +1,5 @@
-#ifndef _LOGIC_H_
-#define _LOGIC_H_
+#ifndef _TASKLIST_H_
+#define _TASKLIST_H_
 
 /*
  *This class is mainly to store tasks and manipulate tasks according to processor's command.
@@ -10,12 +10,12 @@
 #include "Essential.h"
 #include "Task.h"
 
-class Logic{
+class TaskList{
 private:
 	vector<Task> _taskList;
 	
 public:
-	Logic();
+	TaskList();
 	/**
 	* Purpose:
 	* adds the task to the taskList. Pushes any tasks that clashes into the referenced vector

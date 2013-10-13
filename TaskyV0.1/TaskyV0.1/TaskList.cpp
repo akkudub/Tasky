@@ -1,15 +1,15 @@
-#include "Logic.h"
+#include "TaskList.h"
 #include <assert.h>
 
 static const int FLOATING_TASK = 0;
 static const int DEADLINE_TASK = 1;
 static const int NORMAL_TASK = 2;
 
-Logic::Logic(){
+TaskList::TaskList(){
 }
 
 
-int Logic::add(Task toAdd, vector<Task>& _temp){
+int TaskList::add(Task toAdd, vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -40,7 +40,7 @@ int Logic::add(Task toAdd, vector<Task>& _temp){
 }
 
 
-int Logic::remove(Task toRemove){
+int TaskList::remove(Task toRemove){
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
@@ -55,7 +55,7 @@ int Logic::remove(Task toRemove){
 
 
 
-int Logic::search(string searchLine, vector<Task>& _temp){
+int TaskList::search(string searchLine, vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -72,7 +72,7 @@ int Logic::search(string searchLine, vector<Task>& _temp){
 
 }
 
-int Logic::searchKeywords(vector<string> keywords, vector<Task>& _temp){
+int TaskList::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 
 	assert(!keywords.empty());
 
@@ -114,7 +114,7 @@ int Logic::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 
 }
 
-int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
+int TaskList::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
 
 	assert(!keywords.empty());
 
@@ -196,7 +196,7 @@ int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, B
 	return SUCCESS;
 }
 
-int Logic::displayAll(vector<Task>& _temp){
+int TaskList::displayAll(vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -209,7 +209,7 @@ int Logic::displayAll(vector<Task>& _temp){
 
 }
 
-int Logic::displayStatus(bool done, vector<Task>& _temp){
+int TaskList::displayStatus(bool done, vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -226,7 +226,7 @@ int Logic::displayStatus(bool done, vector<Task>& _temp){
 
 }
 
-int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+int TaskList::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -253,7 +253,7 @@ int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& 
 
 
 
-int Logic::update(Task existingTask, Task newTask, vector<Task>& _temp){
+int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -288,7 +288,7 @@ int Logic::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
 }
 
-int Logic::mark(bool mark, Task task){
+int TaskList::mark(bool mark, Task task){
 
 	if(task.getDone() == mark)
 		return MARK_WARNING_NO_CHANGE;
@@ -304,7 +304,7 @@ int Logic::mark(bool mark, Task task){
 }
 
 /*
-vector<Task>* Logic::returnTaskListPointer(){
+vector<Task>* TaskList::returnTaskListPointer(){
 return &(_taskList);
 }
 */

@@ -135,29 +135,27 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
 	int posQuote1=0, posQuote2=0;
+	bool fromToFlag=false, byFlag=false;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
-		if (str.size()==posQuote2+1){
-			type=0;
-		}else if (str.find(TO_KEY_WORD, posQuote2+1)!=std::string::npos){
-			type=extractDateTimeForReschdule(str.substr(posQuote2+4));
-			if (type==1){
-				end=_end;
-			}else if(type==2){
-				start=_start;
-				end=_end;
-			}else if(type!=0){
-				title=EMPTY_STRING;
-				return -1;
-			}
-		}else{
-			title=EMPTY_STRING;
-			return -1;
+		if (containSub(str, FROM_KEY_WORD)){
+		    fromToFlag=fromToCheck(str.substr(posQuote2+1));
+		}else if(containSub(str, BY_KEY_WORD)){
+		    byFlag=byCheck(str.substr(posQuote2+1));
 		}
 	}else{
-		title=EMPTY_STRING;
-		return -1;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
 	}
-	return 0;
+	if (fromToFlag){
+		start=_start;
+		end=_end;
+		type=2;
+	}else if(byFlag){
+		end=_end;
+		type=1;
+	}else{
+		type=0;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
 }
 
 //additional note here, we may change this method to make it more strict
@@ -183,9 +181,9 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 int Interpreter::interpretRemove(string str, string& title){
 	int num1, num2;
 	if (!extractTitle(str, title, num1, num2)){
-        return -1;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_REMOVE;
 	}
-	return 0;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE;
 }
 
 int Interpreter::stringToInt(string str){

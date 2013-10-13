@@ -41,10 +41,10 @@ class Processor{
 	*_fileProcessing: an instance of FileProcessing
 	*_wordList: a temporary way to help to parse command, will be changed later
 	*_statusFlag: 0--last operation ended properly;
-	*             1--update operation has not ended;
-	*             2--remove operation has not ended;
-	*             3--mard operation has not ended;
-	*			  4--rescedule operation has not ended;
+	*             1--remove operation has not ended;
+	*             2--update operation has not ended;
+	*             3--reschedule operation has not ended;
+	*			  4--mark operation has not ended;
 	*/
 private:
 	vector<Task> _tempTaskList; 
@@ -100,24 +100,27 @@ private:
 
 public:
 	Processor();
-	string mainProcessor(string); 
+	int UImainProcessor(string input, string& message, vector<string>& list);
+	int GUImainProcessor(string);
 	~Processor();
 
 private:
 	//level 1 abstraction
-	string addCommandProcessor();
-	string displayCommandProcessor();
-	string updateCommandProcessor();  
-	string rescheduleCommandProcessor();
-	string removeCommandProcessor();  
-	string markCommandProcessor();  
-	string searchCommandProcessor();
-	string undoCommandProcessor();
-	string otherCommandProcessor();
+	int addCommandProcessor();
+	int removeCommandProcessor();
+	int displayCommandProcessor();
+	int renameCommandProcessor();  
+	int rescheduleCommandProcessor();  
+	int markCommandProcessor();  
+	int searchCommandProcessor();
+	int undoCommandProcessor();
+	int otherCommandProcessor();
 	int saveFile();
 
+	int simpleReturn(int returnCode, string& message, vector<string>& list);
+
 	//for add command processing
-	string determineMsgToUI(int);
+	//string determineMsgToUI(int);
 	int addFloatingTask(string, string);//need to refactor to only create a task
 	int addDeadlineTask(string, BasicDateTime, string);//need to refactor to only create a task
 	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task
@@ -134,7 +137,7 @@ private:
 	string printTimedTask(Task);
 	string printStatus(bool);
 	string removeLeadingSpaces(string);
-	string combineStatusMsgWithFeedback(string);
+	string taskVecToStringVec(vector<string>& stringTasks);
 };
 
 #endif

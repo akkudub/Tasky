@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "Processor.h"
 
 const string Processor::EMPTY_STRING = "";
@@ -54,36 +55,45 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 	_wordsList->clear();
 	breakIntoStringVectorBySpace(input, *_wordsList);
 	string firstWord = _wordsList->at(0);
-	int statusCode = 0;
+	int returnCode = -1;
+	assert(_statusFlag >= 0 && _statusFlag < 5);
 	while (firstWord != "exit"){
-		if(_statusFlag == 0){
+		switch (_statusFlag){
+		case 0:
 			if(firstWord == "add"){
-				statusCode = addCommandProcessor();
+				returnCode = addCommandProcessor();
 			}else if(firstWord == "remove"){
-				statusCode = removeCommandProcessor();
+				returnCode = removeCommandProcessor();
 			}else if(firstWord == "display"){
-				statusCode = displayCommandProcessor();
+				returnCode = displayCommandProcessor();
 			}else if(firstWord == "update"){
-				statusCode = updateCommandProcessor();
+				returnCode = renameCommandProcessor();
 			}else if(firstWord == "reschedule"){
-				statusCode = rescheduleCommandProcessor();
+				returnCode = rescheduleCommandProcessor();
 			}else if(firstWord == "mark"){
-				statusCode = markCommandProcessor();
+				returnCode = markCommandProcessor();
 			}else if(firstWord == "search"){
-				statusCode = searchCommandProcessor();
+				returnCode = searchCommandProcessor();
 			}else{
-				statusCode = otherCommandProcessor();
+				returnCode = otherCommandProcessor();
 			}
+			break;
 
-		}else if(_statusFlag == 1){
-			statusCode = updateCommandProcessor();
-		}else if(_statusFlag == 2){
-			statusCode = removeCommandProcessor();
-		}else if(_statusFlag == 3){
-			statusCode = markCommandProcessor();
+		case 1:
+			returnCode = removeCommandProcessor();
+		case 2:
+			returnCode = renameCommandProcessor();
+		case 3:
+			returnCode = rescheduleCommandProcessor();
+		case 4:
+			returnCode = markCommandProcessor();
+		default:
+			break;
 		}
+
+		return simpleReturn(returnCode, message, list);
 	}
-	return 	determineMsgToUI(saveFile());
+	return saveFile();
 }
 
 //level 1 abstraction
@@ -96,8 +106,8 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 * Returns: 
 * Message if task is successfully added (or not with reason)
 */
-string Processor::addCommandProcessor(){
-	int addOperationStatus, type;
+int Processor::addCommandProcessor(){
+	int type;
 	string title, comment;
 	BasicDateTime startingDateTime;
 	BasicDateTime endingDateTime;
@@ -107,20 +117,54 @@ string Processor::addCommandProcessor(){
 
 	switch (type){
 	case 0:
-		addOperationStatus=addFloatingTask(title, comment);
-		return determineMsgToUI(addOperationStatus);
+		return addFloatingTask(title, comment);
 		break;
 	case 1:
-		addOperationStatus=addDeadlineTask(title, endingDateTime, comment);
-		return determineMsgToUI(addOperationStatus);
+		return addDeadlineTask(title, endingDateTime, comment);
 		break;
 	case 2:
-		addOperationStatus=addNormalTask(title, startingDateTime, endingDateTime, comment);
-		return determineMsgToUI(addOperationStatus);
+		return addNormalTask(title, startingDateTime, endingDateTime, comment);
 		break;
 	default:
-		return determineMsgToUI(-1);
+		return ERROR_ADD;
 	}
+}
+
+/*
+* Purpose: Remove task (from search results)
+*
+* Returns: 
+* Task successfully removed; Ask user to choose task to remove; No such task found
+*/
+int Processor::removeCommandProcessor(){
+	int operationStatus;
+	if(_statusFlag == 1){
+		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
+		if((choice <=_tempTaskList.size()) && choice > 0){
+			operationStatus=_logic.remove(_tempTaskList[choice-1]);
+		}
+		_statusFlag = 0;
+		return operationStatus;
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			vector<string> keywords;
+			_interpreter.interpretRemove(user_command, _tempTitle);
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(_tempTitle, keywords);
+			_logic.searchKeywords(keywords, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				return _logic.remove(_tempTaskList[0]);
+
+			}else if(!_tempTaskList.empty()){
+				_statusFlag = 1;
+				return PROMPT_REMOVE_CHOOSE;
+			}else if(_tempTaskList.empty()){
+				return WARNING_SEARCH_NO_RESULT;
+			}
+		}
+	}
+	return ERROR_REMOVE;
 }
 
 /*
@@ -129,33 +173,32 @@ string Processor::addCommandProcessor(){
 * Returns: 
 * Tasks of type; Unable to display
 */
-string Processor::displayCommandProcessor(){
+int Processor::displayCommandProcessor(){
 	string user_command;
 	BasicDateTime start, end;
 	bool status;
-	int OperationStatus;
 	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
 	int return_code = _interpreter.interpretDisplay(user_command, start, end, status);
 	if (return_code == 0){
-		OperationStatus = _logic.displayAll(_tempTaskList);
-		return determineMsgToUI(OperationStatus);
+		return _logic.displayAll(_tempTaskList);
+
 	}else if (return_code == 1){
-		OperationStatus = _logic.displayStatus(status, _tempTaskList);
-		return determineMsgToUI(OperationStatus);
+		return _logic.displayStatus(status, _tempTaskList);
+
 	}else if(return_code == 2){
-		OperationStatus = _logic.displayInRange(start, end, _tempTaskList);
-		return determineMsgToUI(OperationStatus);
+		return _logic.displayInRange(start, end, _tempTaskList);
+
 	}else{
-		return determineMsgToUI(-1);
+		return ERROR_DISPLAY;
 	}
 
 }
 
 //pass the created task and the task in the vector at position
 //create a new vector and pass in that for new clashes
-string Processor::updateCommandProcessor(){
+int Processor::renameCommandProcessor(){
 	int operationStatus;
-	if(_statusFlag == 1){
+	if(_statusFlag == 2){
 		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
 		if((choice <=_tempTaskList.size()) && choice > 0 && _wordsList->size()==2){
 			string title, comment;
@@ -170,7 +213,7 @@ string Processor::updateCommandProcessor(){
 		}
 
 		_statusFlag = 0;
-		return determineMsgToUI(operationStatus);
+		return operationStatus;
 
 	}else if(_statusFlag == 0){
 		if(_wordsList->size()>1){
@@ -178,108 +221,29 @@ string Processor::updateCommandProcessor(){
 			string oldTitle;
 			vector<string> keywords;
 			vector<Task> clash;
-			_interpreter.interpretUpdate(user_command, oldTitle, _tempTitle);
+			_interpreter.interpretRename(user_command, oldTitle, _tempTitle);
 			_tempTaskList.clear();
 			breakIntoStringVectorBySpace(oldTitle, keywords);
 			_logic.searchKeywords(keywords, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				Task t = _tempTaskList[0];
 				t.setTitle(_tempTitle);
-				operationStatus=_logic.update(_tempTaskList[0], t, clash);
-				return determineMsgToUI(operationStatus);
-			}else if(!_tempTaskList.empty()){
-				_statusFlag = 1;
-				return UPDATE_CHOOSE_TASK;
-			}else if(_tempTaskList.empty()){
-				return NO_SUCH_TASK;
-			}
-		}
-	}
-	return EMPTY_STRING;
-}
+				return _logic.update(_tempTaskList[0], t, clash);
 
-/*
-* Purpose: Remove task (from search results)
-*
-* Returns: 
-* Task successfully removed; Ask user to choose task to remove; No such task found
-*/
-string Processor::removeCommandProcessor(){
-	int operationStatus;
-	if(_statusFlag == 2){
-		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
-		if((choice <=_tempTaskList.size()) && choice > 0){
-			operationStatus=_logic.remove(_tempTaskList[choice-1]);
-		}
-		_statusFlag = 0;
-		return determineMsgToUI(operationStatus);
-	}else if(_statusFlag == 0){
-		if(_wordsList->size()>1){
-			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-			vector<string> keywords;
-			_interpreter.interpretRemove(user_command, _tempTitle);
-			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_logic.searchKeywords(keywords, _tempTaskList);
-			if (_tempTaskList.size() == 1){
-				operationStatus=_logic.remove(_tempTaskList[0]);
-				return determineMsgToUI(operationStatus);
 			}else if(!_tempTaskList.empty()){
 				_statusFlag = 2;
-				return REMOVE_CHOOSE_TASK;
+				return PROMPT_RENAME_CHOOSE;
 			}else if(_tempTaskList.empty()){
-				return NO_SUCH_TASK;
+				return WARNING_SEARCH_NO_RESULT;
 			}
 		}
 	}
-	return EMPTY_STRING;
+	return ERROR_UPDATE;
 }
 
-/*
-* Purpose: Mark Task as Done/Pending (from search results)
-*
-* Returns: 
-* Task is marked; Ask user to choose task to mark from results; No such task found
-*/
-string Processor::markCommandProcessor(){
+int Processor::rescheduleCommandProcessor(){
 	int operationStatus;
 	if(_statusFlag == 3){
-		//stringtointvec doenst seem to be working
-		vector<int> choice = _interpreter.stringToIntVec(_wordsList->at(1));
-
-		if(choiceIsValid(choice)){
-			for (unsigned int i = 0; i < choice.size(); i++){
-				operationStatus=_logic.mark(_tempStatus, _tempTaskList[choice[i]]);
-			}
-		}
-		_statusFlag = 0;
-		return determineMsgToUI(operationStatus);
-	}else if(_statusFlag == 0){
-		if(_wordsList->size()>1){
-			vector<string> keywords;
-			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-			_interpreter.interpretMark(user_command, _tempTitle, _tempStatus);
-			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_logic.searchKeywords(keywords, _tempTaskList);
-			if (_tempTaskList.size() == 1){
-				operationStatus=_logic.mark(_tempStatus, _tempTaskList[0]);
-				return determineMsgToUI(operationStatus);
-			}	
-			else if(!_tempTaskList.empty()){
-				_statusFlag = 3;
-				return MARK_CHOOSE_TASK;
-			}else if(_tempTaskList.empty()){
-				return NO_SUCH_TASK;
-			}
-		}
-	}
-	return EMPTY_STRING;
-}
-
-string Processor::rescheduleCommandProcessor(){
-	int operationStatus;
-	if(_statusFlag == 4){
 		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
 		if((choice <=_tempTaskList.size()) && choice > 0 && _wordsList->size()==2){
 			string title, comment;
@@ -296,7 +260,7 @@ string Processor::rescheduleCommandProcessor(){
 		}
 
 		_statusFlag = 0;
-		return determineMsgToUI(operationStatus);
+		return operationStatus;
 
 	}else if(_statusFlag == 0){
 		if(_wordsList->size()>1){
@@ -315,19 +279,62 @@ string Processor::rescheduleCommandProcessor(){
 				t.setStartDate(_tempStart);
 				t.setEndDate(_tempEnd);
 				t.setType(_tempType);
-				operationStatus=_logic.update(_tempTaskList[0], t, clash);
-				return determineMsgToUI(operationStatus);
+				return _logic.update(_tempTaskList[0], t, clash);
+
 			}else if(!_tempTaskList.empty()){
-				_statusFlag = 1;
-				return UPDATE_CHOOSE_TASK;
+				_statusFlag = 3;
+				return PROMPT_RESCHEDULE_CHOOSE;
 			}else if(_tempTaskList.empty()){
-				return NO_SUCH_TASK;
+				return WARNING_SEARCH_NO_RESULT;
 			}
 		}
 	}
-	return EMPTY_STRING;
+	return ERROR_UPDATE;
 }
-string Processor::searchCommandProcessor(){
+
+/*
+* Purpose: Mark Task as Done/Pending (from search results)
+*
+* Returns: 
+* Task is marked; Ask user to choose task to mark from results; No such task found
+*/
+int Processor::markCommandProcessor(){
+	int operationStatus;
+	if(_statusFlag == 4){
+		//stringtointvec doenst seem to be working
+		vector<int> choice = _interpreter.stringToIntVec(_wordsList->at(1));
+
+		if(choiceIsValid(choice)){
+			for (unsigned int i = 0; i < choice.size(); i++){
+				operationStatus=_logic.mark(_tempStatus, _tempTaskList[choice[i]]);
+			}
+		}
+		_statusFlag = 0;
+		return operationStatus;
+	}else if(_statusFlag == 0){
+		if(_wordsList->size()>1){
+			vector<string> keywords;
+			string user_command=combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
+			_interpreter.interpretMark(user_command, _tempTitle, _tempStatus);
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(_tempTitle, keywords);
+			_logic.searchKeywords(keywords, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				return _logic.mark(_tempStatus, _tempTaskList[0]);
+			}	
+			else if(!_tempTaskList.empty()){
+				_statusFlag = 4;
+				return PROMPT_MARK_CHOOSE;
+			}else if(_tempTaskList.empty()){
+				return WARNING_SEARCH_NO_RESULT;
+			}
+		}
+	}
+	return ERROR_MARK;
+}
+
+
+int Processor::searchCommandProcessor(){
 	vector<string> keywords;
 	string user_command;
 	BasicDateTime start, end;
@@ -339,31 +346,34 @@ string Processor::searchCommandProcessor(){
 	int return_code = _interpreter.interpretSearch(user_command, keywords, start, end);
 
 	if (return_code == 0){
-		operationStatus = _logic.searchKeywords(keywords, _tempTaskList);
-		return determineMsgToUI(operationStatus);
+		return _logic.searchKeywords(keywords, _tempTaskList);
+
 	}else if(return_code == 2){
-		//problem 2: logic has a vector subscript out of range exception
-		operationStatus = _logic.searchKeywordsInRange(keywords, _tempTaskList, start, end);
-		return determineMsgToUI(operationStatus);
+		return _logic.searchKeywordsInRange(keywords, _tempTaskList, start, end);
+
 	}else{
-		return determineMsgToUI(-1);
+		return ERROR_SEARCH;
 	}
 
 }
 
 
-string Processor::otherCommandProcessor(){
-	return WRONG_INPUT;
+int Processor::otherCommandProcessor(){
+	return WARNING_WRONG_INPUT;
 }
 
 int Processor::saveFile(){
-		vector<Task> allTasks;
-		vector<string> allTasksString;
-		_logic.displayAll(allTasks);
-		for (unsigned int i = 0; i < allTasks.size(); i++){
-			allTasksString.push_back(taskToString(allTasks[i]));
-		}
-		return _fileProcessing.save(allTasksString);
+	vector<Task> allTasks;
+	vector<string> allTasksString;
+	_logic.displayAll(allTasks);
+	for (unsigned int i = 0; i < allTasks.size(); i++){
+		allTasksString.push_back(taskToString(allTasks[i]));
+	}
+	return _fileProcessing.save(allTasksString);
+}
+
+int Processor::simpleReturn(int returnCode, string&message, vector<string>& list){
+
 }
 
 bool Processor::choiceIsValid(vector<int> choice){
@@ -388,18 +398,20 @@ bool Processor::choiceIsValid(vector<int> choice){
 * Returns: 
 * formatted string of feedback and with user command (including task)
 */
-string Processor::determineMsgToUI(int statusReturnedFromLogic){
-	switch (statusReturnedFromLogic){
-	case STATUS_CODE_SET::SUCCESS:
+int Processor::simpleReturn(int returnCode, string& message, vector<string>& list){
+	
+	switch (returnCode){
+	case STATUS_CODE_SET_SUCCESS::SUCCESS_ADD:
+		message = 
 		return combineStatusMsgWithFeedback(ADD_TASK_SUCCESS);
 		break;
-	case STATUS_CODE_SET::ADD_FAILURE_DUPLICATE:
+	case STATUS_CODE_SET_SUCCESS::SUCCESS_REMOVE:
 		return combineStatusMsgWithFeedback(ADD_TASK_FAILURE_DUPLICATE);
 		break;
-	case STATUS_CODE_SET::ADD_WARNING_CLASH:
+	case STATUS_CODESTATUS_CODE_SET_SUCCESS_SET::SUCCESS_DISPLAY:
 		return combineStatusMsgWithFeedback(ADD_TASK_WARNING_CLASH);
 		break;
-	case STATUS_CODE_SET::ADD_FAILURE:
+	case STATUS_CODE_SET_SUCCESS::SUCCESS_UPDATE:
 		return combineStatusMsgWithFeedback(ADD_TASK_FAILURE_UNEXPECTED);
 		break;
 	default:
@@ -636,12 +648,11 @@ string Processor::removeLeadingSpaces(string str){
 *
 * Returns: formatted status message of adding task
 */
-string Processor::combineStatusMsgWithFeedback(string msg){
-	string feedback=msg;
+string Processor::taskVecToStringVec(vector<string>& stringTasks){
 	int size=_tempTaskList.size();
-
-	for (int i=0;i<size;i++){
-		feedback=combineStringsWithNewLine(feedback, taskToString(_tempTaskList.at(i)));
+	stringTasks.push_back(taskToString(_tempTaskList.at(0)));
+	for (int i=1;i<size;i++){
+		stringTasks.push_back(taskToString(_tempTaskList.at(i)));
 	}
 
 	return feedback;

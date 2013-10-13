@@ -21,7 +21,7 @@ private:
 	static const string DASH_M;
 	static const string PENDING_KEY_WORD;
 	static const string DONE_KEY_WORD;
-	static const string UPDATE_KEY_WORD;
+	static const string RENAME_KEY_WORD;
 	static const string ALL_KEY_WORD;
 	static const string THIS_KEY_WORD;
 	static const string NEXT_KEY_WORD;
@@ -141,6 +141,8 @@ private:
 	string removeSpacesFromBothEnds(string str);
 	int findFirstOfWord(const string& source, const string& word);
 	int findLastOfWord(const string& source, const string& word);
+	bool containSub(string input, string sub);
+	bool containChar(string input, char ch);
 };
 
 #endif

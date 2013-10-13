@@ -9,7 +9,7 @@ const string Interpreter::BY_KEY_WORD = "by ";
 const string Interpreter::DASH_M = "-m";
 const string Interpreter::PENDING_KEY_WORD = "pending";
 const string Interpreter::DONE_KEY_WORD = "done";
-const string Interpreter::UPDATE_KEY_WORD = "' to '";
+const string Interpreter::RENAME_KEY_WORD = "' to '";
 const string Interpreter::ALL_KEY_WORD = "all";
 const string Interpreter::TODAY_KEY_WORD = "today";
 const string Interpreter::TOMORROW_KEY_WORD = "tomorrow";
@@ -117,8 +117,8 @@ int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTim
 
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
 	int posQuote1=0, posKey=0, posQuote2=0;
-	if (str.find(UPDATE_KEY_WORD)==str.find(UPDATE_KEY_WORD)){
-		posKey=str.find(UPDATE_KEY_WORD);
+	if (str.find(RENAME_KEY_WORD)==str.find(RENAME_KEY_WORD)){
+		posKey=str.find(RENAME_KEY_WORD);
 		posQuote1=str.find_first_of(SINGLE_QUOTE);
 		posQuote2=str.find_last_of(SINGLE_QUOTE);
 		if (posQuote2-posQuote1<=5){
@@ -130,7 +130,7 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 	}else{
 		return -1;
 	}
-	return STATUS_CODE_SET::SUCCESS;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME;
 }
 
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
@@ -185,51 +185,54 @@ int Interpreter::interpretRemove(string str, string& title){
 	if (!extractTitle(str, title, num1, num2)){
         return -1;
 	}
-	return STATUS_CODE_SET::SUCCESS;
+	return 0;
 }
 
 int Interpreter::stringToInt(string str){
-	int num;
-	if ((stringstream(str)>>num)){
-		return num;
-	}else{
-		return -1;
+	int num=0;
+	int size=str.size();
+	for (int i=0;i<size;i++){
+		if (str[i]>='0' && str[i]<='9'){
+			num=num*10+str[i]-'0';
+		}else{
+			return -1;
+		}
 	}
+	return num;
 }
 
 vector<int> Interpreter::stringToIntVec(string str){
 	vector<int> vec;
 	vector<string> vecStr;
-	if (!std::regex_match(str, reg1)){
-		return vec;
-	}else if(std::regex_match(str, reg2)){
+	if (containChar(str, COMMA)){
+		vecStr=breakStringWithDelim(str, COMMA);
+		int size=vecStr.size();
+		for (int i=0;i<size;i++){
+			int temp=stringToInt(vecStr.at(i));
+			if (temp>=0){
+				vec.push_back(temp);
+			}
+		}
+	}else if(containChar(str, DASH)){
 		vecStr=breakStringWithDelim(str, DASH);
 		int size=vecStr.size();
 		if (size!=2){
 			return vec;
 		}else{
-			int num1=stringToInt(vecStr.at(0)), num2=stringToInt(vecStr.at(1));
-			if (num1<=0){
-                return vec;
-			}else if(num1>=num2){
-				return vec;
-			}else{
-				for (int i=num1;i<=num2;i++){
+			int temp1=stringToInt(vecStr.at(0));
+			int temp2=stringToInt(vecStr.at(1));
+			if (temp1>=0 && temp2>temp1){
+				for (int i=temp1;i<=temp2; i++){
 					vec.push_back(i);
 				}
-			}
-		}
-    } else{
-		vecStr=breakStringWithDelim(str, COMMA);
-		int size=vecStr.size();
-		for (int i=0;i<size;i++){
-			int tempInt=stringToInt(vecStr.at(i));
-			if (tempInt!=-1){
-				vec.push_back(tempInt);
 			}else{
-				vec.clear();
 				return vec;
 			}
+		}
+	}else{
+		int temp=stringToInt(str);
+		if (temp!=-1){
+			vec.push_back(temp);
 		}
 	}
 	return vec;
@@ -538,6 +541,14 @@ int Interpreter::findLastOfWord(const string& source, const string& word){
 		num=source.find(word, num+1);
 	}
 	return prev;
+}
+
+bool Interpreter::containSub(string input, string sub){
+	return input.find(sub)!=std::string::npos;
+}
+	
+bool Interpreter::containChar(string input, char ch){
+	return input.find(ch)!=std::string::npos;
 }
 
 Interpreter::~Interpreter(){

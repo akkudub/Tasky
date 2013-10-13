@@ -77,7 +77,7 @@ public:
 	 *@param newTitle (string reference) will have the extracted the second quoted string
 	 *@return int status code--will be further defined later, right now -1 means failure and 0 means success
 	 */
-	int interpretUpdate(string str, string& oldTitle, string& newTitle);
+	int interpretRename(string str, string& oldTitle, string& newTitle);
 	/**
 	 *@param str (string) input from processor
 	 *@param title (string reference) will have the value of the extracted quoted string
@@ -86,7 +86,7 @@ public:
 	 *@param end (BasicDateTime reference) will be changed if the input date time format is right
 	 *@return int status code--0: success; -1: failure
 	 */
-	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);  //does not work
 	/**
 	 *@param str (string) input from processor
 	 *@param title (string reference) will have the value of the extracted quoted string
@@ -110,7 +110,7 @@ public:
 	 *@param str (string) input string
 	 *@return a vector of integers
 	 */
-	vector<int> stringToIntVec(string str);
+	vector<int> stringToIntVec(string str);  //does not work
 	/**
 	 *@param input (string)
 	 *@return string of the input string 

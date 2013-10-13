@@ -115,7 +115,7 @@ int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTim
 	}
 }
 
-int Interpreter::interpretUpdate(string str, string& oldTitle, string& newTitle){
+int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
 	int posQuote1=0, posKey=0, posQuote2=0;
 	if (str.find(UPDATE_KEY_WORD)==str.find(UPDATE_KEY_WORD)){
 		posKey=str.find(UPDATE_KEY_WORD);
@@ -200,7 +200,6 @@ int Interpreter::stringToInt(string str){
 vector<int> Interpreter::stringToIntVec(string str){
 	vector<int> vec;
 	vector<string> vecStr;
-	std::regex reg1("[0-9,]"), reg2("[0-9-]");
 	if (!std::regex_match(str, reg1)){
 		return vec;
 	}else if(std::regex_match(str, reg2)){

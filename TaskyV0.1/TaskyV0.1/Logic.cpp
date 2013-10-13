@@ -136,7 +136,7 @@ int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, B
 			}
 		}
 
-		if(duplicateTaskList[i].getType() == DEADLINE_TASK){
+		else if(duplicateTaskList[i].getType() == DEADLINE_TASK){
 
 			if(duplicateTaskList[i].getTitle() == keywords[0] && duplicateTaskList[i].getEnd().compareTo(start) >= 0 
 				&& duplicateTaskList[i].getEnd().compareTo(end) <= 0){
@@ -158,7 +158,7 @@ int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, B
 			}
 		}
 
-		if(duplicateTaskList[i].getType() == DEADLINE_TASK){
+		else if(duplicateTaskList[i].getType() == DEADLINE_TASK){
 			if(duplicateTaskList[i].getTitle().find(keywords[0]) != std::string::npos && duplicateTaskList[i].getEnd().compareTo(start) >= 0 
 				&& duplicateTaskList[i].getEnd().compareTo(end) <= 0){
 					_temp.push_back(duplicateTaskList[i]);
@@ -179,7 +179,7 @@ int Logic::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, B
 					j--;
 				}
 			}
-			if(duplicateTaskList[j].getType() == DEADLINE_TASK){
+			else if(duplicateTaskList[j].getType() == DEADLINE_TASK){
 				if(duplicateTaskList[j].getTitle().find(keywords[0]) != std::string::npos && duplicateTaskList[j].getEnd().compareTo(start) >= 0 
 					&& duplicateTaskList[j].getEnd().compareTo(end) <= 0){
 						_temp.push_back(duplicateTaskList[j]);
@@ -241,7 +241,7 @@ int Logic::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& 
 				_temp.push_back(_taskList[i]);
 			}
 		}
-		if(_taskList[i].getType() == DEADLINE_TASK){
+		else if(_taskList[i].getType() == DEADLINE_TASK){
 			if(_taskList[i].getEnd().compareTo(start) >= 0 && _taskList[i].getEnd().compareTo(end) <= 0){
 				_temp.push_back(_taskList[i]);
 			}

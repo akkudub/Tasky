@@ -39,7 +39,6 @@ public:
 	* @return Success in writing file; failure in writing file
 	*/
 	int save(vector<string>& data); //reads vector, writes to text file
-
 };
 
 #endif

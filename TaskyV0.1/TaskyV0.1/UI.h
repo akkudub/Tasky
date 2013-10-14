@@ -22,7 +22,7 @@ private:
 	* Displays a welcome message to the user
 	* Displays the tasks of the day/pending tasks
 	*/
-	void displayWelcomeMessage();	//should display welcome messages + task of the day
+	void displayWelcomeMessage(HANDLE hConsole);	//should display welcome messages + task of the day
 	/**
 	* Purpose:
 	* Takes in user command & put into string command

@@ -4,7 +4,7 @@
 int FileProcessing::load(vector<string>& data){
 	ifstream input(_LOGNAME);
 	if(!input.is_open()) {
-		return LOAD_FAILURE_OPENFILE;
+		return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
 	} else {
 		if (input.good()) {
 			if (!emptyFile()) {
@@ -19,11 +19,11 @@ int FileProcessing::load(vector<string>& data){
 				return LOAD_WARNING_EMPTYFILE;	
 			}
 		} else {
-			return LOAD_FAILURE_OPENFILE;
+			return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
 		}
 	}
 	input.close();
-	return SUCCESS;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
 }
 
 
@@ -41,10 +41,10 @@ int FileProcessing::save(vector<string>& data){
 		}
 	} else {
 		output.close();
-		return SAVE_FAILURE_SAVEFILE;
+		return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;
 	}
 	output.close();
-	return SUCCESS;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
 }
 
 

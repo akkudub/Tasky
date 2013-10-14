@@ -9,14 +9,16 @@
 */
 
 #include "Essential.h"
+#include "HistoryCommand.h"
+
 
 ///record past sucessful operations and pop the last one when undo called
-
 class History{
 private:
 	static const int CHANGE_IN_HISTORY_SIZE = 1;
-private:
-	vector<string> _historyRecord; //formatted strings from Processor
+	static const int HISTORY_MAX_SIZE = 5;
+	vector<HistoryCommand> _undoRecord;
+	vector<HistoryCommand> _redoRecord;
 	
 public:
 	/**
@@ -30,13 +32,13 @@ public:
 	* @param hist - last action done will be passed back to calling function via this referenced string
 	* @return Success in retrival; Empty records, nothing to be undone; Failure
 	*/
-	int undo(string& hist);
+	int undo(HistoryCommand& hist);
 	/* Purpose:
 	* saves the successful action into vectory of history records
 	* @param hist - string containing successful user action preformed
 	*@return Success in putting the record into history; Failure
 	*/
-	int record(string hist);
+	int record(HistoryCommand hist);
 	
 };
 

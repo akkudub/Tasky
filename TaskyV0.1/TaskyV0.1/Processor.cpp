@@ -17,15 +17,22 @@ const string Processor::MESSAGE_ARRAY [] = {
 	MESSAGE_SUCCESS_ADD,
 	MESSAGE_SUCCESS_REMOVE,
 	MESSAGE_SUCCESS_DISPLAY,
-	MESSAGE_SUCCESS_RENAME,
-	MESSAGE_SUCCESS_RESCHEDULE,
+	MESSAGE_SUCCESS_UPDATE,
+	MESSAGE_SUCCESS_RESHCEDULE,
 	MESSAGE_SUCCESS_MARK,
 	MESSAGE_SUCCESS_SEARCH,
-	MESSAGE_SUCCESS_UNDO,
 	MESSAGE_SUCCESS_LOAD,
 	MESSAGE_SUCCESS_SAVE,
-	MESSAGE_SUCCESS_RECORD,
+	MESSAGE_SUCCESS_UNDO,
 	MESSAGE_SUCCESS_REDO,
+	MESSAGE_SUCCESS_RECORD,
+	MESSAGE_SUCCESS_INTERPRET_ADD,
+	MESSAGE_SUCCESS_INTERPRET_REMOVE,
+	MESSAGE_SUCCESS_INTERPRET_DISPLAY,
+	MESSAGE_SUCCESS_INTERPRET_RENAME,
+	MESSAGE_SUCCESS_INTERPRET_RESCHEDULE,	
+	MESSAGE_SUCCESS_INTERPRET_MARK,
+	MESSAGE_SUCCESS_INTERPRET_SEARCH,
 
 	MESSAGE_WARNING_ADD_CLASH,	
 	MESSAGE_WARNING_ADD_DUPLICATE,
@@ -35,24 +42,36 @@ const string Processor::MESSAGE_ARRAY [] = {
 	MESSAGE_WARNING_MARK_NO_CHANGE,
 	MESSAGE_WARNING_SEARCH_NO_RESULT,
 	MESSAGE_WARNING_UNDO_NO_TASKS,
+	MESSAGE_WARNING_LOAD_EMPTY_FILE,	
+	MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE,
 	MESSAGE_WARNING_WRONG_INPUT,
 
 	MESSAGE_ERROR_ADD,
 	MESSAGE_ERROR_REMOVE,
 	MESSAGE_ERROR_DISPLAY,
-	MESSAGE_ERROR_RENAME,
-	MESSAGE_ERROR_RESCHEDULE,
+	MESSAGE_ERROR_UPDATE,
 	MESSAGE_ERROR_MARK,
 	MESSAGE_ERROR_SEARCH,
 	MESSAGE_ERROR_UNDO,
-	MESSAGE_ERROR_RECORD,
 	MESSAGE_ERROR_LOAD_OPENFILE,
 	MESSAGE_ERROR_SAVE_SAVEFILE,
+	MESSAGE_ERROR_RECORD,
+	MESSAGE_ERROR_INTERPRET_EMPTY_INPUT,
+	MESSAGE_ERROR_INTERPRET_TITLE_FORMAT,
+	MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT,
+	MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD,
+	MESSAGE_ERROR_INTERPRET_ADD,
+	MESSAGE_ERROR_INTERPRET_REMOVE,
+	MESSAGE_ERROR_INTERPRET_DISPLAY,
+	MESSAGE_ERROR_INTERPRET_RENAME,	
+	MESSAGE_ERROR_INTERPRET_RESCHEDULE,
+	MESSAGE_ERROR_INTERPRET_MARK,
+	MESSAGE_ERROR_INTERPRET_SEARCH,
 
 	MESSAGE_PROMPT_REMOVE_CHOOSE,
 	MESSAGE_PROMPT_RENAME_CHOOSE,
 	MESSAGE_PROMPT_RESCHEDULE_CHOOSE,
-	MESSAGE_PROMPT_MARK_CHOOSE
+	MESSAGE_PROMPT_MARK_CHOOSE,
 };
 
 const string Processor::MESSAGE_OVERALL_SUCCESS =		"Success!";
@@ -64,37 +83,56 @@ const string Processor::MESSAGE_OVERALL_EXIT =			"The program will now exit, Goo
 const string Processor::MESSAGE_SUCCESS_ADD =			"Success! Task added";
 const string Processor::MESSAGE_SUCCESS_REMOVE =		"Success! Task removed";
 const string Processor::MESSAGE_SUCCESS_DISPLAY =		"Success! Tasks displayed";
-const string Processor::MESSAGE_SUCCESS_RENAME =		"Success! Task renamed";
-const string Processor::MESSAGE_SUCCESS_RESCHEDULE =	"Success! Task rescheduled";
+const string Processor::MESSAGE_SUCCESS_UPDATE =		"Success! Task updated";
+const string Processor::MESSAGE_SUCCESS_RESHCEDULE =	"Success! Task rescheduled";
 const string Processor::MESSAGE_SUCCESS_MARK =			"Success! Task(s) marked";
 const string Processor::MESSAGE_SUCCESS_SEARCH =		"Success! Search successful";
-const string Processor::MESSAGE_SUCCESS_UNDO =			"Success! Undo successful";
 const string Processor::MESSAGE_SUCCESS_LOAD =			"Success! File loaded";
 const string Processor::MESSAGE_SUCCESS_SAVE =			"Success! File saved";
-const string Processor::MESSAGE_SUCCESS_RECORD =		"Success! Previous action recorded";
+const string Processor::MESSAGE_SUCCESS_UNDO =			"Success! Undo successful";
 const string Processor::MESSAGE_SUCCESS_REDO =			"Success! Redo successful";
+const string Processor::MESSAGE_SUCCESS_RECORD =		"Success! Previous action recorded";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_ADD = "Success! Interpreted add";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_REMOVE = "Success! Interpreted remove";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_DISPLAY = "Success! Interpreted display";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_RENAME = "Success! Interpreted rename";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_RESCHEDULE = "Success! Interpreted reschedule";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_MARK = "Success! Interpreted mark";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_SEARCH = "Success! Interpreted search";
 
 const string Processor::MESSAGE_WARNING_ADD_CLASH =		"Warning! Task clashes with existing ones";
 const string Processor::MESSAGE_WARNING_ADD_DUPLICATE = "Warning! Task already exists";
-const string Processor::MESSAGE_WARNING_UPDATE_SAME =	"Warning! The new data is the same as the old data";
-const string Processor::MESSAGE_WARNING_UPDATE_CLASH =	"Warning! The new data will make the task clash with the following";
-const string Processor::MESSAGE_WARNING_SEARCH_NO_RESULT = "Warning! No such task";
 const string Processor::MESSAGE_WARNING_DISPLAY_NO_RESULT = "Warning! No tasks match the parameters";
+const string Processor::MESSAGE_WARNING_UPDATE_SAME =	"Warning! The new data is the same as the old data";
+const string Processor::MESSAGE_WARNING_UPDATE_CLASH =	"Warning! The new data will make the task clash with the following:";
 const string Processor::MESSAGE_WARNING_MARK_NO_CHANGE = "Warning! There is no change in the status";
+const string Processor::MESSAGE_WARNING_SEARCH_NO_RESULT = "Warning! No such task";
 const string Processor::MESSAGE_WARNING_UNDO_NO_TASKS = "Warning! There is nothing to undo";
+const string Processor::MESSAGE_WARNING_LOAD_EMPTY_FILE = "Warning! The file being loaded is empty";	
+const string Processor::MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE = "Warning! No title interpreted";
 const string Processor::MESSAGE_WARNING_WRONG_INPUT =	"Warning! Wrong input";
 
 const string Processor::MESSAGE_ERROR_ADD =				"Error! Unexpected error while adding task";
 const string Processor::MESSAGE_ERROR_REMOVE =			"Error! Unexpected error while removing task" ;
 const string Processor::MESSAGE_ERROR_DISPLAY =			"Error! Unexpected error while displaying tasks";
-const string Processor::MESSAGE_ERROR_RENAME =			"Error! Unexpected error while renaming task";
-const string Processor::MESSAGE_ERROR_RESCHEDULE =		"Error! Unexpected error while rescheduling task";
+const string Processor::MESSAGE_ERROR_UPDATE =		"Error! Unexpected error while rescheduling task";
 const string Processor::MESSAGE_ERROR_MARK =			"Error! Unexpected error while marking task(s)";
 const string Processor::MESSAGE_ERROR_SEARCH =			"Error! Unexpected error while searching for tasks";
 const string Processor::MESSAGE_ERROR_UNDO =			"Error! Unexpected error while adding task";
-const string Processor::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
 const string Processor::MESSAGE_ERROR_LOAD_OPENFILE =	"Error! Unexpected error while loading file";
 const string Processor::MESSAGE_ERROR_SAVE_SAVEFILE =	"Error! Unexpected error while saving to file";
+const string Processor::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
+const string Processor::MESSAGE_ERROR_INTERPRET_EMPTY_INPUT = "Error! Empty input";
+const string Processor::MESSAGE_ERROR_INTERPRET_TITLE_FORMAT = "Error! Invalid title format";
+const string Processor::MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT = "Error! Invalid datetime format";
+const string Processor::MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD = "Error! Missing Keyword";
+const string Processor::MESSAGE_ERROR_INTERPRET_ADD = "Error! Unexpected error while interpreting add";
+const string Processor::MESSAGE_ERROR_INTERPRET_REMOVE = "Error! Unexpected error while interpreting remove";
+const string Processor::MESSAGE_ERROR_INTERPRET_DISPLAY = "Error! Unexpected error while interpreting display";
+const string Processor::MESSAGE_ERROR_INTERPRET_RENAME = "Error! Unexpected error while interpreting rename";
+const string Processor::MESSAGE_ERROR_INTERPRET_RESCHEDULE = "Error! Unexpected error while interpreting reschedule";
+const string Processor::MESSAGE_ERROR_INTERPRET_MARK = "Error! Unexpected error while interpreting mark";
+const string Processor::MESSAGE_ERROR_INTERPRET_SEARCH = "Error! Unexpected error while interpreting search";
 
 const string Processor::MESSAGE_PROMPT_REMOVE_CHOOSE =	"Enter task number to remove:";
 const string Processor::MESSAGE_PROMPT_RENAME_CHOOSE =	"Enter task number to rename:";
@@ -167,8 +205,8 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 			break;
 		}
 	}
-	
-	return simpleReturn(returnCode, message, list);
+
+	return feedbackToUI(returnCode, message, list);
 }
 
 //level 1 abstraction
@@ -313,7 +351,7 @@ int Processor::renameCommandProcessor(){
 			}
 		}
 	}
-	return ERROR_RENAME;
+	return ERROR_UPDATE;
 }
 
 int Processor::rescheduleCommandProcessor(){
@@ -364,7 +402,7 @@ int Processor::rescheduleCommandProcessor(){
 			}
 		}
 	}
-	return ERROR_RENAME;
+	return ERROR_UPDATE;
 }
 
 /*
@@ -413,7 +451,6 @@ int Processor::searchCommandProcessor(){
 	vector<string> keywords;
 	string user_command;
 	BasicDateTime start, end;
-	int operationStatus;
 
 	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
 	_tempTaskList.clear();
@@ -429,7 +466,6 @@ int Processor::searchCommandProcessor(){
 	}else{
 		return ERROR_SEARCH;
 	}
-
 }
 
 
@@ -447,33 +483,20 @@ int Processor::saveFile(){
 	return _fileProcessing.save(allTasksString);
 }
 
-int Processor::simpleReturn(int returnCode, string&message, vector<string>& list){
-
-}
-
-bool Processor::choiceIsValid(vector<int> choice){
-	if(choice.empty()){
-		return false;
-	}else{
-		for (unsigned int i = 0; i < choice.size(); i++){
-			unsigned int curr_choice = choice[i];
-			if(curr_choice>=_tempTaskList.size() || choice[i]<1){
-				return false;
-			}
-		}
-		return true;
-	}
-}
 /*
 * Purpose: To get feedback to tell user is command is succesful/unsuccessful
 *
 * Param: 
-* statusReturnedFromtaskList - feedback from taskList code 
+* returnCode - feedback from commandProcessors
+* message - message to be passed to the UI
+* list - the list of strings that need to be printed out with the message
 *
 * Returns: 
-* formatted string of feedback and with user command (including task)
+* int telling the UI which type of feedback is being given
 */
-int Processor::simpleReturn(int returnCode, string& message, vector<string>& list){
+int Processor::feedbackToUI(int returnCode, string& message, vector<string>& list){
+	assert(returnCode>=STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS &&
+		returnCode<=STATUS_CODE_SET_PROPMT::PROMPT_MARK_CHOOSE);
 
 	message = MESSAGE_ARRAY[returnCode];
 	if (returnCode == STATUS_CODE_SET_OVERALL::OVERALL_EXIT){
@@ -492,9 +515,27 @@ int Processor::simpleReturn(int returnCode, string& message, vector<string>& lis
 			return STATUS_CODE_SET_OVERALL::OVERALL_ERROR;
 		}else if (returnCode >= PROMPT_REMOVE_CHOOSE && returnCode <= PROMPT_MARK_CHOOSE){
 			return STATUS_CODE_SET_OVERALL::OVERALL_PROMPT;
+		}else{
+			return STATUS_CODE_SET_OVERALL::OVERALL_ERROR;
 		}
 	}
 }
+
+bool Processor::choiceIsValid(vector<int> choice){
+	if(choice.empty()){
+		return false;
+	}else{
+		for (unsigned int i = 0; i < choice.size(); i++){
+			unsigned int curr_choice = choice[i];
+			if(curr_choice>=_tempTaskList.size() || choice[i]<1){
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+
 
 /*
 * Purpose: Add task of type Floating tasks 

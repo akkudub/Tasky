@@ -16,7 +16,7 @@ int FileProcessing::load(vector<string>& data){
 				}
 			} else {
 				input.close();
-				return STATUS_CODE_SET_WARNING::WARNING_LOAD_EMPTY_FILE;	
+				return LOAD_WARNING_EMPTYFILE;	
 			}
 		} else {
 			return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
@@ -44,7 +44,7 @@ int FileProcessing::save(vector<string>& data){
 		return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;
 	}
 	output.close();
-	return STATUS_CODE_SET_SUCCESS::SUCCESS_SAVE;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
 }
 
 

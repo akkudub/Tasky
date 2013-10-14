@@ -18,7 +18,7 @@ private:
 	static const int CHANGE_IN_HISTORY_SIZE = 1;
 	static const int HISTORY_MAX_SIZE = 5;
 	vector<HistoryCommand> _undoRecord;
-	vector<HistoryCommand> _redoRecord; 
+	vector<HistoryCommand> _redoRecord;
 	
 public:
 	/**

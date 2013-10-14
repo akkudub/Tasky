@@ -70,7 +70,7 @@ private:
 	static const string TO_KEY_WORD;
 	static const string BY_KEY_WORD;
 
-	static const int MAX_MESSAGES = 50;
+	static const int MAX_MESSAGES = 100;
 	static const string MESSAGE_ARRAY [MAX_MESSAGES];
 
 	static const string MESSAGE_OVERALL_SUCCESS;
@@ -82,37 +82,56 @@ private:
 	static const string MESSAGE_SUCCESS_ADD;
 	static const string MESSAGE_SUCCESS_REMOVE;
 	static const string MESSAGE_SUCCESS_DISPLAY;
-	static const string MESSAGE_SUCCESS_RENAME;
-	static const string MESSAGE_SUCCESS_RESCHEDULE;
+	static const string MESSAGE_SUCCESS_UPDATE;
+	static const string MESSAGE_SUCCESS_RESHCEDULE;
 	static const string MESSAGE_SUCCESS_MARK;
 	static const string MESSAGE_SUCCESS_SEARCH;
-	static const string MESSAGE_SUCCESS_UNDO;
 	static const string MESSAGE_SUCCESS_LOAD;
 	static const string MESSAGE_SUCCESS_SAVE;
-	static const string MESSAGE_SUCCESS_RECORD;
+	static const string MESSAGE_SUCCESS_UNDO;
 	static const string MESSAGE_SUCCESS_REDO;
+	static const string MESSAGE_SUCCESS_RECORD;
+	static const string MESSAGE_SUCCESS_INTERPRET_ADD;
+	static const string MESSAGE_SUCCESS_INTERPRET_REMOVE;
+	static const string MESSAGE_SUCCESS_INTERPRET_DISPLAY;
+	static const string MESSAGE_SUCCESS_INTERPRET_RENAME;
+	static const string MESSAGE_SUCCESS_INTERPRET_RESCHEDULE;	
+	static const string MESSAGE_SUCCESS_INTERPRET_MARK;
+	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH;
 
-	static const string MESSAGE_WARNING_ADD_CLASH;
+	static const string MESSAGE_WARNING_ADD_CLASH;	
 	static const string MESSAGE_WARNING_ADD_DUPLICATE;
 	static const string MESSAGE_WARNING_DISPLAY_NO_RESULT;
-	static const string MESSAGE_WARNING_UPDATE_SAME;
+	static const string MESSAGE_WARNING_UPDATE_SAME;	
 	static const string MESSAGE_WARNING_UPDATE_CLASH;
 	static const string MESSAGE_WARNING_MARK_NO_CHANGE;
 	static const string MESSAGE_WARNING_SEARCH_NO_RESULT;
 	static const string MESSAGE_WARNING_UNDO_NO_TASKS;
+	static const string MESSAGE_WARNING_LOAD_EMPTY_FILE;	
+	static const string MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE;
 	static const string MESSAGE_WARNING_WRONG_INPUT;
 
 	static const string MESSAGE_ERROR_ADD;
 	static const string MESSAGE_ERROR_REMOVE;
 	static const string MESSAGE_ERROR_DISPLAY;
-	static const string MESSAGE_ERROR_RENAME;
-	static const string MESSAGE_ERROR_RESCHEDULE;
+	static const string MESSAGE_ERROR_UPDATE;
 	static const string MESSAGE_ERROR_MARK;
 	static const string MESSAGE_ERROR_SEARCH;
 	static const string MESSAGE_ERROR_UNDO;
-	static const string MESSAGE_ERROR_RECORD;
 	static const string MESSAGE_ERROR_LOAD_OPENFILE;
 	static const string MESSAGE_ERROR_SAVE_SAVEFILE;
+	static const string MESSAGE_ERROR_RECORD;
+	static const string MESSAGE_ERROR_INTERPRET_EMPTY_INPUT;
+	static const string MESSAGE_ERROR_INTERPRET_TITLE_FORMAT;
+	static const string MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT;
+	static const string MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD;
+	static const string MESSAGE_ERROR_INTERPRET_ADD;
+	static const string MESSAGE_ERROR_INTERPRET_REMOVE;
+	static const string MESSAGE_ERROR_INTERPRET_DISPLAY;
+	static const string MESSAGE_ERROR_INTERPRET_RENAME;	
+	static const string MESSAGE_ERROR_INTERPRET_RESCHEDULE;
+	static const string MESSAGE_ERROR_INTERPRET_MARK;
+	static const string MESSAGE_ERROR_INTERPRET_SEARCH;
 
 	static const string MESSAGE_PROMPT_REMOVE_CHOOSE;
 	static const string MESSAGE_PROMPT_RENAME_CHOOSE;
@@ -145,10 +164,11 @@ private:
 	int markCommandProcessor();  
 	int searchCommandProcessor();
 	int undoCommandProcessor();
+	int redoCommandProcessor();
 	int otherCommandProcessor();
 	int saveFile();
 
-	int simpleReturn(int returnCode, string& message, vector<string>& list);
+	int feedbackToUI(int returnCode, string& message, vector<string>& list);
 
 	//for add command processing
 	//string determineMsgToUI(int);

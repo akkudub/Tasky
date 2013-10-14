@@ -16,7 +16,7 @@ int TaskList::add(Task toAdd, vector<Task>& _temp){
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
 		if(toAdd.isEqualTo(_taskList[i])){
-			return ADD_FAILURE_DUPLICATE;
+			return WARNING_ADD_DUPLICATE;
 		}
 	}
 
@@ -32,10 +32,11 @@ int TaskList::add(Task toAdd, vector<Task>& _temp){
 	_taskList.push_back(toAdd);
 
 	if(!_temp.empty())
-		return ADD_WARNING_CLASH;
+		return WARNING_ADD_CLASH;
 	else	
-		return SUCCESS;
+		return SUCCESS_ADD;
 
+	return ERROR_ADD;
 
 }
 
@@ -46,10 +47,10 @@ int TaskList::remove(Task toRemove){
 
 		if(toRemove.isEqualTo(_taskList[i])){
 			_taskList.erase(_taskList.begin()+i);
-			return SUCCESS;
+			return SUCCESS_REMOVE;
 		}
 	}
-	return REMOVE_FAILURE;
+	return ERROR_REMOVE;
 }
 
 
@@ -66,9 +67,11 @@ int TaskList::search(string searchLine, vector<Task>& _temp){
 	}
 
 	if(_temp.empty())
-		return SEARCH_WARNING_NO_RESULT;
+		return WARNING_SEARCH_NO_RESULT;
 	else
-		return SUCCESS;
+		return SUCCESS_SEARCH;
+
+	return ERROR_SEARCH;
 
 }
 
@@ -110,8 +113,12 @@ int TaskList::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 				break;
 	}
 
-	return SUCCESS;
+	if(!_temp.empty())
+		return SUCCESS_SEARCH;
+	else
+		return WARNING_SEARCH_NO_RESULT;
 
+	return ERROR_SEARCH;
 }
 
 int TaskList::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
@@ -193,7 +200,12 @@ int TaskList::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp
 			break;
 	}
 
-	return SUCCESS;
+	if(!_temp.empty())
+		return SUCCESS_SEARCH;
+	else
+		return WARNING_SEARCH_NO_RESULT;
+
+	return ERROR_SEARCH;
 }
 
 int TaskList::displayAll(vector<Task>& _temp){
@@ -202,10 +214,12 @@ int TaskList::displayAll(vector<Task>& _temp){
 
 	_temp = _taskList;
 
-	if(_temp.empty())
-		return DISPLAY_WARNING_NO_RESULT;
+	if(!_temp.empty())
+		return SUCCESS_DISPLAY;
 	else
-		return SUCCESS;
+		return WARNING_DISPLAY_NO_RESULT;
+
+	return ERROR_DISPLAY;
 
 }
 
@@ -219,10 +233,12 @@ int TaskList::displayStatus(bool done, vector<Task>& _temp){
 			_temp.push_back(_taskList[i]);
 	}
 
-	if(_temp.empty())
-		return DISPLAY_WARNING_NO_RESULT;
+	if(!_temp.empty())
+		return SUCCESS_DISPLAY;
 	else
-		return SUCCESS;
+		return WARNING_DISPLAY_NO_RESULT;
+
+	return ERROR_DISPLAY;
 
 }
 
@@ -248,7 +264,12 @@ int TaskList::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task
 		}
 	}
 
-	return SUCCESS;
+	if(!_temp.empty())
+		return SUCCESS_DISPLAY;
+	else
+		return WARNING_DISPLAY_NO_RESULT;
+
+	return ERROR_DISPLAY;
 }
 
 
@@ -258,7 +279,7 @@ int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
 	_temp.clear();
 
 	if(existingTask.isEqualTo(newTask)){
-		return UPDATE_WARNING_SAME;
+		return WARNING_UPDATE_SAME;
 	}
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
@@ -282,25 +303,44 @@ int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
 	_taskList.push_back(newTask);
 
 	if(!_temp.empty())
-		return UPDATE_WARNING_CLASH;
+		return WARNING_UPDATE_CLASH;
 	else
-		return SUCCESS;
+		return SUCCESS_UPDATE;
+
+	return ERROR_UPDATE;
 
 }
 
 int TaskList::mark(bool mark, Task task){
 
 	if(task.getDone() == mark)
-		return MARK_WARNING_NO_CHANGE;
+		return WARNING_MARK_NO_CHANGE;
 
 	for(unsigned int i = 0; i < _taskList.size(); i++){
 
 		if(task.isEqualTo(_taskList[i])){
 			_taskList[i].toggleDone();
-			return SUCCESS;
+			return SUCCESS_MARK;
 		}
 	}
-	return MARK_FAILURE;
+	return ERROR_MARK;
+}
+
+void TaskList::getOccupiedDates(vector<BasicDateTime>& usedDates){
+
+	usedDates.clear();
+
+	for(unsigned int i = 0; i < _taskList.size(); i++){
+
+		if(_taskList[i].getType() == NORMAL_TASK){
+			usedDates.push_back(_taskList[i].getStart());
+			usedDates.push_back(_taskList[i].getEnd());
+		}
+		else if(_taskList[i].getType() == DEADLINE_TASK){
+			usedDates.push_back(_taskList[i].getEnd());
+		}
+	}
+
 }
 
 /*

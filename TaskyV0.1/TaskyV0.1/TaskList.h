@@ -98,7 +98,12 @@ public:
 	* @return status code
 	*/
 	int mark(bool mark, Task task);
-
+	/**
+	* Purpose:
+	* pushes BasicDateTimes that are used into the referenced vector
+	* @param vector<BasicDateTime> to push in the BasicDateTimes that are used
+	*/
+	void getOccupiedDates(vector<BasicDateTime>& usedDates);
 };
 
 #endif

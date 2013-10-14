@@ -3,9 +3,10 @@
 
 void UI::UI_interface(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	/*displayWelcomeMessage();*/
-	char buf[] = "I am Blinking!!!!\n";
-    setBlinkingText(0, 1, buf, 5, 1000);
+	/*displayWelcomeMessage(hConsole);*/
+	/*char buf[] = "I am Blinking!!!!\n";
+	setBlinkingText(0, 1, buf, 5, 1000);
+	*/
 	string command;
 	bool statusFlag = false;
 	while (!statusFlag) {
@@ -16,10 +17,28 @@ void UI::UI_interface(){
 }
 
 
-void UI::displayWelcomeMessage(){
+void UI::displayWelcomeMessage(HANDLE hConsole){
 	cout << MESSAGE_WELCOME <<endl;
-	string output = _processor.mainProcessor(COMMAND_DISPLAY_TASK_PENDING);
-	cout << output << endl;
+	string message;
+	vector<string> feedback;
+	int output = _processor.UImainProcessor(COMMAND_DISPLAY_TASK_PENDING, message, feedback);
+	switch(output){
+	case -1:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+		break;
+	case 0:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		break;
+	case 1:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN |FOREGROUND_RED | FOREGROUND_INTENSITY);
+		break;
+	}
+	cout << message << endl;
+
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	for (string str:feedback){
+		cout << str << endl;
+	}
 }
 
 
@@ -31,10 +50,26 @@ void UI::displayCommandMessage(string& command, HANDLE hConsole){
 
 
 void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFlag){
-	string output = _processor.mainProcessor(command);
-	//DO SOME COLOR PROCESSING HERE
-	SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-	cout << output << endl;
+	string message;
+	vector<string> feedback;
+	int output = _processor.UImainProcessor(command, message, feedback);
+	switch(output){
+	case -1:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+		break;
+	case 0:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		break;
+	case 1:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN |FOREGROUND_RED | FOREGROUND_INTENSITY);
+		break;
+	}
+	cout << message << endl;
+
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	for (string str:feedback){
+		cout << str << endl;
+	}
 }
 
 
@@ -43,22 +78,22 @@ void UI::displayExitMessage(){
 }
 
 void UI::setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs){
-    ::system("cls");
-    COORD ord;
-    ord.X = x;
-    ord.Y = y; 
+	::system("cls");
+	COORD ord;
+	ord.X = x;
+	ord.Y = y; 
 
-    int len = strlen(buf);
-    char *p = new char[len + 1];
-    memset(p, 32, len);
-    p[len] = '\0';
-    for(int i = 0; i < timestoBlink; i++){
+	int len = strlen(buf);
+	char *p = new char[len + 1];
+	memset(p, 32, len);
+	p[len] = '\0';
+	for(int i = 0; i < timestoBlink; i++){
 
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
-        std::cout << p;
-        ::Sleep(300);
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
-        std::cout << buf;
-        ::Sleep(delayMilliSecs);
-    }
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
+		std::cout << p;
+		::Sleep(300);
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
+		std::cout << buf;
+		::Sleep(delayMilliSecs);
+	}
 }

@@ -42,6 +42,13 @@ private:
 	static const char SPACE;
 	static const char DASH;
 	static const char COLON;
+	static const char ZERO;
+	static const char NINE;
+
+	static const int NO_DATETIME=0;
+	static const int ONE_DATETIME=1;
+	static const int TWO_DATETIME=2;
+	static const int TWO_DATETIME_WITH_STATUS_FOR_DISPLAY=3;
 
 public:
 	///construtor: quite dummy for now
@@ -65,21 +72,25 @@ public:
 	 *e.g.: "'keyword1 keyword2 ...' from 12/12/13 12:00:00 to 13/11/2014 12:00:00"
 	 *@param str input string from processor
 	 *@param keywords (vector<string> reference) will push the orignal quoted content into the vector first and will break the content into  separate words and push in
+	 *@param type (int reference) similar to type for add, just for by case the start will be assigned to the current time and type will be 2.
+	 *       so type will only be 0 or 2
 	 *@param start (BasicDateTime reference) will have the new value if the input format is right
 	 *@param end (BasicDateTime reference) will have the new value if the input format is right
 	 *@return int status code, -1: failue; 0: no dates; 2: with two dates;
 	 */
-	int interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end);
+	int interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *a method for Processor::displayCommandProcessor, as this will take in a string without command type and try to parse the string
 	 *according to 'display' format on the user guide
 	 *e.g.: "pending from 12/10/2013 12.00 to 13/11/2014 13:05:05"
 	 *@param str (string) input from processor
+	 *@param type (int reference) similar to type for add, just for by case the start will be assigned to the current time and type will be 2.
+	 *       so type will only be 0 or 2
 	 *@param start (BasicDateTime reference) will have the new value if the input format is right
 	 *@param end (BasicDateTime reference) will have the new value if the input format is right
 	 *@param status (bool refernce) will have true--done false pending if the user has specified
 	 */
-	int interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status);
+	int interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status);
 	/**
 	 *a method for Processor::renameCommandProcessor, as this will take in a strin with command type and try to parse the string
 	 *according to 'rename' format on the user guide
@@ -101,7 +112,7 @@ public:
 	 *@param end (BasicDateTime reference) will be changed if the input date time format is right
 	 *@return int status code--0: success; -1: failure
 	 */
-	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);  //does not work
+	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *a method for Processor::markCommandProcessor, as this will take in a strin with command type and try to parse the string
 	 *according to 'mark' format on the user guide
@@ -137,7 +148,7 @@ public:
 	 *@param str (string) input string
 	 *@return a vector of integers
 	 */
-	vector<int> stringToIntVec(string str);  //does not work
+	vector<int> stringToIntVec(string str);
 	/**
 	 *make use of <algorithm> and transfer a string to all lower case
 	 *@param input (string)
@@ -169,7 +180,6 @@ private:
 	string removeSpacesFromBothEnds(string str);
 	int findFirstOfWord(const string& source, const string& word);
 	int findLastOfWord(const string& source, const string& word);
-	bool containSub(string input, string sub);
 	bool containChar(string input, char ch);
 };
 

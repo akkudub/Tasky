@@ -47,6 +47,9 @@ public:
 	///construtor: quite dummy for now
 	Interpreter();
 	/**
+	 *a method created specially for Processor::addCommandProcessor, as this will take in a string without command type and try to  parse the string
+	 *according to 'add' format on Tasky's user guide.
+	 *e.g.: "'title' from 12/12/2012 1200 to 13/12/2013 1300 -m comment goes here"
 	 *@param str (string) input from processor
 	 *@param title (string reference) will change the content of the string if the input format is correct, contain the title
 	 *@param type (string reference) will change the content of the innt if the input format is correct, stating 0--floating; 1--deadline; 2--timed
@@ -57,6 +60,9 @@ public:
 	 */
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
 	/**
+	 *a method created specially for Processor::searchCommandProcessor, as this will take in a string without command type and try to parse the string
+	 *according to 'search' format on the user guide
+	 *e.g.: "'keyword1 keyword2 ...' from 12/12/13 12:00:00 to 13/11/2014 12:00:00"
 	 *@param str input string from processor
 	 *@param keywords (vector<string> reference) will push the orignal quoted content into the vector first and will break the content into  separate words and push in
 	 *@param start (BasicDateTime reference) will have the new value if the input format is right
@@ -65,6 +71,9 @@ public:
 	 */
 	int interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end);
 	/**
+	 *a method for Processor::displayCommandProcessor, as this will take in a string without command type and try to parse the string
+	 *according to 'display' format on the user guide
+	 *e.g.: "pending from 12/10/2013 12.00 to 13/11/2014 13:05:05"
 	 *@param str (string) input from processor
 	 *@param start (BasicDateTime reference) will have the new value if the input format is right
 	 *@param end (BasicDateTime reference) will have the new value if the input format is right
@@ -72,6 +81,9 @@ public:
 	 */
 	int interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status);
 	/**
+	 *a method for Processor::renameCommandProcessor, as this will take in a strin with command type and try to parse the string
+	 *according to 'rename' format on the user guide
+	 *e.g.:"'old title' to 'new title'"
 	 *@param str (string) input from processor
 	 *@param oldTitle (string reference) will have the extracted the first qouted string
 	 *@param newTitle (string reference) will have the extracted the second quoted string
@@ -79,6 +91,9 @@ public:
 	 */
 	int interpretRename(string str, string& oldTitle, string& newTitle);
 	/**
+	 *a method for Processor::rescheduleCommandProcessor, as this will take in a strin with command type and try to parse the string
+	 *according to 'reschedule' format on the user guide
+	 *e.g.:"'title' by 12/9/2014 12.00.06"
 	 *@param str (string) input from processor
 	 *@param title (string reference) will have the value of the extracted quoted string
 	 *@param type (int reference) will be changed according to input: 0--floating; 1--deadline task; 2--timed task;
@@ -88,6 +103,9 @@ public:
 	 */
 	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);  //does not work
 	/**
+	 *a method for Processor::markCommandProcessor, as this will take in a strin with command type and try to parse the string
+	 *according to 'mark' format on the user guide
+	 *e.g.:"'title' done"
 	 *@param str (string) input from processor
 	 *@param title (string reference) will have the value of the extracted quoted string
 	 *@param status (bool reference) will set the value of status: true--done; false--pending
@@ -95,23 +113,33 @@ public:
 	 */
 	int interpretMark(string str, string& title, bool& status);
 	/**
+	 *a method for Processor::removeCommandProcessor, as this will take in a strin with command type and try to parse the string
+	 *according to 'remove' format on the user guide
+	 *e.g.:"'title'"
 	 *@param str (string) input from processor
 	 *@param title (string reference) will have the value of the extracted quoted string
 	 *@return int status code--0: success; -1: failure
 	 */
 	int interpretRemove(string str, string& title);
 	/**
+	 *a more general method as this will take a string and try to convert it to an integer
+	 *notice that this method is very limited--only allow postive integers and will return -1 as the error code
+	 *and this method will not allow any char other than digits. plus: notice the number of digits allowed is limited to the range of int
 	 *@param str (string) input string
 	 *@return try to parse the string to int, if failure then return -1
 	 */
 	int stringToInt(string str);
 	/**
+	 *a general method as this will take a string and try to convert it to an integer vector
+	 *e.g.: 1,3,5--><1,3,5>; 1-3--><1,2,3>
+	 *notice that this method makes use of the previous one and thus only allow non-nagetive int and input format should be strict
 	 * 1, 3, 4, 5--return <1, 3, 4, 5>;  1-5--return <1, 2, 3, 4, 5>
 	 *@param str (string) input string
 	 *@return a vector of integers
 	 */
 	vector<int> stringToIntVec(string str);  //does not work
 	/**
+	 *make use of <algorithm> and transfer a string to all lower case
 	 *@param input (string)
 	 *@return string of the input string 
 	 */

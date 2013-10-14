@@ -21,6 +21,8 @@ const char Interpreter::SINGLE_QUOTE = '\'';
 const char Interpreter::SPACE = ' ';
 const char Interpreter::DASH = '-';
 const char Interpreter::COLON = ':';
+const char Interpreter::ZERO = '0';
+const char Interpreter::NINE = '9';
 
 Interpreter::Interpreter(){
 }
@@ -30,10 +32,10 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	bool fromToFlag=false, byFlag=false;
 
 	if (!extractComment(str, comment, posDashM)){
-		return -1;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
-		return -1;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 
 	if (str.find(FROM_KEY_WORD, posQuote2+1)!=std::string::npos){
@@ -47,27 +49,27 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	if (fromToFlag){
         start=_start;
 		end=_end;
-		type=2;
+		type=TWO_DATETIME;
 	}else if(byFlag){
 		end=_end;
-		type=1;
+		type=ONE_DATETIME;
 	}else{
-		type=0;
+		type=NO_DATETIME;
 	}
-	return 0;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 }
 
-int Interpreter::interpretSearch(string str, vector<string>& keywords, BasicDateTime& start, BasicDateTime& end){
+int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end){
 	int size=str.size(), pos1, pos2;
 	keywords.clear();
 	if (str.find(SINGLE_QUOTE)!=std::string::npos){
 		pos1=str.find_first_of(SINGLE_QUOTE);
 		pos2=str.find_last_of(SINGLE_QUOTE);
 		if (pos1==pos2){
-			return -1;
+			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 		}
 	}else{
-		return -1;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 	vector<string> temp=breakStringWithDelim(str.substr(pos1+1,pos2-pos1-1), SPACE);
 	keywords.push_back(str.substr(pos1+1,pos2-pos1-1));
@@ -75,18 +77,18 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, BasicDate
 	if (fromToCheck(str.substr(pos1))){
 		start=_start;
 		end=_end;
-		return 2;
+		type=TWO_DATETIME;
 	}else{
-		return 0;
+		type=ONE_DATETIME;
 	}
-	return 0;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 }
 
-int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTime& end, bool& status){
+int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status){
 	bool statusFlag=false;
 	int pos=0, size=str.size();
 	if (str.find(ALL_KEY_WORD)!=std::string::npos){
-		return 0;
+		type=NO_DATETIME;
 	}else{
 		if (str.find(PENDING_KEY_WORD)!=std::string::npos){
 			statusFlag=true;
@@ -98,21 +100,25 @@ int Interpreter::interpretDisplay(string str, BasicDateTime& start, BasicDateTim
 			pos=str.find(DONE_KEY_WORD);
 		}
 		if (pos>=size-1){
-			return -1;
+			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
 		}else{
 			if (fromToCheck(str.substr(pos))){
 				start=_start;
 				end=_end;
-			}else{
-				return -1;
+			}else if(byCheck(str.substr(pos))){
+				start=_start;
+				end=_end;
+            }else{
+				return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
 			}
 		}
 	}
 	if (statusFlag){
-		return 1;
+		type=TWO_DATETIME;
 	}else{
-		return 2;
+		type=TWO_DATETIME_WITH_STATUS_FOR_DISPLAY;
 	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
 }
 
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
@@ -122,13 +128,13 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 		posQuote1=str.find_first_of(SINGLE_QUOTE);
 		posQuote2=str.find_last_of(SINGLE_QUOTE);
 		if (posQuote2-posQuote1<=5){
-			return -1;
+			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
 		}else{
 			oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
 			newTitle=str.substr(posKey+6, posQuote2-posKey-6);
 		}
 	}else{
-		return -1;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME;
 }
@@ -137,9 +143,9 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 	int posQuote1=0, posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
-		if (containSub(str, FROM_KEY_WORD)){
+		if (str.find(FROM_KEY_WORD)!=std::string::npos){
 		    fromToFlag=fromToCheck(str.substr(posQuote2+1));
-		}else if(containSub(str, BY_KEY_WORD)){
+		}else if(str.find(BY_KEY_WORD)!=std::string::npos){
 		    byFlag=byCheck(str.substr(posQuote2+1));
 		}
 	}else{
@@ -148,23 +154,22 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 	if (fromToFlag){
 		start=_start;
 		end=_end;
-		type=2;
+		type=TWO_DATETIME;
 	}else if(byFlag){
 		end=_end;
-		type=1;
+		type=ONE_DATETIME;
 	}else{
-		type=0;
+		type=NO_DATETIME;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
 }
 
-//additional note here, we may change this method to make it more strict
 int Interpreter::interpretMark(string str, string& title, bool& status){
 	int posQuote1=0, posQuote2=0;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
 		if (str.size()==posQuote2+1){
 			title=EMPTY_STRING;
-			return -1;
+			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
 		}
 		if (str.find(DONE_KEY_WORD, posQuote2+1)!=std::string::npos){
 			status=true;
@@ -172,10 +177,10 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 			status=false;
 		}else{
 			title=EMPTY_STRING;
-			return -1;
+			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
 		}
 	}
-	return 0;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK;
 }
 
 int Interpreter::interpretRemove(string str, string& title){
@@ -190,8 +195,8 @@ int Interpreter::stringToInt(string str){
 	int num=0;
 	int size=str.size();
 	for (int i=0;i<size;i++){
-		if (str[i]>='0' && str[i]<='9'){
-			num=num*10+str[i]-'0';
+		if (str[i]>=ZERO && str[i]<=NINE){
+			num=num*10+str[i]-ZERO;
 		}else{
 			return -1;
 		}
@@ -310,6 +315,10 @@ bool Interpreter::byCheck(string str){
 		byFlag=translateDateTime(vec.at(0), vec.at(1), 1);
 	}else{
 		return false;
+	}
+	if (byFlag){
+		DateTime dt=DateTime::Now;
+		_start=BasicDateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
 	}
 	return byFlag;
 }
@@ -545,10 +554,6 @@ int Interpreter::findLastOfWord(const string& source, const string& word){
 	return prev;
 }
 
-bool Interpreter::containSub(string input, string sub){
-	return input.find(sub)!=std::string::npos;
-}
-	
 bool Interpreter::containChar(string input, char ch){
 	return input.find(ch)!=std::string::npos;
 }

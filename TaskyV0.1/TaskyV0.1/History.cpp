@@ -2,29 +2,35 @@
 
 
 History::History() {
+	_undoRecord.clear();
+	_redoRecord.clear();
 }
 
 
-int History::undo(string& hist) {
-	int size = _historyRecord.size();
-	if(!_historyRecord.empty()) {
-		hist = _historyRecord.back();
-		_historyRecord.pop_back();
-		if (size - CHANGE_IN_HISTORY_SIZE == _historyRecord.size()) {
-			return SUCCESS;
+int History::undo(HistoryCommand& hist) {
+	int currentSize = _undoRecord.size();
+	if(currentSize > 0) {
+		hist = _undoRecord.back();
+		_redoRecord.push_back(_undoRecord.back());
+		_undoRecord.pop_back();
+		if (currentSize - _undoRecord.size() == CHANGE_IN_HISTORY_SIZE){
+			return STATUS_CODE_SET_SUCCESS::SUCCESS_UNDO;
 		}
 	} else {
-		return UNDO_WARNING_EMPTYLIST;
+		return STATUS_CODE_SET_WARNING::WARNING_UNDO_NO_TASKS;
 	}
-	return UNDO_FAILURE;
+	return STATUS_CODE_SET_ERROR::ERROR_UNDO;
 }
 
 
-int History::record(string hist) {
-	int size = _historyRecord.size();
-	_historyRecord.push_back(hist);
-	if (size + CHANGE_IN_HISTORY_SIZE == _historyRecord.size()) {
-		return SUCCESS;
+int History::record(HistoryCommand hist) {
+	int currentSize = _undoRecord.size();
+	_undoRecord.push_back(hist);
+	if (_undoRecord.size() > HISTORY_MAX_SIZE) {
+		_undoRecord.erase(_undoRecord.begin());
 	}
-	return RECORD_FAILURE;
+	if (_undoRecord.size() <= HISTORY_MAX_SIZE){
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_RECORD;
+	}
+	return STATUS_CODE_SET_ERROR::ERROR_RECORD;
 }

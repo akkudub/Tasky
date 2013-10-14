@@ -7,23 +7,99 @@ const string Processor::TO_KEY_WORD = "to";
 const string Processor::BY_KEY_WORD = "by";
 const string Processor::NEW_LINE_STRING = "\n";
 
-const string Processor::ADD_TASK_SUCCESS = "Task added successfully: ";
-const string Processor::ADD_TASK_FAILURE_DUPLICATE = "Failed! Task existed: ";
-const string Processor::ADD_TASK_FAILURE_UNEXPECTED = "Failed! Unexpected error during task adding: ";
-const string Processor::ADD_TASK_WARNING_CLASH = "Warning: this task clashes with existing ones";
-const string Processor::DISPLAY_TASK_SUCCESS = "Task Display success!";
-const string Processor::DISPLAY_TASK_FAILURE_UNEXPECTED = "Unexpected task failure";
-const string Processor::WRONG_INPUT = "Wrong input";
-const string Processor::UNEXPECTED_ERROR = "Unexpected error";
-const string Processor::UPDATE_CHOOSE_TASK = "Enter the task number to update: ";
-const string Processor::UPDATE_MESSAGE_WARNING_SAME = "Warning! The new data is the same as the old data";
-const string Processor::UPDATE_MESSAGE_WARNING_CLASH = "Warning! The new data will make the task clash with the following:";
-const string Processor::UPDATE_MESSAGE_FAILURE = "Error! Unable to update task";
-const string Processor::REMOVE_CHOOSE_TASK = "Enter the task number to remove: ";
-const string Processor::MARK_CHOOSE_TASK = "Enter the task number to mark: ";
-const string Processor::NO_SUCH_TASK = "No such task!";
-const string Processor::FILE_SAVE_SUCCESS = "File Saved successfully!";
-const string Processor::FILE_SAVE_FAILURE = "File COULD NOT BE SAVED!! LOL GG";
+const string Processor::MESSAGE_ARRAY [] = {
+	MESSAGE_OVERALL_SUCCESS,
+	MESSAGE_OVERALL_WARNING,
+	MESSAGE_OVERALL_ERROR,
+	MESSAGE_OVERALL_PROMPT,
+	MESSAGE_OVERALL_EXIT,
+
+	MESSAGE_SUCCESS_ADD,
+	MESSAGE_SUCCESS_REMOVE,
+	MESSAGE_SUCCESS_DISPLAY,
+	MESSAGE_SUCCESS_RENAME,
+	MESSAGE_SUCCESS_RESCHEDULE,
+	MESSAGE_SUCCESS_MARK,
+	MESSAGE_SUCCESS_SEARCH,
+	MESSAGE_SUCCESS_UNDO,
+	MESSAGE_SUCCESS_LOAD,
+	MESSAGE_SUCCESS_SAVE,
+	MESSAGE_SUCCESS_RECORD,
+	MESSAGE_SUCCESS_REDO,
+
+	MESSAGE_WARNING_ADD_CLASH,	
+	MESSAGE_WARNING_ADD_DUPLICATE,
+	MESSAGE_WARNING_DISPLAY_NO_RESULT,
+	MESSAGE_WARNING_UPDATE_SAME,	
+	MESSAGE_WARNING_UPDATE_CLASH,
+	MESSAGE_WARNING_MARK_NO_CHANGE,
+	MESSAGE_WARNING_SEARCH_NO_RESULT,
+	MESSAGE_WARNING_UNDO_NO_TASKS,
+	MESSAGE_WARNING_WRONG_INPUT,
+
+	MESSAGE_ERROR_ADD,
+	MESSAGE_ERROR_REMOVE,
+	MESSAGE_ERROR_DISPLAY,
+	MESSAGE_ERROR_RENAME,
+	MESSAGE_ERROR_RESCHEDULE,
+	MESSAGE_ERROR_MARK,
+	MESSAGE_ERROR_SEARCH,
+	MESSAGE_ERROR_UNDO,
+	MESSAGE_ERROR_RECORD,
+	MESSAGE_ERROR_LOAD_OPENFILE,
+	MESSAGE_ERROR_SAVE_SAVEFILE,
+
+	MESSAGE_PROMPT_REMOVE_CHOOSE,
+	MESSAGE_PROMPT_RENAME_CHOOSE,
+	MESSAGE_PROMPT_RESCHEDULE_CHOOSE,
+	MESSAGE_PROMPT_MARK_CHOOSE
+};
+
+const string Processor::MESSAGE_OVERALL_SUCCESS =		"Success!";
+const string Processor::MESSAGE_OVERALL_WARNING =		"Warning!";
+const string Processor::MESSAGE_OVERALL_ERROR =			"Error!";
+const string Processor::MESSAGE_OVERALL_PROMPT =		"Please enter your choice:";
+const string Processor::MESSAGE_OVERALL_EXIT =			"The program will now exit, Goodbye!";
+
+const string Processor::MESSAGE_SUCCESS_ADD =			"Success! Task added";
+const string Processor::MESSAGE_SUCCESS_REMOVE =		"Success! Task removed";
+const string Processor::MESSAGE_SUCCESS_DISPLAY =		"Success! Tasks displayed";
+const string Processor::MESSAGE_SUCCESS_RENAME =		"Success! Task renamed";
+const string Processor::MESSAGE_SUCCESS_RESCHEDULE =	"Success! Task rescheduled";
+const string Processor::MESSAGE_SUCCESS_MARK =			"Success! Task(s) marked";
+const string Processor::MESSAGE_SUCCESS_SEARCH =		"Success! Search successful";
+const string Processor::MESSAGE_SUCCESS_UNDO =			"Success! Undo successful";
+const string Processor::MESSAGE_SUCCESS_LOAD =			"Success! File loaded";
+const string Processor::MESSAGE_SUCCESS_SAVE =			"Success! File saved";
+const string Processor::MESSAGE_SUCCESS_RECORD =		"Success! Previous action recorded";
+const string Processor::MESSAGE_SUCCESS_REDO =			"Success! Redo successful";
+
+const string Processor::MESSAGE_WARNING_ADD_CLASH =		"Warning! Task clashes with existing ones";
+const string Processor::MESSAGE_WARNING_ADD_DUPLICATE = "Warning! Task already exists";
+const string Processor::MESSAGE_WARNING_UPDATE_SAME =	"Warning! The new data is the same as the old data";
+const string Processor::MESSAGE_WARNING_UPDATE_CLASH =	"Warning! The new data will make the task clash with the following";
+const string Processor::MESSAGE_WARNING_SEARCH_NO_RESULT = "Warning! No such task";
+const string Processor::MESSAGE_WARNING_DISPLAY_NO_RESULT = "Warning! No tasks match the parameters";
+const string Processor::MESSAGE_WARNING_MARK_NO_CHANGE = "Warning! There is no change in the status";
+const string Processor::MESSAGE_WARNING_UNDO_NO_TASKS = "Warning! There is nothing to undo";
+const string Processor::MESSAGE_WARNING_WRONG_INPUT =	"Warning! Wrong input";
+
+const string Processor::MESSAGE_ERROR_ADD =				"Error! Unexpected error while adding task";
+const string Processor::MESSAGE_ERROR_REMOVE =			"Error! Unexpected error while removing task" ;
+const string Processor::MESSAGE_ERROR_DISPLAY =			"Error! Unexpected error while displaying tasks";
+const string Processor::MESSAGE_ERROR_RENAME =			"Error! Unexpected error while renaming task";
+const string Processor::MESSAGE_ERROR_RESCHEDULE =		"Error! Unexpected error while rescheduling task";
+const string Processor::MESSAGE_ERROR_MARK =			"Error! Unexpected error while marking task(s)";
+const string Processor::MESSAGE_ERROR_SEARCH =			"Error! Unexpected error while searching for tasks";
+const string Processor::MESSAGE_ERROR_UNDO =			"Error! Unexpected error while adding task";
+const string Processor::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
+const string Processor::MESSAGE_ERROR_LOAD_OPENFILE =	"Error! Unexpected error while loading file";
+const string Processor::MESSAGE_ERROR_SAVE_SAVEFILE =	"Error! Unexpected error while saving to file";
+
+const string Processor::MESSAGE_PROMPT_REMOVE_CHOOSE =	"Enter task number to remove:";
+const string Processor::MESSAGE_PROMPT_RENAME_CHOOSE =	"Enter task number to rename:";
+const string Processor::MESSAGE_PROMPT_RESCHEDULE_CHOOSE = "Enter task number to reschedule:";
+const string Processor::MESSAGE_PROMPT_MARK_CHOOSE =	"Enter task number to mark:";
 
 const char Processor::SLASH = '/';
 const char Processor::BACK_SLASH = '\\';
@@ -55,9 +131,9 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 	_wordsList->clear();
 	breakIntoStringVectorBySpace(input, *_wordsList);
 	string firstWord = _wordsList->at(0);
-	int returnCode = -1;
+	int returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
 	assert(_statusFlag >= 0 && _statusFlag < 5);
-	while (firstWord != "exit"){
+	if (firstWord != "exit"){
 		switch (_statusFlag){
 		case 0:
 			if(firstWord == "add"){
@@ -66,7 +142,7 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 				returnCode = removeCommandProcessor();
 			}else if(firstWord == "display"){
 				returnCode = displayCommandProcessor();
-			}else if(firstWord == "update"){
+			}else if(firstWord == "rename"){
 				returnCode = renameCommandProcessor();
 			}else if(firstWord == "reschedule"){
 				returnCode = rescheduleCommandProcessor();
@@ -90,10 +166,9 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 		default:
 			break;
 		}
-
-		return simpleReturn(returnCode, message, list);
 	}
-	return saveFile();
+	
+	return simpleReturn(returnCode, message, list);
 }
 
 //level 1 abstraction
@@ -141,7 +216,7 @@ int Processor::removeCommandProcessor(){
 	if(_statusFlag == 1){
 		unsigned int choice = _interpreter.stringToInt(_wordsList->at(1));
 		if((choice <=_tempTaskList.size()) && choice > 0){
-			operationStatus=_logic.remove(_tempTaskList[choice-1]);
+			operationStatus=_taskList.remove(_tempTaskList[choice-1]);
 		}
 		_statusFlag = 0;
 		return operationStatus;
@@ -152,9 +227,9 @@ int Processor::removeCommandProcessor(){
 			_interpreter.interpretRemove(user_command, _tempTitle);
 			_tempTaskList.clear();
 			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_logic.searchKeywords(keywords, _tempTaskList);
+			_taskList.searchKeywords(keywords, _tempTaskList);
 			if (_tempTaskList.size() == 1){
-				return _logic.remove(_tempTaskList[0]);
+				return _taskList.remove(_tempTaskList[0]);
 
 			}else if(!_tempTaskList.empty()){
 				_statusFlag = 1;
@@ -180,13 +255,13 @@ int Processor::displayCommandProcessor(){
 	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
 	int return_code = _interpreter.interpretDisplay(user_command, start, end, status);
 	if (return_code == 0){
-		return _logic.displayAll(_tempTaskList);
+		return _taskList.displayAll(_tempTaskList);
 
 	}else if (return_code == 1){
-		return _logic.displayStatus(status, _tempTaskList);
+		return _taskList.displayStatus(status, _tempTaskList);
 
 	}else if(return_code == 2){
-		return _logic.displayInRange(start, end, _tempTaskList);
+		return _taskList.displayInRange(start, end, _tempTaskList);
 
 	}else{
 		return ERROR_DISPLAY;
@@ -208,7 +283,7 @@ int Processor::renameCommandProcessor(){
 			vector<Task> clash;
 
 			t.setTitle(_tempTitle);
-			operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
+			operationStatus = _taskList.update(_tempTaskList[choice-1], t, clash);
 			_tempTaskList = clash;
 		}
 
@@ -224,11 +299,11 @@ int Processor::renameCommandProcessor(){
 			_interpreter.interpretRename(user_command, oldTitle, _tempTitle);
 			_tempTaskList.clear();
 			breakIntoStringVectorBySpace(oldTitle, keywords);
-			_logic.searchKeywords(keywords, _tempTaskList);
+			_taskList.searchKeywords(keywords, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				Task t = _tempTaskList[0];
 				t.setTitle(_tempTitle);
-				return _logic.update(_tempTaskList[0], t, clash);
+				return _taskList.update(_tempTaskList[0], t, clash);
 
 			}else if(!_tempTaskList.empty()){
 				_statusFlag = 2;
@@ -238,7 +313,7 @@ int Processor::renameCommandProcessor(){
 			}
 		}
 	}
-	return ERROR_UPDATE;
+	return ERROR_RENAME;
 }
 
 int Processor::rescheduleCommandProcessor(){
@@ -255,7 +330,7 @@ int Processor::rescheduleCommandProcessor(){
 			t.setStartDate(_tempStart);
 			t.setEndDate(_tempEnd);
 			t.setType(_tempType);
-			operationStatus = _logic.update(_tempTaskList[choice-1], t, clash);
+			operationStatus = _taskList.update(_tempTaskList[choice-1], t, clash);
 			_tempTaskList = clash;
 		}
 
@@ -271,7 +346,7 @@ int Processor::rescheduleCommandProcessor(){
 			_interpreter.interpretReschedule(user_command, _tempTitle, _tempType, _tempStart, _tempEnd);
 			_tempTaskList.clear();
 			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_logic.searchKeywords(keywords, _tempTaskList);
+			_taskList.searchKeywords(keywords, _tempTaskList);
 
 			if (_tempTaskList.size() == 1){
 				Task t = _tempTaskList[0];
@@ -279,7 +354,7 @@ int Processor::rescheduleCommandProcessor(){
 				t.setStartDate(_tempStart);
 				t.setEndDate(_tempEnd);
 				t.setType(_tempType);
-				return _logic.update(_tempTaskList[0], t, clash);
+				return _taskList.update(_tempTaskList[0], t, clash);
 
 			}else if(!_tempTaskList.empty()){
 				_statusFlag = 3;
@@ -289,7 +364,7 @@ int Processor::rescheduleCommandProcessor(){
 			}
 		}
 	}
-	return ERROR_UPDATE;
+	return ERROR_RENAME;
 }
 
 /*
@@ -306,7 +381,7 @@ int Processor::markCommandProcessor(){
 
 		if(choiceIsValid(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
-				operationStatus=_logic.mark(_tempStatus, _tempTaskList[choice[i]]);
+				operationStatus=_taskList.mark(_tempStatus, _tempTaskList[choice[i]]);
 			}
 		}
 		_statusFlag = 0;
@@ -318,9 +393,9 @@ int Processor::markCommandProcessor(){
 			_interpreter.interpretMark(user_command, _tempTitle, _tempStatus);
 			_tempTaskList.clear();
 			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_logic.searchKeywords(keywords, _tempTaskList);
+			_taskList.searchKeywords(keywords, _tempTaskList);
 			if (_tempTaskList.size() == 1){
-				return _logic.mark(_tempStatus, _tempTaskList[0]);
+				return _taskList.mark(_tempStatus, _tempTaskList[0]);
 			}	
 			else if(!_tempTaskList.empty()){
 				_statusFlag = 4;
@@ -346,10 +421,10 @@ int Processor::searchCommandProcessor(){
 	int return_code = _interpreter.interpretSearch(user_command, keywords, start, end);
 
 	if (return_code == 0){
-		return _logic.searchKeywords(keywords, _tempTaskList);
+		return _taskList.searchKeywords(keywords, _tempTaskList);
 
 	}else if(return_code == 2){
-		return _logic.searchKeywordsInRange(keywords, _tempTaskList, start, end);
+		return _taskList.searchKeywordsInRange(keywords, _tempTaskList, start, end);
 
 	}else{
 		return ERROR_SEARCH;
@@ -365,7 +440,7 @@ int Processor::otherCommandProcessor(){
 int Processor::saveFile(){
 	vector<Task> allTasks;
 	vector<string> allTasksString;
-	_logic.displayAll(allTasks);
+	_taskList.displayAll(allTasks);
 	for (unsigned int i = 0; i < allTasks.size(); i++){
 		allTasksString.push_back(taskToString(allTasks[i]));
 	}
@@ -393,30 +468,31 @@ bool Processor::choiceIsValid(vector<int> choice){
 * Purpose: To get feedback to tell user is command is succesful/unsuccessful
 *
 * Param: 
-* statusReturnedFromLogic - feedback from Logic code 
+* statusReturnedFromtaskList - feedback from taskList code 
 *
 * Returns: 
 * formatted string of feedback and with user command (including task)
 */
 int Processor::simpleReturn(int returnCode, string& message, vector<string>& list){
-	
-	switch (returnCode){
-	case STATUS_CODE_SET_SUCCESS::SUCCESS_ADD:
-		message = 
-		return combineStatusMsgWithFeedback(ADD_TASK_SUCCESS);
-		break;
-	case STATUS_CODE_SET_SUCCESS::SUCCESS_REMOVE:
-		return combineStatusMsgWithFeedback(ADD_TASK_FAILURE_DUPLICATE);
-		break;
-	case STATUS_CODESTATUS_CODE_SET_SUCCESS_SET::SUCCESS_DISPLAY:
-		return combineStatusMsgWithFeedback(ADD_TASK_WARNING_CLASH);
-		break;
-	case STATUS_CODE_SET_SUCCESS::SUCCESS_UPDATE:
-		return combineStatusMsgWithFeedback(ADD_TASK_FAILURE_UNEXPECTED);
-		break;
-	default:
-		return ADD_TASK_FAILURE_UNEXPECTED;
-		break;
+
+	message = MESSAGE_ARRAY[returnCode];
+	if (returnCode == STATUS_CODE_SET_OVERALL::OVERALL_EXIT){
+		message += MESSAGE_ARRAY[saveFile()];
+		list.clear();
+		saveFile();
+		return STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
+	}else{
+		list = taskVecToStringVec(_tempTaskList);
+
+		if (returnCode >= SUCCESS_ADD && returnCode < WARNING_ADD_CLASH){
+			return STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS;
+		}else if (returnCode >= WARNING_ADD_CLASH && returnCode < ERROR_ADD){
+			return STATUS_CODE_SET_OVERALL::OVERALL_WARNING;
+		}else if (returnCode >= ERROR_ADD && returnCode < PROMPT_REMOVE_CHOOSE){
+			return STATUS_CODE_SET_OVERALL::OVERALL_ERROR;
+		}else if (returnCode >= PROMPT_REMOVE_CHOOSE && returnCode <= PROMPT_MARK_CHOOSE){
+			return STATUS_CODE_SET_OVERALL::OVERALL_PROMPT;
+		}
 	}
 }
 
@@ -433,7 +509,7 @@ int Processor::addFloatingTask(string title, string comment){
 	Task t;
 	t = Task(title, dt1, dt2, 2, false, comment);
 	_tempTaskList.clear();
-	return _logic.add(t, _tempTaskList);
+	return _taskList.add(t, _tempTaskList);
 }
 
 /*
@@ -450,7 +526,7 @@ int Processor::addDeadlineTask(string title, BasicDateTime dt, string comment){
 	Task t;
 	t = Task(title, dt1, dt, 2, false, comment);
 	_tempTaskList.clear();
-	return _logic.add(t, _tempTaskList);
+	return _taskList.add(t, _tempTaskList);
 }
 
 /*
@@ -467,7 +543,7 @@ int Processor::addNormalTask(string title, BasicDateTime dt1, BasicDateTime dt2,
 	Task t;
 	t = Task(title, dt1, dt2, 2, false, comment);
 	_tempTaskList.clear();
-	return _logic.add(t, _tempTaskList);
+	return _taskList.add(t, _tempTaskList);
 }
 /*
 * Purpose: Separates the user input word by word into vector _wordsList
@@ -552,7 +628,7 @@ string Processor::taskToString(Task t){
 	}else if(t.getType() == 2){
 		return printTimedTask(t);
 	}else{
-		return UNEXPECTED_ERROR;
+		return EMPTY_STRING;
 	}
 }
 
@@ -648,14 +724,14 @@ string Processor::removeLeadingSpaces(string str){
 *
 * Returns: formatted status message of adding task
 */
-string Processor::taskVecToStringVec(vector<string>& stringTasks){
+vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
+	vector<string> temp;
 	int size=_tempTaskList.size();
-	stringTasks.push_back(taskToString(_tempTaskList.at(0)));
+	temp.push_back(taskToString(_tempTaskList.at(0)));
 	for (int i=1;i<size;i++){
-		stringTasks.push_back(taskToString(_tempTaskList.at(i)));
+		temp.push_back(taskToString(_tempTaskList.at(i)));
 	}
-
-	return feedback;
+	return temp;
 }
 
 Processor::~Processor(){

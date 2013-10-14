@@ -1,11 +1,11 @@
 #ifndef _TASK_H_
 #define _TASK_H_
 
-/*
-*This class is mainly to model a task in the real world.
+/**
+*This class is mainly to model a task in the real world. It uses
+*the BasicDateTime class for the date and time of a task.
 *
-*Additional notice: we use pointer to datetime to avoid problems with initialization. Attention to
-*memory leak.
+*
 *
 *Main author: Kai Wen
 */
@@ -26,37 +26,37 @@ private:
 
 public:
 
-	///<summary>default constructor</summary>
 	Task();
-	///<summary>overloaded constructor</summary>
-	///<value>title, start, end, type, status, comment</value>
 	Task(std::string title, BasicDateTime start, BasicDateTime end, int type, bool status, std::string comment);
 	~Task();	
-	///getter for title
 	string getTitle();
-	///getter for start
 	BasicDateTime getStart();
-	///getter for end
 	BasicDateTime getEnd();
-	///getter for type
 	int getType();
-	///getter for status; done: true; pending: false;
 	bool getDone();
-	///getter for comment
 	string getComment();
-	///toggles the status
+	/**
+	* Purpose:
+	* toggles the state of the task from pending to done or vice versa.
+	*/
 	void toggleDone();
-	///checks if a task is equal to another task
-	bool isEqualTo(Task);
-	///checks if a task clashes with another task.
-	bool isClashingWith(Task);
-	///set title
+	/**
+	* Purpose:
+	* checks if this Task is equal to argument Task
+	* @param Task the task to be compared with
+	* @return True - Tasks are equal, False - Tasks are not equal
+	*/
+	bool isEqualTo(Task another);
+	/**
+	* Purpose:
+	* checks if argument Task clashes with this Task.
+	* @param Task the task to be compared with
+	* @return True - Tasks clash, False - No clash
+	*/
+	bool isClashingWith(Task another);
 	void setTitle(string title);
-	///set start
 	void setStartDate(BasicDateTime start);
-	///set end
 	void setEndDate(BasicDateTime end);
-	///set type
 	void setType(int type);
 };
 

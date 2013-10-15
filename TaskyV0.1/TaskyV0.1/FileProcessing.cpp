@@ -16,7 +16,7 @@ int FileProcessing::load(vector<string>& data){
 				}
 			} else {
 				input.close();
-				return LOAD_WARNING_EMPTYFILE;	
+				return WARNING_LOAD_EMPTY_FILE;	
 			}
 		} else {
 			return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;

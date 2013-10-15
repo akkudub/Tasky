@@ -10,6 +10,7 @@
 
 #include "Essential.h"
 #include "HistoryCommand.h"
+#include <assert.h>
 
 
 ///record past sucessful operations and pop the last one when undo called

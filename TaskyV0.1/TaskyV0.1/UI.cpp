@@ -78,6 +78,7 @@ void UI::displayExitMessage(){
 }
 
 void UI::setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs){
+	assert(buf != NULL);
 	::system("cls");
 	COORD ord;
 	ord.X = x;

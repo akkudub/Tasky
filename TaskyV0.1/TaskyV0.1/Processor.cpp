@@ -802,11 +802,11 @@ vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
 */
 string Processor::printFloatingTask(Task t){
 	string result;
-	result="title: "+t.getTitle();
+	result="Type: Floating Task";
+	result=combineStringsWithNewLine(result, "Title: ");
+	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");
 	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Type: ");
-	result+="Floating task";
 	return result;
 }
 
@@ -819,10 +819,11 @@ string Processor::printFloatingTask(Task t){
 */
 string Processor::printDeadlineTask(Task t){
 	string result;
-	result="title: "+t.getTitle();
+	result="Type: Floating Task";
+	result=combineStringsWithNewLine(result, "Title: ");
+	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");
 	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Type: ");
 	result+="Deadline task";
 	result=combineStringsWithNewLine(result, "Deadline: ");
 	result+= t.getEnd().getDateTimeString();
@@ -838,11 +839,11 @@ string Processor::printDeadlineTask(Task t){
 */
 string Processor::printTimedTask(Task t){
 	string result;
-	result="title: "+t.getTitle();
+	result="Type: Floating Task";
+	result=combineStringsWithNewLine(result, "Title: ");
+	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");
 	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Type: ");
-	result+="Timed task";
 	result=combineStringsWithNewLine(result, "Start Date: ");
 	result+= t.getStart().getDateTimeString();
 	result=combineStringsWithNewLine(result, "End Date: ");

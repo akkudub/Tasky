@@ -60,7 +60,6 @@ private:
 	History _history;
 	Interpreter _interpreter;
 	FileProcessing _fileProcessing;
-	vector<string> *_wordsList;
 	int _statusFlag; 
 
 private:
@@ -156,15 +155,15 @@ public:
 
 private:
 	//level 1 abstraction
-	int addCommandProcessor();
-	int removeCommandProcessor();
-	int displayCommandProcessor();
-	int renameCommandProcessor();  
-	int rescheduleCommandProcessor();  
-	int markCommandProcessor();  
-	int searchCommandProcessor();
-	int undoCommandProcessor();
-	int redoCommandProcessor();
+	int addCommandProcessor(string input);
+	int removeCommandProcessor(string input);
+	int displayCommandProcessor(string input);
+	int renameCommandProcessor(string input);
+	int rescheduleCommandProcessor(string input);
+	int markCommandProcessor(string input);
+	int searchCommandProcessor(string input);
+	int undoCommandProcessor(string input);
+	int redoCommandProcessor(string input);
 	int otherCommandProcessor();
 	int saveFile();
 	int loadFile();
@@ -177,6 +176,8 @@ private:
 	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task
 
 	//additional helper methods
+	string getCommand(string& input);
+	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
 	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
 	bool choiceIsValid(vector<int> choice);
 	string combineStringsWithSpaceOnVector(int,int);//check size of vector first

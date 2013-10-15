@@ -104,6 +104,11 @@
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LogLibrary\LogLibrary\LogLibrary.vcxproj">
+      <Project>{fe395494-9f7c-4b5e-871a-42668305b376}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

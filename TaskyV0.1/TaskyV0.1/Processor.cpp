@@ -564,6 +564,51 @@ int Processor::saveFile(){
 }
 
 int Processor::loadFile(){
+	vector<string> stringsFromFile;
+	string currStr, tempStr;
+	int count;
+	bool exitFlag;
+
+	string title, comment;
+	int type;
+	bool status;
+	BasicDateTime start, end;
+
+	_fileProcessing.load(stringsFromFile);
+	for (unsigned int i = 0; i < stringsFromFile.size(); i++){
+		currStr = stringsFromFile[i];
+		stringstream ss(currStr);
+		count = 0;
+		exitFlag = false;
+		while (std::getline(ss, tempStr, NEW_LINE) && !exitFlag){
+			switch (count){
+			case 0:
+				if (tempStr.substr(6) == "Floating Task"){
+					type = 0;
+				}else if (tempStr.substr(6) == "Deadline Task"){
+					type = 1;
+				}else if (tempStr.substr(6) == "Timed Task"){
+					type = 2;			
+				}
+				count++;
+				break;
+			case 1:
+				title = tempStr.substr(7);
+				count++;
+				if (type==0){
+					exitFlag = true;
+				}
+				break;
+			case 2:
+				if (type == 1){
+
+				}
+				break;
+			}
+			Task tempTask(title, start, end, type, status, comment);
+			_taskList.add(tempTask, _tempTaskList);
+		}
+	}
 	return 0;
 }
 
@@ -819,12 +864,11 @@ string Processor::printFloatingTask(Task t){
 */
 string Processor::printDeadlineTask(Task t){
 	string result;
-	result="Type: Floating Task";
+	result="Type: Deadline Task";
 	result=combineStringsWithNewLine(result, "Title: ");
 	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");
 	result+= printStatus(t.getDone());
-	result+="Deadline task";
 	result=combineStringsWithNewLine(result, "Deadline: ");
 	result+= t.getEnd().getDateTimeString();
 	return result;
@@ -839,7 +883,7 @@ string Processor::printDeadlineTask(Task t){
 */
 string Processor::printTimedTask(Task t){
 	string result;
-	result="Type: Floating Task";
+	result="Type: Timed Task";
 	result=combineStringsWithNewLine(result, "Title: ");
 	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");

@@ -13,6 +13,22 @@ const string Interpreter::RENAME_KEY_WORD = "' to '";
 const string Interpreter::ALL_KEY_WORD = "all";
 const string Interpreter::TODAY_KEY_WORD = "today";
 const string Interpreter::TOMORROW_KEY_WORD = "tomorrow";
+const string Interpreter::THIS_KEY_WORD = "this";
+const string Interpreter::NEXT_KEY_WORD = "next";
+const string Interpreter::MON_KEY_WORD = "mon";
+const string Interpreter::MON_FULL_KEY_WORD = "monday";
+const string Interpreter::TUE_KEY_WORD = "tue";
+const string Interpreter::TUE_FULL_KEY_WORD = "tuesday";
+const string Interpreter::WED_KEY_WORD = "wed";
+const string Interpreter::WED_FULL_KEY_WORD = "wednesday";
+const string Interpreter::THU_KEY_WORD = "thu";
+const string Interpreter::THU_FULL_KEY_WORD = "thursday";
+const string Interpreter::FRI_KEY_WORD = "fri";
+const string Interpreter::FRI_FULL_KEY_WORD = "friday";
+const string Interpreter::SAT_KEY_WORD = "sat";
+const string Interpreter::SAT_FULL_KEY_WORD = "saturday";
+const string Interpreter::SUN_KEY_WORD = "sun";
+const string Interpreter::SUN_FULL_KEY_WORD = "sunday";
 
 const char Interpreter::SLASH = '/';
 const char Interpreter::DOT = '.';
@@ -287,8 +303,10 @@ bool Interpreter::fromToCheck(string str){
 	if (vec.size()==1){
 		fromFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
 	}else if (vec.size()==2){
-		fromFlag=translateDateTime(vec.at(0), vec.at(1), 1);
-	}else{
+		fromFlag=translateDateTime(vec.at(0), vec.at(1), 1) || translateNaturalDate(vec.at(0), vec.at(1), 1);
+	}else if (vec.size()==3){
+		fromFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), 1);
+    }else{
 		return false;
 	}
 	tempStr=str.substr(pos2+3);
@@ -296,8 +314,10 @@ bool Interpreter::fromToCheck(string str){
 	if (vec.size()==1){
 		toFlag=translateDateTime(vec.at(0), EMPTY_STRING, 2);
 	}else if (vec.size()==2){
-		toFlag=translateDateTime(vec.at(0), vec.at(1), 2);
-	}else{
+		toFlag=translateDateTime(vec.at(0), vec.at(1), 2) || translateNaturalDate(vec.at(0), vec.at(1), 2);
+	}else if(vec.size()==3){
+		toFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), 2);
+    }else{
 		return false;
 	}
 	return fromFlag&&toFlag;
@@ -326,10 +346,10 @@ bool Interpreter::byCheck(string str){
 bool Interpreter::translateDateTime(string str1, string str2, int either){
 	bool dateFlag=false, timeFlag=false;
 	if(str2!=EMPTY_STRING){
-		dateFlag=translateDate(str1, either);
-		timeFlag=translateTime(str2, either);
+		dateFlag=interpretDate(str1, either);
+		timeFlag=interpretTime(str2, either);
 	}else if(str1!=EMPTY_STRING){
-		dateFlag=translateDate(str1, either);
+		dateFlag=interpretDate(str1, either);
 		timeFlag=true;
 		setTimeParams(0, 0, 0, either);
 	}else{
@@ -338,11 +358,33 @@ bool Interpreter::translateDateTime(string str1, string str2, int either){
 	return dateFlag&&timeFlag;
 }
 
-bool Interpreter::translateDate(string str1, int either){
+bool Interpreter::translateNaturalDateTime(string str1, string str2, string str3, int either){
+	return translateNaturalDate(str1, str2, either) && interpretTime(str3, either);
+}
+
+bool Interpreter::translateOnlyDate(string str1, int either){
+	return interpretDate(str1, either);
+}
+
+bool Interpreter::translateNaturalDate(string str1, string str2, int either){
+	int todayOfWeek=mapTodayDayOfWeek(), thatOfWeek=mapDayOfWeekToInt(str2);
+	if (thatOfWeek==INTERNAL_ERROR_CODE){
+		return false;
+	}
+	if (str1 == THIS_KEY_WORD){
+		return dateThisOrNextDateFormat(thatOfWeek-todayOfWeek, 0, either);
+	}else if (str1 == NEXT_KEY_WORD){
+		return dateThisOrNextDateFormat(thatOfWeek-todayOfWeek, 1, either);
+	}else{
+		return false;  //possibly a bug or wrong input from the user
+	}
+}
+
+bool Interpreter::interpretDate(string str1, int either){
 	return dateStandardInput(str1, either) || dateTodayOrTomorrow(str1, either);
 }
 
-bool Interpreter::translateTime(string str1, int either){
+bool Interpreter::interpretTime(string str1, int either){
 	return timeStandardInput(str1, DOT, either)||timeSpecialNumsOnly(str1, either)||timeStandardInput(str1, COLON, either);
 }
 
@@ -408,6 +450,17 @@ bool Interpreter::dateTodayOrTomorrow(string str, int either){
 	return false;
 }
 
+bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
+	DateTime dt=DateTime::Now;
+	int incremental=week*7+day;
+	if (incremental < 0){
+		return false;
+	}
+	dt.AddDays(incremental);
+	setDateParams(dt.Year, dt.Month, dt.Day, either);
+	return true;
+}
+
 bool Interpreter::timeStandardInput(string str, char delim, int either){
 	bool hourFlag=false, minuteFlag=false, secondFlag=false;
 	int hour, minute, second;
@@ -466,40 +519,46 @@ bool Interpreter::timeSpecialNumsOnly(string str, int either){
 	}
 }
 
-int Interpreter::extractDateTimeForReschdule(string str){
-	bool dateTimeFlag1=false, dateTimeFlag2=false;
-	vector<string> vec=breakStringWithDelim(str, SPACE);
-	int size=vec.size();
-	if (size>=5 || size<=1){
-		return -1;
-	}else if(size==4){
-		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
-		dateTimeFlag2=translateDateTime(vec.at(2), vec.at(3), 2);
-	}else if(size==3){  //not allowed for now
-		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
-		dateTimeFlag2=translateDateTime(vec.at(2), EMPTY_STRING, 2);
-	}else if(size==2){
-		dateTimeFlag1=translateDateTime(vec.at(0), vec.at(1), 1);
-	}
-	if (dateTimeFlag1&&dateTimeFlag2){
-		return 2;
-	}else if(dateTimeFlag1){
-	    return 1;
-    }else{
-		return 0;
+int Interpreter::mapTodayDayOfWeek(){
+	DateTime dt=DateTime::Now;
+	if (dt.DayOfWeek == System::DayOfWeek::Sunday){
+		return INT_SUNDAY;
+	}if (dt.DayOfWeek == System::DayOfWeek::Monday){
+		return INT_MONDAY;
+	}else if(dt.DayOfWeek == System::DayOfWeek::Tuesday){
+		return INT_TUESDAY;
+	}else if(dt.DayOfWeek == System::DayOfWeek::Wednesday){
+		return INT_WEDNESDAY;
+	}else if(dt.DayOfWeek == System::DayOfWeek::Thursday){
+		return INT_THURSDAY;
+	}else if(dt.DayOfWeek == System::DayOfWeek::Friday){
+		return INT_FRIDAY;
+	}else if(dt.DayOfWeek == System::DayOfWeek::Saturday){
+		return INT_SATURDAY;
+	}else{
+		return INTERNAL_ERROR_CODE;
 	}
 }
 
-vector<string> Interpreter::breakStringWithDelim(string str, char delim){
-	vector<string> vec;
-	stringstream ss(str);
-	string tempStr;
-	while (std::getline(ss, tempStr, delim)){
-		if (tempStr!=EMPTY_STRING){
-			vec.push_back(tempStr);
-		}
+int Interpreter::mapDayOfWeekToInt(const string& str){
+	string str1=toLowerCase(str);
+	if (str1==SUN_KEY_WORD || str1==SUN_FULL_KEY_WORD){
+		return INT_SUNDAY;
+	}else if(str1==MON_KEY_WORD || str1==MON_FULL_KEY_WORD){
+		return INT_MONDAY;
+	}else if(str1==TUE_KEY_WORD || str1==TUE_FULL_KEY_WORD){
+		return INT_TUESDAY;
+	}else if(str1==WED_KEY_WORD || str1==WED_FULL_KEY_WORD){
+		return INT_WEDNESDAY;
+	}else if(str1==THU_KEY_WORD || str1==THU_FULL_KEY_WORD){
+		return INT_THURSDAY;
+	}else if(str1==FRI_KEY_WORD || str1==FRI_KEY_WORD){
+		return INT_FRIDAY;
+	}else if(str1==SAT_KEY_WORD || str1==SAT_FULL_KEY_WORD){
+		return INT_SATURDAY;
+	}else{
+		return INTERNAL_ERROR_CODE;
 	}
-	return vec;
 }
 
 void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int either){
@@ -524,6 +583,18 @@ void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue,
 		_end.setMinute(minuteValue);
 		_end.setSec(secondValue);
 	}
+}
+
+vector<string> Interpreter::breakStringWithDelim(string str, char delim){
+	vector<string> vec;
+	stringstream ss(str);
+	string tempStr;
+	while (std::getline(ss, tempStr, delim)){
+		if (tempStr!=EMPTY_STRING){
+			vec.push_back(tempStr);
+		}
+	}
+	return vec;
 }
 
 string Interpreter::removeLeadingSpaces(string str){

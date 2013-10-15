@@ -167,11 +167,11 @@ private:
 	int redoCommandProcessor();
 	int otherCommandProcessor();
 	int saveFile();
+	int loadFile();
 
 	int feedbackToUI(int returnCode, string& message, vector<string>& list);
 
 	//for add command processing
-	//string determineMsgToUI(int);
 	int addFloatingTask(string, string);//need to refactor to only create a task
 	int addDeadlineTask(string, BasicDateTime, string);//need to refactor to only create a task
 	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task

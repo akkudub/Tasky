@@ -290,8 +290,9 @@ int Processor::displayCommandProcessor(){
 	string user_command;
 	BasicDateTime start, end;
 	bool status;
+	int type;
 	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
-	int return_code = _interpreter.interpretDisplay(user_command, start, end, status);
+	int return_code = _interpreter.interpretDisplay(user_command, type, start, end, status);
 	if (return_code == 0){
 		return _taskList.displayAll(_tempTaskList);
 
@@ -451,11 +452,12 @@ int Processor::searchCommandProcessor(){
 	vector<string> keywords;
 	string user_command;
 	BasicDateTime start, end;
+	int type;
 
 	user_command = combineStringsWithSpaceOnVector(1, _wordsList->size()-1);
 	_tempTaskList.clear();
 	breakIntoStringVectorBySpace(_tempTitle, keywords);
-	int return_code = _interpreter.interpretSearch(user_command, keywords, start, end);
+	int return_code = _interpreter.interpretSearch(user_command, keywords, type, start, end);
 
 	if (return_code == 0){
 		return _taskList.searchKeywords(keywords, _tempTaskList);
@@ -469,6 +471,14 @@ int Processor::searchCommandProcessor(){
 }
 
 
+int Processor::undoCommandProcessor(){
+	return 0;
+}
+
+int Processor::redoCommandProcessor(){
+	return 0;
+}
+
 int Processor::otherCommandProcessor(){
 	return WARNING_WRONG_INPUT;
 }
@@ -481,6 +491,10 @@ int Processor::saveFile(){
 		allTasksString.push_back(taskToString(allTasks[i]));
 	}
 	return _fileProcessing.save(allTasksString);
+}
+
+int Processor::loadFile(){
+	return 0;
 }
 
 /*

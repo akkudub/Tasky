@@ -88,6 +88,7 @@ private:
 	static const int MINUTE_UPPER_BOUND=59;
 	static const int SECOND_LOWER_BOUND=0;
 	static const int SECOND_UPPER_BOUND=59;
+	static const int TEN_FOR_STR_INT_CONVERTION=10;
 
 	static const int EITHER_AS_START=1;
 	static const int EITHER_AS_END=2;

@@ -170,19 +170,15 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 int Interpreter::interpretMark(string str, string& title, bool& status){
 	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
-	if (extractTitle(str, title, posQuote1, posQuote2)){
-		if (str.size()==posQuote2+1){
-			title=EMPTY_STRING;
-			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
-		}
-		if (str.find(DONE_KEY_WORD, posQuote2+1)!=std::string::npos){
-			status=true;
-		}else if(str.find(PENDING_KEY_WORD, posQuote2+1)!=std::string::npos){
-			status=false;
-		}else{
-			title=EMPTY_STRING;
-			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
-		}
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
+	}
+	if (str.find(DONE_KEY_WORD, posQuote2+1)!=std::string::npos){
+		status=true;
+	}else if(str.find(PENDING_KEY_WORD, posQuote2+1)!=std::string::npos){
+		status=false;
+	}else{
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK;
 }
@@ -202,9 +198,9 @@ int Interpreter::stringToInt(string str){
 	int size=str.size();
 	for (int i=0;i<size;i++){
 		if (str[i]>=ZERO && str[i]<=NINE){
-			num=num*10+str[i]-ZERO;
+			num=num*TEN_FOR_STR_INT_CONVERTION+str[i]-ZERO;
 		}else{
-			return -1;
+			return INTERNAL_ERROR_CODE;
 		}
 	}
 	return num;

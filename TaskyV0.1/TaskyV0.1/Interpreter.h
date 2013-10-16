@@ -172,6 +172,14 @@ public:
 	 *@return string of the input string 
 	 */
 	string toLowerCase(string input);
+	/**
+	 *take a standard string and try to parse it into the format of BasicDateTime
+	 *e.g. "30/09/2013 12:00:04"
+	 *@param input (string)
+	 *@param time (BasicDateTime reference)
+	 *@return status code
+	 */
+	int stringToBasicDateTime(string input, BasicDateTime& time);
 	///destructor
 	~Interpreter();
 
@@ -197,6 +205,9 @@ private:
 	int mapDayOfWeekToInt(const string& str);
 	void setDateParams(int yearValue, int monthValue, int dayValue, int either);
 	void setTimeParams(int hourValue, int minuteValue, int secondValue, int either);
+	bool validateDate(int year, int month, int day);
+	bool validateYear(int year);
+	bool validateMonthDay(int month, int day, bool leap);
 
 	vector<string> breakStringWithDelim(string str, char delim);
 	string removeLeadingSpaces(string str);

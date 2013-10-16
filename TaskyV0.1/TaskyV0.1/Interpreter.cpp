@@ -67,10 +67,12 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 		end=_end;
 		type=TWO_DATETIME;
 	}else if(byFlag){
+		start=_start;
 		end=_end;
 		type=ONE_DATETIME;
 	}else{
 		type=NO_DATETIME;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 }
@@ -266,6 +268,22 @@ string Interpreter::toLowerCase(string str){
 	return str;
 }
 
+int Interpreter::stringToBasicDateTime(string input, BasicDateTime& time){
+	vector<string> vec=breakStringWithDelim(input, SPACE);
+	bool flag=false;
+	if (vec.size()!=2){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_STRINGTODATETIME;
+	}else{
+		flag=translateDateTime(vec.at(0), vec.at(1), 2);
+	}
+	if (!flag){
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_STRINGTODATETIME;
+	}else{
+		time=_end;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_STRINGTODATETIME;
+}
+
 bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int& pos2){
 	if (str.find_first_of(SINGLE_QUOTE)!=std::string::npos){
 		pos1=str.find_first_of(SINGLE_QUOTE);
@@ -330,10 +348,12 @@ bool Interpreter::byCheck(string str){
 	tempStr=str.substr(3);
 	vec=breakStringWithDelim(tempStr, SPACE);
 	if (vec.size()==1){
-		byFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
+		byFlag=translateDateTime(vec.at(0), EMPTY_STRING, 2);
 	}else if (vec.size()==2){
-		byFlag=translateDateTime(vec.at(0), vec.at(1), 1);
-	}else{
+		byFlag=translateDateTime(vec.at(0), vec.at(1), 2) || translateNaturalDate(vec.at(0), vec.at(1), 2);
+	}else if (vec.size()==3){
+		byFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), 2);
+    }else{
 		return false;
 	}
 	if (byFlag){
@@ -424,13 +444,12 @@ bool Interpreter::dateStandardInput(string str, int either){
 		yearFlag=true;
 	}
 	if (yearFlag&&monthFlag&&dayFlag){
-		try{
-			DateTime dt(year, month, day, 0, 0, 0);
-		}catch (const exception& e){
+		if (validateDate(year, month, day)){
+		    setDateParams(year, month, day, either);
+		    return true;
+		}else{
 			return false;
 		}
-		setDateParams(year, month, day, either);
-		return true;
 	}else{
 		return false;
 	}
@@ -456,7 +475,7 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 	if (incremental < 0){
 		return false;
 	}
-	dt.AddDays(incremental);
+	dt=dt.AddDays(incremental);
 	setDateParams(dt.Year, dt.Month, dt.Day, either);
 	return true;
 }
@@ -583,6 +602,56 @@ void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue,
 		_end.setMinute(minuteValue);
 		_end.setSec(secondValue);
 	}
+}
+
+bool Interpreter::validateDate(int year, int month, int day){
+	if (!validateYear(year)){
+		return false;
+	}
+	if (System::DateTime::IsLeapYear(year)){
+		return validateMonthDay(month, day, false);
+	}else{
+		return validateMonthDay(month, day, true);
+	}
+	return true;
+}
+
+bool Interpreter::validateYear(int year){
+	if (year>=2000 && year<=3000){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::validateMonthDay(int month, int day, bool leap){
+	bool valid=false;
+	switch (month){
+	case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+		if (day>=1 && day<=31){
+			valid=true;
+		}
+		break;
+	case 4: case 6: case 9: case 11:
+		if (day>=1 && day<=30){
+			valid=true;
+		}
+		break;
+	case 2:
+		if (leap){
+			if (day>=1 && day<=29){
+				valid=true;
+			}
+		}else{
+			if (day>=1 && day<=28){
+				valid=true;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return valid;
 }
 
 vector<string> Interpreter::breakStringWithDelim(string str, char delim){

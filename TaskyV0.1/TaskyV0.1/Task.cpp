@@ -72,7 +72,6 @@ bool Task::isEqualTo(Task another){
 		break;
 
 	}
-	return false;
 }
 
 

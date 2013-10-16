@@ -101,7 +101,6 @@
     <ClCompile Include="HistoryCommand.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Processor.cpp" />
-    <ClCompile Include="TaskList-v2.cpp" />
     <ClCompile Include="TaskList.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Task.cpp" />

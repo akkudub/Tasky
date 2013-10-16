@@ -39,3 +39,17 @@ int History::record(HistoryCommand hist) {
 	}
 	return STATUS_CODE_SET_ERROR::ERROR_RECORD;
 }
+
+int History::redo(HistoryCommand& hist) {
+	int currentSize = _redoRecord.size();
+	if(currentSize > 0) {
+		hist = _redoRecord.back();
+		_redoRecord.pop_back();
+		assert(_redoRecord.size() == currentSize - 1);
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_REDO;
+	} else {
+		assert(currentSize == 0);
+		return STATUS_CODE_SET_WARNING::WARNING_REDO_NO_TASKS;
+	}
+	return STATUS_CODE_SET_ERROR::ERROR_REDO;
+}

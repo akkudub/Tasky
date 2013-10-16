@@ -53,25 +53,11 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
-
-	if (str.find(FROM_KEY_WORD, posQuote2+1)!=std::string::npos){
-		fromToFlag=fromToCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
-	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
-		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
-	}else{
+	if (!firstCheckForFromToOrBy(str.substr(posQuote2+1, posDashM-posQuote2-1), fromToFlag, byFlag)){
 		type = NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 	}
-
-	if (fromToFlag){
-        start=_start;
-		end=_end;
-		type=TWO_DATETIME;
-	}else if(byFlag){
-		start=_start;
-		end=_end;
-		type=ONE_DATETIME;
-	}else{
+	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
@@ -168,26 +154,14 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
-	if (extractTitle(str, title, posQuote1, posQuote2)){
-		if (str.find(FROM_KEY_WORD)!=std::string::npos){
-		    fromToFlag=fromToCheck(str.substr(posQuote2+1));
-		}else if(str.find(BY_KEY_WORD)!=std::string::npos){
-		    byFlag=byCheck(str.substr(posQuote2+1));
-		}else{
-			type=NO_DATETIME;
-			return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
-		}
-	}else{
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
 	}
-	if (fromToFlag){
-		start=_start;
-		end=_end;
-		type=TWO_DATETIME;
-	}else if(byFlag){
-		end=_end;
-		type=ONE_DATETIME;
-	}else{
+	if (!firstCheckForFromToOrBy(str.substr(posQuote2+1), fromToFlag, byFlag)){
+		type=NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
+	}
+	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
@@ -323,6 +297,35 @@ bool Interpreter::extractComment(const string& str, string& comment, int& pos){
 		comment=EMPTY_STRING;
 	}
 	return true;
+}
+
+bool Interpreter::firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){
+	if (str.find(FROM_KEY_WORD)!=std::string::npos){
+		fromToFlag=fromToCheck(str);
+		return true;
+	}else if(str.find(BY_KEY_WORD)!=std::string::npos){
+		byFlag=byCheck(str);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::judgeFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end){
+	assert(!(fromToFlag&&byFlag));
+	if (fromToFlag){
+        start=_start;
+		end=_end;
+		type=TWO_DATETIME;
+		return true;
+	}else if(byFlag){
+		start=_start;
+		end=_end;
+		type=ONE_DATETIME;
+		return true;
+	}else{
+		return false;
+	}
 }
 
 bool Interpreter::fromToCheck(string str){

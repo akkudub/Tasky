@@ -213,6 +213,8 @@ private:
 	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
 	bool extractComment(const string& str, string& comment, int& pos);
 
+	bool firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
+	bool judgeFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
 	bool fromToCheck(string str);
 	bool byCheck(string str);
 	bool translateDateTime(string str1, string str2, int either);  //will take in more strings as we progress

@@ -1,5 +1,5 @@
-#ifndef _FILEPROCESSING_H_
-#define _FILEPROCESSING_H_
+#ifndef FILEPROCESSING_H
+#define FILEPROCESSING_H
 
 /*
  *This class is mainly for file-related operations. At the starting phase of the program, it will load existing 

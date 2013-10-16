@@ -9,7 +9,12 @@
 using namespace System;
 using namespace msclr::interop;
 
-///wrap date and time into a simple class
+/**
+* Tasky's version of storing date and time 
+* 1. able to set based on date, month, year ,  hour , min , sec
+* 2. able to compare to another BasicDateTime object based on contained DateTime object
+* 3. format the date and time to be inclusive of 0s
+*/
 
 class BasicDateTime
 {
@@ -29,53 +34,107 @@ private:
 	static const int ZERO=0;
 
 public:	
-	///default constructor
+	/**
+	* default constructor 
+	*/
 	BasicDateTime();
-	///year, month, day
+	/**
+	* year, month, day
+	*/
 	BasicDateTime(int year, int month, int day);
-	///year, month, day, hour, minute
+	/**
+	* year, month, day, hour, minute
+	*/
 	BasicDateTime(int year, int month, int day, int hour, int minute);
-	///year, month, day, hour, minute, sec
+	/**
+	* year, month, day, hour, minute, sec
+	*/
 	BasicDateTime(int, int, int, int, int, int);
-	///destructor
+	/** 
+	* destructor
+	*/
 	~BasicDateTime();
-	///setter 1
+	/**
+	* setter 1 : year, month , day
+	*/
 	void setDateTime(int year, int month, int day);
-	///setter 2
+	/**
+	* setter 2 : year, month, day, hour, minute
+	*/
 	void setDateTime(int year, int month, int day, int hour, int minute);
-	///setter 3
+	/**
+	* setter 3 : year, month, day, hour, minute, sec
+	*/
 	void setDateTime(int year, int month, int day, int hour, int minute, int sec);
-	///getter for year
+	/**
+	* getter for year
+	*/
 	int getYear();
-	///setter for year
+	/** 
+	* setter for year
+	*/
 	void setYear(int year);
-	///getter for month
+	/**
+	* getter for month
+	*/
 	int getMonth();
-	///setter for month
+	/**
+	* setter for month
+	*/
 	void setMonth(int month);
-	///getter for day
+	/** 
+	* getter for day
+	*/
 	int getDay();
-	///setter for day
+	/**
+	* setter for day
+	*/
 	void setDay(int day);
-	///getter for hour
+	/**
+	* getter for hour
+	*/
 	int getHour();
-	///setter for hour
+	/**
+	* setter for hour
+	*/
 	void setHour(int hour);
-	///getter for minute
+	/**
+	* getter for minute
+	*/
 	int getMinute();
-	///setter for minute
+	/**
+	* setter for minute
+	*/
 	void setMinute(int minute);
-	///getter for sec
+	/**
+	* getter for sec
+	*/
 	int getSec();
-	///setter for sec
+	/**
+	* setter for sec
+	*/
 	void setSec(int sec);
-	///translate the datetime into string
+	/**
+	* Purpose : translate the datetime into string
+	* @return date and time in a string
+	*/
 	string getDateTimeString();
-	///compare to another BasicDateTime object
+	/*
+	* Purpose :
+	* compare to another BasicDateTime object based on internal DateTime object comparison
+	* @param another BasicDateTime Object to be compared to
+	* @return value of comparision(compareTo)
+	*/
 	int compareTo(BasicDateTime another);
 
 private:
-	string addZeroFromFront(string);
+	/*
+	* Purpose :
+	* determines if the string needs to add 0 to make it date/time compatible
+	* @param str date/time to be checked
+	* @return formatted string
+	*/
+	string addZeroFromFront(string str);
 };
 
 #endif

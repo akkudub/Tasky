@@ -36,20 +36,23 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 	vector<string> feedback;
 	int output = _processor.UImainProcessor(command, message, feedback);
 	switch(output){
-	case -1:
+	case STATUS_CODE_SET_OVERALL::OVERALL_ERROR:
 		SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
 		break;
-	case 0:
+	case STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS:
 		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 		break;
-	case 1:
+	case STATUS_CODE_SET_OVERALL::OVERALL_WARNING:
+	case STATUS_CODE_SET_OVERALL::OVERALL_PROMPT:
 		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN |FOREGROUND_RED | FOREGROUND_INTENSITY);
 		break;
 	}
+	cout << endl;
 	cout << message << endl;
 
 	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 	for (string str:feedback){
+		cout << endl;
 		cout << str << endl;
 	}
 }

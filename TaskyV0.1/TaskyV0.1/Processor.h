@@ -180,16 +180,14 @@ private:
 	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
 	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
 	bool choiceIsValid(vector<int> choice);
-	string combineStringsWithSpaceOnVector(int,int);//check size of vector first
-	string combineStringsWithNewLineOnVector(int,int);
 	string combineStringsWithNewLine(string, string);
 	string taskToString(Task);
+	vector<string> taskVecToStringVec(vector<Task> taskList);
+
 	string printFloatingTask(Task);
 	string printDeadlineTask(Task);
 	string printTimedTask(Task);
 	string printStatus(bool);
-	string removeLeadingSpaces(string);
-	vector<string> taskVecToStringVec(vector<Task> taskList);
 };
 
 #endif

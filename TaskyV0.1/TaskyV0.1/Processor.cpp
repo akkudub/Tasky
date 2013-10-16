@@ -7,73 +7,6 @@ const string Processor::TO_KEY_WORD = "to";
 const string Processor::BY_KEY_WORD = "by";
 const string Processor::NEW_LINE_STRING = "\n";
 
-const string Processor::MESSAGE_ARRAY [] = {
-	MESSAGE_OVERALL_SUCCESS,
-	MESSAGE_OVERALL_WARNING,
-	MESSAGE_OVERALL_ERROR,
-	MESSAGE_OVERALL_PROMPT,
-	MESSAGE_OVERALL_EXIT,
-
-	MESSAGE_SUCCESS_ADD,
-	MESSAGE_SUCCESS_REMOVE,
-	MESSAGE_SUCCESS_DISPLAY,
-	MESSAGE_SUCCESS_UPDATE,
-	MESSAGE_SUCCESS_RESHCEDULE,
-	MESSAGE_SUCCESS_MARK,
-	MESSAGE_SUCCESS_SEARCH,
-	MESSAGE_SUCCESS_LOAD,
-	MESSAGE_SUCCESS_SAVE,
-	MESSAGE_SUCCESS_UNDO,
-	MESSAGE_SUCCESS_REDO,
-	MESSAGE_SUCCESS_RECORD,
-	MESSAGE_SUCCESS_INTERPRET_ADD,
-	MESSAGE_SUCCESS_INTERPRET_REMOVE,
-	MESSAGE_SUCCESS_INTERPRET_DISPLAY,
-	MESSAGE_SUCCESS_INTERPRET_RENAME,
-	MESSAGE_SUCCESS_INTERPRET_RESCHEDULE,	
-	MESSAGE_SUCCESS_INTERPRET_MARK,
-	MESSAGE_SUCCESS_INTERPRET_SEARCH,
-
-	MESSAGE_WARNING_ADD_CLASH,	
-	MESSAGE_WARNING_ADD_DUPLICATE,
-	MESSAGE_WARNING_DISPLAY_NO_RESULT,
-	MESSAGE_WARNING_UPDATE_SAME,	
-	MESSAGE_WARNING_UPDATE_CLASH,
-	MESSAGE_WARNING_MARK_NO_CHANGE,
-	MESSAGE_WARNING_SEARCH_NO_RESULT,
-	MESSAGE_WARNING_UNDO_NO_TASKS,
-	MESSAGE_WARNING_LOAD_EMPTY_FILE,	
-	MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE,
-	MESSAGE_WARNING_WRONG_INPUT,
-
-	MESSAGE_ERROR_ADD,
-	MESSAGE_ERROR_REMOVE,
-	MESSAGE_ERROR_DISPLAY,
-	MESSAGE_ERROR_UPDATE,
-	MESSAGE_ERROR_MARK,
-	MESSAGE_ERROR_SEARCH,
-	MESSAGE_ERROR_UNDO,
-	MESSAGE_ERROR_LOAD_OPENFILE,
-	MESSAGE_ERROR_SAVE_SAVEFILE,
-	MESSAGE_ERROR_RECORD,
-	MESSAGE_ERROR_INTERPRET_EMPTY_INPUT,
-	MESSAGE_ERROR_INTERPRET_TITLE_FORMAT,
-	MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT,
-	MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD,
-	MESSAGE_ERROR_INTERPRET_ADD,
-	MESSAGE_ERROR_INTERPRET_REMOVE,
-	MESSAGE_ERROR_INTERPRET_DISPLAY,
-	MESSAGE_ERROR_INTERPRET_RENAME,	
-	MESSAGE_ERROR_INTERPRET_RESCHEDULE,
-	MESSAGE_ERROR_INTERPRET_MARK,
-	MESSAGE_ERROR_INTERPRET_SEARCH,
-
-	MESSAGE_PROMPT_REMOVE_CHOOSE,
-	MESSAGE_PROMPT_RENAME_CHOOSE,
-	MESSAGE_PROMPT_RESCHEDULE_CHOOSE,
-	MESSAGE_PROMPT_MARK_CHOOSE,
-};
-
 const string Processor::MESSAGE_OVERALL_SUCCESS =		"Success!";
 const string Processor::MESSAGE_OVERALL_WARNING =		"Warning!";
 const string Processor::MESSAGE_OVERALL_ERROR =			"Error!";
@@ -99,6 +32,7 @@ const string Processor::MESSAGE_SUCCESS_INTERPRET_RENAME = "Success! Interpreted
 const string Processor::MESSAGE_SUCCESS_INTERPRET_RESCHEDULE = "Success! Interpreted reschedule";
 const string Processor::MESSAGE_SUCCESS_INTERPRET_MARK = "Success! Interpreted mark";
 const string Processor::MESSAGE_SUCCESS_INTERPRET_SEARCH = "Success! Interpreted search";
+const string Processor::MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME = "Success! Interpreted Date";
 
 const string Processor::MESSAGE_WARNING_ADD_CLASH =		"Warning! Task clashes with existing ones";
 const string Processor::MESSAGE_WARNING_ADD_DUPLICATE = "Warning! Task already exists";
@@ -133,11 +67,81 @@ const string Processor::MESSAGE_ERROR_INTERPRET_RENAME = "Error! Unexpected erro
 const string Processor::MESSAGE_ERROR_INTERPRET_RESCHEDULE = "Error! Unexpected error while interpreting reschedule";
 const string Processor::MESSAGE_ERROR_INTERPRET_MARK = "Error! Unexpected error while interpreting mark";
 const string Processor::MESSAGE_ERROR_INTERPRET_SEARCH = "Error! Unexpected error while interpreting search";
+const string Processor::MESSAGE_ERROR_INTERPRET_STRINGTODATETIME = "Error! Unexpected error while interpreting datetime";
 
 const string Processor::MESSAGE_PROMPT_REMOVE_CHOOSE =	"Enter task number to remove:";
 const string Processor::MESSAGE_PROMPT_RENAME_CHOOSE =	"Enter task number to rename:";
 const string Processor::MESSAGE_PROMPT_RESCHEDULE_CHOOSE = "Enter task number to reschedule:";
 const string Processor::MESSAGE_PROMPT_MARK_CHOOSE =	"Enter task number to mark:";
+
+const string Processor::MESSAGE_ARRAY [MAX_MESSAGES] = {
+	MESSAGE_OVERALL_SUCCESS,
+	MESSAGE_OVERALL_WARNING,
+	MESSAGE_OVERALL_ERROR,
+	MESSAGE_OVERALL_PROMPT,
+	MESSAGE_OVERALL_EXIT,
+
+	MESSAGE_SUCCESS_ADD,
+	MESSAGE_SUCCESS_REMOVE,
+	MESSAGE_SUCCESS_DISPLAY,
+	MESSAGE_SUCCESS_UPDATE,
+	MESSAGE_SUCCESS_RESHCEDULE,
+	MESSAGE_SUCCESS_MARK,
+	MESSAGE_SUCCESS_SEARCH,
+	MESSAGE_SUCCESS_LOAD,
+	MESSAGE_SUCCESS_SAVE,
+	MESSAGE_SUCCESS_UNDO,
+	MESSAGE_SUCCESS_REDO,
+	MESSAGE_SUCCESS_RECORD,
+	MESSAGE_SUCCESS_INTERPRET_ADD,
+	MESSAGE_SUCCESS_INTERPRET_REMOVE,
+	MESSAGE_SUCCESS_INTERPRET_DISPLAY,
+	MESSAGE_SUCCESS_INTERPRET_RENAME,
+	MESSAGE_SUCCESS_INTERPRET_RESCHEDULE,	
+	MESSAGE_SUCCESS_INTERPRET_MARK,
+	MESSAGE_SUCCESS_INTERPRET_SEARCH,
+	MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME,
+
+	MESSAGE_WARNING_ADD_CLASH,	
+	MESSAGE_WARNING_ADD_DUPLICATE,
+	MESSAGE_WARNING_DISPLAY_NO_RESULT,
+	MESSAGE_WARNING_UPDATE_SAME,	
+	MESSAGE_WARNING_UPDATE_CLASH,
+	MESSAGE_WARNING_MARK_NO_CHANGE,
+	MESSAGE_WARNING_SEARCH_NO_RESULT,
+	MESSAGE_WARNING_UNDO_NO_TASKS,
+	MESSAGE_WARNING_LOAD_EMPTY_FILE,	
+	MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE,
+	MESSAGE_WARNING_WRONG_INPUT,
+
+	MESSAGE_ERROR_ADD,
+	MESSAGE_ERROR_REMOVE,
+	MESSAGE_ERROR_DISPLAY,
+	MESSAGE_ERROR_UPDATE,
+	MESSAGE_ERROR_MARK,
+	MESSAGE_ERROR_SEARCH,
+	MESSAGE_ERROR_UNDO,
+	MESSAGE_ERROR_LOAD_OPENFILE,
+	MESSAGE_ERROR_SAVE_SAVEFILE,
+	MESSAGE_ERROR_RECORD,
+	MESSAGE_ERROR_INTERPRET_EMPTY_INPUT,
+	MESSAGE_ERROR_INTERPRET_TITLE_FORMAT,
+	MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT,
+	MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD,
+	MESSAGE_ERROR_INTERPRET_ADD,
+	MESSAGE_ERROR_INTERPRET_REMOVE,
+	MESSAGE_ERROR_INTERPRET_DISPLAY,
+	MESSAGE_ERROR_INTERPRET_RENAME,	
+	MESSAGE_ERROR_INTERPRET_RESCHEDULE,
+	MESSAGE_ERROR_INTERPRET_MARK,
+	MESSAGE_ERROR_INTERPRET_SEARCH,
+	MESSAGE_ERROR_INTERPRET_STRINGTODATETIME,
+
+	MESSAGE_PROMPT_REMOVE_CHOOSE,
+	MESSAGE_PROMPT_RENAME_CHOOSE,
+	MESSAGE_PROMPT_RESCHEDULE_CHOOSE,
+	MESSAGE_PROMPT_MARK_CHOOSE,
+};
 
 const char Processor::SLASH = '/';
 const char Processor::BACK_SLASH = '\\';
@@ -151,6 +155,7 @@ const char Processor::NEW_LINE = '\n';
 
 Processor::Processor(){
 	_statusFlag=0;
+	loadFile();
 }
 
 /*
@@ -546,7 +551,34 @@ int Processor::undoCommandProcessor(string input){
 }
 
 int Processor::redoCommandProcessor(string input){
-	return 0;//no api in history!
+	Task oldTask, newTask;
+	COMMAND_TYPES type = COMMAND_TYPES::ADD;//Just for initialization
+	int addResult;
+	HistoryCommand command(type, oldTask, newTask);
+	int returnCode = _history.redo(command);
+	_tempTaskList.clear();
+	if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UNDO){
+		switch (command.getCommandTypeRedo()){
+		case COMMAND_TYPES::ADD:
+			addResult = _taskList.add(command.getNew(), _tempTaskList);
+			if (addResult != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+				_tempTaskList.push_back(command.getNew());
+			}
+			return addResult;
+			break;
+		case COMMAND_TYPES::REMOVE:
+			_tempTaskList.push_back(command.getOld());
+			return _taskList.remove(command.getOld());
+			break;
+		case COMMAND_TYPES::UPDATE:
+			_tempTaskList.push_back(command.getOld());
+			_tempTaskList.push_back(command.getNew());
+			return _taskList.update(command.getOld(), command.getNew(), _tempTaskList);
+		default:
+			break;
+		}
+	}
+	return returnCode;
 }
 
 int Processor::otherCommandProcessor(){
@@ -565,7 +597,7 @@ int Processor::saveFile(){
 
 int Processor::loadFile(){
 	vector<string> stringsFromFile;
-	string currStr, tempStr;
+	string currStr, tempStr, statusString;
 	int count;
 	bool exitFlag;
 
@@ -595,14 +627,33 @@ int Processor::loadFile(){
 			case 1:
 				title = tempStr.substr(7);
 				count++;
+				break;
+			case 2:
+				statusString = tempStr.substr(8);
+				if (statusString == "done"){
+					status = true;
+				}else if (statusString == "pending"){
+					status = false;
+				}
 				if (type==0){
 					exitFlag = true;
 				}
+				count++;
 				break;
-			case 2:
-				if (type == 1){
-
+			case 3:
+				if(type == 1){
+					_interpreter.stringToBasicDateTime(tempStr.substr(10), end);
+					exitFlag = true;
+				}else if (type == 2){
+					_interpreter.stringToBasicDateTime(tempStr.substr(12), start);
 				}
+				count++;
+				break;
+			case 4:
+				if (type == 2){
+					_interpreter.stringToBasicDateTime(tempStr.substr(10), end);
+				}
+				exitFlag = true;
 				break;
 			}
 			Task tempTask(title, start, end, type, status, comment);
@@ -628,6 +679,7 @@ int Processor::feedbackToUI(int returnCode, string& message, vector<string>& lis
 		returnCode<=STATUS_CODE_SET_PROPMT::PROMPT_MARK_CHOOSE);
 
 	message = MESSAGE_ARRAY[returnCode];
+
 	if (returnCode == STATUS_CODE_SET_OVERALL::OVERALL_EXIT){
 		message += MESSAGE_ARRAY[saveFile()];
 		list.clear();
@@ -749,8 +801,9 @@ string Processor::getCommand(string& input){
 		if (count == 0){
 			command = tempStr;
 		}else{
-			tempOut += tempStr;
+			tempOut += (SPACE + tempStr);
 		}
+		
 		count ++;
 		noSpace = false;
 	}

@@ -105,6 +105,7 @@ private:
 	static const string MESSAGE_WARNING_MARK_NO_CHANGE;
 	static const string MESSAGE_WARNING_SEARCH_NO_RESULT;
 	static const string MESSAGE_WARNING_UNDO_NO_TASKS;
+	static const string MESSAGE_WARNING_REDO_NO_TASKS;
 	static const string MESSAGE_WARNING_LOAD_EMPTY_FILE;	
 	static const string MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE;
 	static const string MESSAGE_WARNING_WRONG_INPUT;
@@ -116,6 +117,7 @@ private:
 	static const string MESSAGE_ERROR_MARK;
 	static const string MESSAGE_ERROR_SEARCH;
 	static const string MESSAGE_ERROR_UNDO;
+	static const string MESSAGE_ERROR_REDO;
 	static const string MESSAGE_ERROR_LOAD_OPENFILE;
 	static const string MESSAGE_ERROR_SAVE_SAVEFILE;
 	static const string MESSAGE_ERROR_RECORD;

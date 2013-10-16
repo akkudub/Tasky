@@ -42,6 +42,7 @@ const string Processor::MESSAGE_WARNING_UPDATE_CLASH =	"Warning! The new data wi
 const string Processor::MESSAGE_WARNING_MARK_NO_CHANGE = "Warning! There is no change in the status";
 const string Processor::MESSAGE_WARNING_SEARCH_NO_RESULT = "Warning! No such task";
 const string Processor::MESSAGE_WARNING_UNDO_NO_TASKS = "Warning! There is nothing to undo";
+const string Processor::MESSAGE_WARNING_REDO_NO_TASKS = "Warning! There is nothing to redo";
 const string Processor::MESSAGE_WARNING_LOAD_EMPTY_FILE = "Warning! The file being loaded is empty";	
 const string Processor::MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE = "Warning! No title interpreted";
 const string Processor::MESSAGE_WARNING_WRONG_INPUT =	"Warning! Wrong input";
@@ -52,7 +53,8 @@ const string Processor::MESSAGE_ERROR_DISPLAY =			"Error! Unexpected error while
 const string Processor::MESSAGE_ERROR_UPDATE =		"Error! Unexpected error while rescheduling task";
 const string Processor::MESSAGE_ERROR_MARK =			"Error! Unexpected error while marking task(s)";
 const string Processor::MESSAGE_ERROR_SEARCH =			"Error! Unexpected error while searching for tasks";
-const string Processor::MESSAGE_ERROR_UNDO =			"Error! Unexpected error while adding task";
+const string Processor::MESSAGE_ERROR_UNDO =			"Error! Unexpected error while undoing task";
+const string Processor::MESSAGE_ERROR_REDO =			"Error! Unexpected error while redoing task";
 const string Processor::MESSAGE_ERROR_LOAD_OPENFILE =	"Error! Unexpected error while loading file";
 const string Processor::MESSAGE_ERROR_SAVE_SAVEFILE =	"Error! Unexpected error while saving to file";
 const string Processor::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
@@ -110,6 +112,7 @@ const string Processor::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_WARNING_MARK_NO_CHANGE,
 	MESSAGE_WARNING_SEARCH_NO_RESULT,
 	MESSAGE_WARNING_UNDO_NO_TASKS,
+	MESSAGE_WARNING_REDO_NO_TASKS,
 	MESSAGE_WARNING_LOAD_EMPTY_FILE,	
 	MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE,
 	MESSAGE_WARNING_WRONG_INPUT,
@@ -121,6 +124,7 @@ const string Processor::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_ERROR_MARK,
 	MESSAGE_ERROR_SEARCH,
 	MESSAGE_ERROR_UNDO,
+	MESSAGE_ERROR_REDO,
 	MESSAGE_ERROR_LOAD_OPENFILE,
 	MESSAGE_ERROR_SAVE_SAVEFILE,
 	MESSAGE_ERROR_RECORD,
@@ -200,12 +204,16 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 
 		case 1:
 			returnCode = removeCommandProcessor(input);
+			break;
 		case 2:
 			returnCode = renameCommandProcessor(input);
+			break;
 		case 3:
 			returnCode = rescheduleCommandProcessor(input);
+			break;
 		case 4:
 			returnCode = markCommandProcessor(input);
+			break;
 		default:
 			break;
 		}
@@ -261,10 +269,10 @@ int Processor::removeCommandProcessor(string input){
 		vector<int> choice = _interpreter.stringToIntVec(input);
 		if(choiceIsValid(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
-				operationStatus=_taskList.remove(_tempTaskList[choice[i]]);
+				operationStatus=_taskList.remove(_tempTaskList[choice[i]-1]);
 				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
-					recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[choice[i]], oldTask);
-					removedTasks.push_back(_tempTaskList[choice[i]]);
+					recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[choice[i]-1], oldTask);
+					removedTasks.push_back(_tempTaskList[choice[i]-1]);
 				}
 			}
 		}
@@ -455,14 +463,14 @@ int Processor::markCommandProcessor(string input){
 
 		if(choiceIsValid(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
-				operationStatus=_taskList.mark(_tempStatus, _tempTaskList[choice[i]]);
+				operationStatus=_taskList.mark(_tempStatus, _tempTaskList[choice[i]-1]);
 				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_MARK){
-					Task oldTask = _tempTaskList[choice[i]];
+					Task oldTask = _tempTaskList[choice[i]-1];
 					Task newTask = oldTask;
 					if(newTask.getDone() != _tempStatus){
 						newTask.toggleDone();
 					}
-					markedTasks.push_back(_tempTaskList[choice[i]]);
+					markedTasks.push_back(_tempTaskList[choice[i]-1]);
 					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
 				}
 			}
@@ -708,7 +716,7 @@ bool Processor::choiceIsValid(vector<int> choice){
 	}else{
 		for (unsigned int i = 0; i < choice.size(); i++){
 			unsigned int curr_choice = choice[i];
-			if(curr_choice>=_tempTaskList.size() || choice[i]<1){
+			if(curr_choice>_tempTaskList.size() || curr_choice<1){
 				return false;
 			}
 		}
@@ -729,7 +737,7 @@ bool Processor::choiceIsValid(vector<int> choice){
 int Processor::addFloatingTask(string title, string comment){
 	BasicDateTime dt1, dt2;
 	Task tNew, tOld;
-	tNew = Task(title, dt1, dt2, 2, false, comment);
+	tNew = Task(title, dt1, dt2, 0, false, comment);
 	_tempTaskList.clear();
 	int statusCode = _taskList.add(tNew, _tempTaskList);
 	if (statusCode != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -753,7 +761,7 @@ int Processor::addFloatingTask(string title, string comment){
 int Processor::addDeadlineTask(string title, BasicDateTime dt, string comment){
 	BasicDateTime dt1;
 	Task tNew, tOld;
-	tNew = Task(title, dt1, dt, 2, false, comment);
+	tNew = Task(title, dt1, dt, 1, false, comment);
 	_tempTaskList.clear();
 	int statusCode = _taskList.add(tNew, _tempTaskList);
 	if (statusCode != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){

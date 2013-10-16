@@ -59,7 +59,8 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
 		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
 	}else{
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
+		type = NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 	}
 
 	if (fromToFlag){

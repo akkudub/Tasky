@@ -251,8 +251,6 @@ int TaskList::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task
 	return ERROR_DISPLAY;
 }
 
-
-
 int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
 	if(existingTask.isEqualTo(newTask)){

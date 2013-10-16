@@ -64,7 +64,33 @@ private:
 	static const int INT_THURSDAY=4;
 	static const int INT_FRIDAY=5;
 	static const int INT_SATURDAY=6;
+	static const int JANUARY=1;
+	static const int FEBRUARY=2;
+	static const int MARCH=3;
+	static const int APRIL=4;
+	static const int MAY=5;
+	static const int JUNE=6;
+	static const int JULY=7;
+	static const int AUGUST=8;
+	static const int SEPTEMBER=9;
+	static const int OCTOBER=10;
+	static const int NOVEMBER=11;
+	static const int DECEMBER=12;
+	static const int YEAR_LOWER_BOUND=1900;
+	static const int YEAR_UPPER_BOUND=3000;
+	static const int DAY_LOWER_BOUND=1;
+	static const int DAY_UPPER_BOUND1=31;
+	static const int DAY_UPPER_BOUND2=30;
+	static const int DAY_UPPER_BOUND3=28;
+	static const int HOUR_LOWER_BOUND=0;
+	static const int HOUR_UPPER_BOUND=23;
+	static const int MINUTE_LOWER_BOUND=0;
+	static const int MINUTE_UPPER_BOUND=59;
+	static const int SECOND_LOWER_BOUND=0;
+	static const int SECOND_UPPER_BOUND=59;
 
+	static const int EITHER_AS_START=1;
+	static const int EITHER_AS_END=2;
 	static const int INTERNAL_ERROR_CODE = -1;
 
 public:
@@ -206,6 +232,7 @@ private:
 	void setDateParams(int yearValue, int monthValue, int dayValue, int either);
 	void setTimeParams(int hourValue, int minuteValue, int secondValue, int either);
 	bool validateDate(int year, int month, int day);
+	bool validateTime(int hour, int month, int day);
 	bool validateYear(int year);
 	bool validateMonthDay(int month, int day, bool leap);
 

@@ -69,9 +69,6 @@ private:
 	static const string TO_KEY_WORD;
 	static const string BY_KEY_WORD;
 
-	static const int MAX_MESSAGES = 100;
-	static const string MESSAGE_ARRAY [MAX_MESSAGES];
-
 	static const string MESSAGE_OVERALL_SUCCESS;
 	static const string MESSAGE_OVERALL_WARNING;
 	static const string MESSAGE_OVERALL_ERROR;
@@ -97,6 +94,8 @@ private:
 	static const string MESSAGE_SUCCESS_INTERPRET_RESCHEDULE;	
 	static const string MESSAGE_SUCCESS_INTERPRET_MARK;
 	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH;
+	static const string MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME;
+	static const string MESSAGE_ERROR_INTERPRET_STRINGTODATETIME;
 
 	static const string MESSAGE_WARNING_ADD_CLASH;	
 	static const string MESSAGE_WARNING_ADD_DUPLICATE;
@@ -136,6 +135,9 @@ private:
 	static const string MESSAGE_PROMPT_RENAME_CHOOSE;
 	static const string MESSAGE_PROMPT_RESCHEDULE_CHOOSE;
 	static const string MESSAGE_PROMPT_MARK_CHOOSE;
+	
+	static const int MAX_MESSAGES = 100;
+	static const string MESSAGE_ARRAY [MAX_MESSAGES];
 
 	static const char NEW_LINE;
 	static const char SLASH;

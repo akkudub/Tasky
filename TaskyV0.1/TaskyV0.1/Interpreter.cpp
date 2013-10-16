@@ -72,7 +72,6 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 		end=_end;
 		type=ONE_DATETIME;
 	}else{
-		type=NO_DATETIME;
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
@@ -150,6 +149,9 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 		posKey=str.find(RENAME_KEY_WORD);
 		posQuote1=str.find_first_of(SINGLE_QUOTE);
 		posQuote2=str.find_last_of(SINGLE_QUOTE);
+		if (posKey==INTERNAL_ERROR_CODE){
+            return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+		}
 		if (posQuote2-posQuote1<=5){
 			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
 		}else{
@@ -171,6 +173,9 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 		    fromToFlag=fromToCheck(str.substr(posQuote2+1));
 		}else if(str.find(BY_KEY_WORD)!=std::string::npos){
 		    byFlag=byCheck(str.substr(posQuote2+1));
+		}else{
+			type=NO_DATETIME;
+			return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
 		}
 	}else{
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
@@ -183,7 +188,7 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 		end=_end;
 		type=ONE_DATETIME;
 	}else{
-		type=NO_DATETIME;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
 }
@@ -349,7 +354,11 @@ bool Interpreter::fromToCheck(string str){
     }else{
 		return false;
 	}
-	return fromFlag&&toFlag;
+	if (fromFlag&&toFlag){
+		return (_start.compareTo(_end)<0);
+	}else{
+		return false;
+	}
 }
 
 bool Interpreter::byCheck(string str){
@@ -370,8 +379,10 @@ bool Interpreter::byCheck(string str){
 	if (byFlag){
 		DateTime dt=DateTime::Now;
 		_start=BasicDateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+		return (_start.compareTo(_end)<0);
+	}else{
+		return false;
 	}
-	return byFlag;
 }
 
 bool Interpreter::translateDateTime(string str1, string str2, int either){

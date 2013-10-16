@@ -1,5 +1,5 @@
-#ifndef _TASKLIST-V2_H_
-#define _TASKLIST-V2_H_
+#ifndef _TASKLIST_V2_H_
+#define _TASKLIST_V2_H_
 
 /*
 *This class is mainly to store tasks and manipulate tasks according to processor's command.

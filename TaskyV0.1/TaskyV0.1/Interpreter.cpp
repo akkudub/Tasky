@@ -59,7 +59,7 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	}else if(str.find(BY_KEY_WORD, posQuote2+1)!=std::string::npos){
 		byFlag=byCheck(str.substr(posQuote2+1, posDashM-posQuote2-1));
 	}else{
-		return -1;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 
 	if (fromToFlag){
@@ -78,6 +78,7 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 }
 
 int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end){
+	str=removeLeadingSpaces(str);
 	int size=str.size(), pos1, pos2;
 	keywords.clear();
 	if (str.find(SINGLE_QUOTE)!=std::string::npos){
@@ -103,6 +104,7 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type
 }
 
 int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status){
+	str=removeLeadingSpaces(str);
 	bool statusFlag=false;
 	int pos=0, size=str.size();
 	if (str.find(ALL_KEY_WORD)!=std::string::npos){
@@ -140,6 +142,7 @@ int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, B
 }
 
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
+	str=removeLeadingSpaces(str);
 	int posQuote1=0, posKey=0, posQuote2=0;
 	if (str.find(RENAME_KEY_WORD)==str.find(RENAME_KEY_WORD)){
 		posKey=str.find(RENAME_KEY_WORD);
@@ -158,6 +161,7 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 }
 
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
+	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
@@ -183,6 +187,7 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 }
 
 int Interpreter::interpretMark(string str, string& title, bool& status){
+	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
 		if (str.size()==posQuote2+1){
@@ -202,6 +207,7 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 }
 
 int Interpreter::interpretRemove(string str, string& title){
+	str=removeLeadingSpaces(str);
 	int num1, num2;
 	if (!extractTitle(str, title, num1, num2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_REMOVE;
@@ -210,6 +216,7 @@ int Interpreter::interpretRemove(string str, string& title){
 }
 
 int Interpreter::stringToInt(string str){
+	str=removeLeadingSpaces(str);
 	int num=0;
 	int size=str.size();
 	for (int i=0;i<size;i++){
@@ -223,6 +230,7 @@ int Interpreter::stringToInt(string str){
 }
 
 vector<int> Interpreter::stringToIntVec(string str){
+	str=removeLeadingSpaces(str);
 	vector<int> vec;
 	vector<string> vecStr;
 	if (containChar(str, COMMA)){
@@ -269,6 +277,7 @@ string Interpreter::toLowerCase(string str){
 }
 
 int Interpreter::stringToBasicDateTime(string input, BasicDateTime& time){
+	input=removeLeadingSpaces(input);
 	vector<string> vec=breakStringWithDelim(input, SPACE);
 	bool flag=false;
 	if (vec.size()!=2){
@@ -371,7 +380,7 @@ bool Interpreter::translateDateTime(string str1, string str2, int either){
 	}else if(str1!=EMPTY_STRING){
 		dateFlag=interpretDate(str1, either);
 		timeFlag=true;
-		setTimeParams(0, 0, 0, either);
+		setTimeParams(HOUR_LOWER_BOUND, MINUTE_LOWER_BOUND, SECOND_LOWER_BOUND, either);
 	}else{
 		return false;  //if reach here, a bug found
 	}
@@ -410,7 +419,7 @@ bool Interpreter::interpretTime(string str1, int either){
 
 bool Interpreter::dateStandardInput(string str, int either){
 	vector<string> vec=breakStringWithDelim(str, SLASH);
-	bool yearFlag=false, monthFlag=false, dayFlag=false;
+	bool dateFlag=false;
 	int year=0, month=0, day=0;
 	int size=vec.size();
 	if (size<=1 || size>=4){
@@ -419,37 +428,19 @@ bool Interpreter::dateStandardInput(string str, int either){
 		year=stringToInt(vec.at(2));
 		month=stringToInt(vec.at(1));
 		day=stringToInt(vec.at(0));
-		if (year>=2000 && year<=9999){
-			yearFlag=true;
-		}else if(year>=0 && year<=99){ //short cut input for 20xx
-			yearFlag=true;
+		if (year>=0&&year<=99){
 			year=year+2000;
 		}
-		if (month>=1 && month<=12){
-			monthFlag=true;
-		}
-		if (day>=1 && day<=31){
-			dayFlag=true;
-		}
+		dateFlag=validateDate(year, month, day);
 	}else if(size==2){
 		month=stringToInt(vec.at(1));
 		day=stringToInt(vec.at(0));
-		if (month>=1 && month<=12){
-			monthFlag=true;
-		}
-		if (day>=1 && day<=31){
-			dayFlag=true;
-		}
 		year=DateTime::Now.Year;
-		yearFlag=true;
+		dateFlag=validateDate(year, month, day);
 	}
-	if (yearFlag&&monthFlag&&dayFlag){
-		if (validateDate(year, month, day)){
-		    setDateParams(year, month, day, either);
-		    return true;
-		}else{
-			return false;
-		}
+	if (dateFlag){
+		setDateParams(year, month, day, either);
+	    return true;
 	}else{
 		return false;
 	}
@@ -473,7 +464,7 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 	DateTime dt=DateTime::Now;
 	int incremental=week*7+day;
 	if (incremental < 0){
-		return false;
+		incremental+=7;
 	}
 	dt=dt.AddDays(incremental);
 	setDateParams(dt.Year, dt.Month, dt.Day, either);
@@ -481,7 +472,7 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 }
 
 bool Interpreter::timeStandardInput(string str, char delim, int either){
-	bool hourFlag=false, minuteFlag=false, secondFlag=false;
+	bool timeFlag=false;
 	int hour, minute, second;
 	vector<string> vec=breakStringWithDelim(str, delim);
 	int size=vec.size();
@@ -490,29 +481,15 @@ bool Interpreter::timeStandardInput(string str, char delim, int either){
 	}else if(size==2){
 		hour=stringToInt(vec.at(0));
 		minute=stringToInt(vec.at(1));
-		if (hour>=0 && hour<=23){
-			hourFlag=true;
-		}
-		if (minute>=0 && minute<=59){
-			minuteFlag=true;
-		}
-		second=0;
-		secondFlag=true;
+		second=SECOND_LOWER_BOUND;
+		timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
 	}else if(size==3){
 		hour=stringToInt(vec.at(0));
 		minute=stringToInt(vec.at(1));
 		second=stringToInt(vec.at(2));
-		if (hour>=0 && hour<=23){
-			hourFlag=true;
-		}
-		if (minute>=0 && minute<=59){
-			minuteFlag=true;
-		}
-		if (second>=0 && second<=59){
-			secondFlag=true;
-		}
+		timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
 	}
-	if (hourFlag&&minuteFlag&&secondFlag){
+	if (timeFlag){
 		setTimeParams(hour, minute, second, either);
 		return true;
 	}else{
@@ -523,15 +500,10 @@ bool Interpreter::timeStandardInput(string str, char delim, int either){
 bool Interpreter::timeSpecialNumsOnly(string str, int either){
 	int num=stringToInt(str);
 	int hour=num/100, minute=num%100;
-	bool hourFlag=false, minuteFlag=false;
-	if (hour>=0 && hour<=23){
-		hourFlag=true;
-	}
-	if (minute>=0 && minute<=60){
-		minuteFlag=true;
-	}
-	if (hourFlag&&minuteFlag){
-		setTimeParams(hour, minute, 0, either);
+	bool timeFlag=false;
+	timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
+	if (timeFlag){
+		setTimeParams(hour, minute, SECOND_LOWER_BOUND, either);
 		return true;
 	}else{
 		return false;
@@ -581,7 +553,7 @@ int Interpreter::mapDayOfWeekToInt(const string& str){
 }
 
 void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int either){
-	if (either==1){
+	if (either==EITHER_AS_START){
 		_start.setYear(yearValue);
 		_start.setMonth(monthValue);
 		_start.setDay(dayValue);
@@ -593,7 +565,7 @@ void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int
 }
 
 void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue, int either){
-	if (either==1){
+	if (either==EITHER_AS_START){
 		_start.setHour(hourValue);
 		_start.setMinute(minuteValue);
 		_start.setSec(secondValue);
@@ -616,8 +588,22 @@ bool Interpreter::validateDate(int year, int month, int day){
 	return true;
 }
 
+bool Interpreter::validateTime(int hour, int minute, int second){
+	bool hourFlag=false, minuteFlag=false, secondFlag=false;
+	if (hour>=HOUR_LOWER_BOUND && hour<=HOUR_UPPER_BOUND){
+		hourFlag=true;
+	}
+	if (minute>=MINUTE_LOWER_BOUND && minute<=MINUTE_UPPER_BOUND){
+		minuteFlag=true;
+	}
+	if (second>=SECOND_LOWER_BOUND && second<=SECOND_UPPER_BOUND){
+		secondFlag=true;
+	}
+	return hourFlag&&minuteFlag&&secondFlag;
+}
+
 bool Interpreter::validateYear(int year){
-	if (year>=2000 && year<=3000){
+	if (year>=YEAR_LOWER_BOUND && year<=YEAR_UPPER_BOUND){
 		return true;
 	}else{
 		return false;
@@ -627,23 +613,23 @@ bool Interpreter::validateYear(int year){
 bool Interpreter::validateMonthDay(int month, int day, bool leap){
 	bool valid=false;
 	switch (month){
-	case 1: case 3: case 5: case 7: case 8: case 10: case 12:
-		if (day>=1 && day<=31){
+	case JANUARY: case MARCH: case MAY: case JULY: case AUGUST: case OCTOBER: case DECEMBER:
+		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND1){
 			valid=true;
 		}
 		break;
-	case 4: case 6: case 9: case 11:
-		if (day>=1 && day<=30){
+	case APRIL: case JUNE: case SEPTEMBER: case NOVEMBER:
+		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND2){
 			valid=true;
 		}
 		break;
-	case 2:
+	case FEBRUARY:
 		if (leap){
-			if (day>=1 && day<=29){
+			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3-1){
 				valid=true;
 			}
 		}else{
-			if (day>=1 && day<=28){
+			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3){
 				valid=true;
 			}
 		}

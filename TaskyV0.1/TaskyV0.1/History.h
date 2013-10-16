@@ -1,5 +1,5 @@
-#ifndef _HISTORY_H_
-#define _HISTORY_H_
+#ifndef HISTORY_H
+#define HISTORY_H
 
 /*
  *This class is mainly to store previous successful operations. If undo is being called, undo will pop the latest

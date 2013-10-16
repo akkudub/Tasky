@@ -169,8 +169,7 @@ Processor::Processor(){
 * formatted string of feedback and with user command (including task)
 */
 int Processor::UImainProcessor(string input, string& message, vector<string>& list){
-	input = _interpreter.toLowerCase(input);
-	string command = getCommand(input);
+	string command = _interpreter.toLowerCase(getCommand(input));
 	int returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
 	assert(_statusFlag >= 0 && _statusFlag < 5);
 	if (command != "exit"){
@@ -582,6 +581,7 @@ int Processor::redoCommandProcessor(string input){
 }
 
 int Processor::otherCommandProcessor(){
+	_tempTaskList.clear();
 	return WARNING_WRONG_INPUT;
 }
 

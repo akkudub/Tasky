@@ -109,6 +109,7 @@ int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, B
 	int pos=0, size=str.size();
 	if (str.find(ALL_KEY_WORD)!=std::string::npos){
 		type=NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
 	}else{
 		if (str.find(PENDING_KEY_WORD)!=std::string::npos){
 			statusFlag=true;

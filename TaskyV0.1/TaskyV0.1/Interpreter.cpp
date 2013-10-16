@@ -67,10 +67,12 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 		end=_end;
 		type=TWO_DATETIME;
 	}else if(byFlag){
+		start=_start;
 		end=_end;
 		type=ONE_DATETIME;
 	}else{
 		type=NO_DATETIME;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 }
@@ -330,10 +332,12 @@ bool Interpreter::byCheck(string str){
 	tempStr=str.substr(3);
 	vec=breakStringWithDelim(tempStr, SPACE);
 	if (vec.size()==1){
-		byFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
+		byFlag=translateDateTime(vec.at(0), EMPTY_STRING, 2);
 	}else if (vec.size()==2){
-		byFlag=translateDateTime(vec.at(0), vec.at(1), 1);
-	}else{
+		byFlag=translateDateTime(vec.at(0), vec.at(1), 2) || translateNaturalDate(vec.at(0), vec.at(1), 2);
+	}else if (vec.size()==3){
+		byFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), 2);
+    }else{
 		return false;
 	}
 	if (byFlag){
@@ -456,7 +460,7 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 	if (incremental < 0){
 		return false;
 	}
-	dt.AddDays(incremental);
+	dt=dt.AddDays(incremental);
 	setDateParams(dt.Year, dt.Month, dt.Day, either);
 	return true;
 }

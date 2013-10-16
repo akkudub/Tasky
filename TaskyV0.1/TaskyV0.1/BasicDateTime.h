@@ -21,6 +21,13 @@ private:
 	int _minute;
 	int _sec;
 
+private:
+	static const string DASH;
+	static const string SPACE;
+	static const string COLON;
+	static const string ZERO_STRING;
+	static const int ZERO=0;
+
 public:	
 	///default constructor
 	BasicDateTime();
@@ -66,6 +73,9 @@ public:
 	string getDateTimeString();
 	///compare to another BasicDateTime object
 	int compareTo(BasicDateTime another);
+
+private:
+	string addZeroFromFront(string);
 };
 
 #endif

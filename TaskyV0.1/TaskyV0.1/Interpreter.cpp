@@ -268,6 +268,22 @@ string Interpreter::toLowerCase(string str){
 	return str;
 }
 
+int Interpreter::stringToBasicDateTime(string input, BasicDateTime& time){
+	vector<string> vec=breakStringWithDelim(input, SPACE);
+	bool flag=false;
+	if (vec.size()!=2){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_STRINGTODATETIME;
+	}else{
+		flag=translateDateTime(vec.at(0), vec.at(1), 2);
+	}
+	if (!flag){
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_STRINGTODATETIME;
+	}else{
+		time=_end;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_STRINGTODATETIME;
+}
+
 bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int& pos2){
 	if (str.find_first_of(SINGLE_QUOTE)!=std::string::npos){
 		pos1=str.find_first_of(SINGLE_QUOTE);

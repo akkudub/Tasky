@@ -172,6 +172,14 @@ public:
 	 *@return string of the input string 
 	 */
 	string toLowerCase(string input);
+	/**
+	 *take a standard string and try to parse it into the format of BasicDateTime
+	 *e.g. "30/09/2013 12:00:04"
+	 *@param input (string)
+	 *@param time (BasicDateTime reference)
+	 *@return status code
+	 */
+	int stringToBasicDateTime(string input, BasicDateTime& time);
 	///destructor
 	~Interpreter();
 

@@ -8,47 +8,15 @@ static const int NORMAL_TASK = 2;
 TaskList::TaskList(){
 }
 
-
 int TaskList::add(Task toAdd, vector<Task>& _temp){
 
 	_temp.clear();
 
-	switch(toAdd.getType()){
+	if(isExisting(toAdd))
+		return WARNING_ADD_DUPLICATE;
 
-	case FLOATING_TASK:
-		for(unsigned int i = 0; i < _floatingTask.size(); i++){
-
-			if(toAdd.isEqualTo(_floatingTask[i])){
-				return WARNING_ADD_DUPLICATE;
-			}
-		}
-		_floatingTask.push_back(toAdd);
-		break;
-	case DEADLINE_TASK:
-		for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-			if(toAdd.isEqualTo(_deadlineTask[i])){
-				return WARNING_ADD_DUPLICATE;
-			}
-		}
-		_deadlineTask.push_back(toAdd);
-		break;
-	case NORMAL_TASK:
-		for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-			if(toAdd.isEqualTo(_normalTask[i])){
-				return WARNING_ADD_DUPLICATE;
-			}
-		}
-
-		for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-			if(_normalTask[i].isClashingWith(toAdd)){
-				_temp.push_back(_normalTask[i]);
-			}
-		}
-		break;
-	}
+	if(toAdd.getType() == NORMAL_TASK)
+		pushClashing(toAdd, _temp);
 
 	if(!_temp.empty())
 		return WARNING_ADD_CLASH;
@@ -59,67 +27,19 @@ int TaskList::add(Task toAdd, vector<Task>& _temp){
 
 }
 
-
 int TaskList::remove(Task toRemove){
 
-	switch(toRemove.getType()){
-
-	case FLOATING_TASK:
-		for(unsigned int i = 0; i < _floatingTask.size(); i++){
-
-			if(toRemove.isEqualTo(_floatingTask[i])){
-				_floatingTask.erase(_floatingTask.begin()+i);
-				return SUCCESS_REMOVE;
-			}
-		}
-		break;
-	case DEADLINE_TASK:
-		for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-			if(toRemove.isEqualTo(_deadlineTask[i])){
-				_deadlineTask.erase(_deadlineTask.begin()+i);
-				return SUCCESS_REMOVE;
-			}
-		}
-		break;
-	case NORMAL_TASK:
-		for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-			if(toRemove.isEqualTo(_normalTask[i])){
-				_normalTask.erase(_normalTask.begin()+i);
-				return SUCCESS_REMOVE;
-			}
-		}
-		break;
-	}
-
-	return ERROR_REMOVE;
+	if(isSuccessfullyRemoved(toRemove))
+		return SUCCESS_REMOVE;
+	else
+		return ERROR_REMOVE;
 }
-
-
-
 
 int TaskList::search(string searchLine, vector<Task>& _temp){
 
 	_temp.clear();
 
-	for(unsigned int i = 0; i < _floatingTask.size(); i++){
-
-		if(_floatingTask[i].getTitle() == searchLine)
-			_temp.push_back(_floatingTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(_deadlineTask[i].getTitle() == searchLine)
-			_temp.push_back(_deadlineTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(_normalTask[i].getTitle() == searchLine)
-			_temp.push_back(_normalTask[i]);
-	}
+	searchTitle(searchLine, _temp);
 
 	if(_temp.empty())
 		return WARNING_SEARCH_NO_RESULT;
@@ -136,13 +56,7 @@ int TaskList::searchKeywords(vector<string> keywords, vector<Task>& _temp){
 
 	_temp.clear();
 
-	_duplicateFloating = _floatingTask;
-	_duplicateDeadline = _deadlineTask;
-	_duplicateNormal = _normalTask;
-
-	exactSearch(keywords[0], _temp);
-	containingExactStringSearch(keywords[0], _temp);
-	containingBreakdownStringSearch(keywords, _temp);
+	searchVectors(keywords, _temp);
 
 	if(!_temp.empty())
 		return SUCCESS_SEARCH;
@@ -158,12 +72,7 @@ int TaskList::searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp
 
 	_temp.clear();
 
-	_duplicateDeadline = _deadlineTask;
-	_duplicateNormal = _normalTask;
-
-	exactSearchWithRange(keywords[0], _temp, start, end);
-	containingExactStringSearchWithRange(keywords[0], _temp, start, end);
-	containingBreakdownStringSearchWithRange(keywords, _temp, start, end);
+	searchVectorsWithRange(keywords, _temp, start, end);
 
 	if(!_temp.empty())
 		return SUCCESS_SEARCH;
@@ -177,9 +86,7 @@ int TaskList::displayAll(vector<Task>& _temp){
 
 	_temp.clear();
 
-	_temp = _floatingTask;
-	_temp.insert(_temp.end(), _deadlineTask.begin(), _deadlineTask.end());
-	_temp.insert(_temp.end(), _normalTask.begin(), _normalTask.end());
+	appendVectors(_temp);
 
 	if(!_temp.empty())
 		return SUCCESS_DISPLAY;
@@ -194,23 +101,7 @@ int TaskList::displayStatus(bool done, vector<Task>& _temp){
 
 	_temp.clear();
 
-	for(unsigned int i = 0; i < _floatingTask.size(); i++){
-
-		if(_floatingTask[i].getDone() == done)
-			_temp.push_back(_floatingTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(_deadlineTask[i].getDone() == done)
-			_temp.push_back(_deadlineTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(_normalTask[i].getDone() == done)
-			_temp.push_back(_normalTask[i]);
-	}
+	pushStatus(done, _temp);
 
 	if(!_temp.empty())
 		return SUCCESS_DISPLAY;
@@ -225,23 +116,7 @@ int TaskList::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task
 
 	_temp.clear();
 
-	Task tempTask;
-
-	tempTask = Task("temp", start, end, 2, false, "comment");
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(tempTask.isClashingWith(_normalTask[i]))
-			_temp.push_back(_normalTask[i]);
-
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(isInRange(_deadlineTask[i].getEnd(), start, end))
-			_temp.push_back(_deadlineTask[i]);
-
-	}
+	pushInRange(_temp, start, end);
 
 	if(!_temp.empty())
 		return SUCCESS_DISPLAY;
@@ -251,13 +126,25 @@ int TaskList::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task
 	return ERROR_DISPLAY;
 }
 
+int TaskList::displayStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
 
+	_temp.clear();
+
+	pushStatusInRange(done, start, end, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_DISPLAY;
+	else
+		return WARNING_DISPLAY_NO_RESULT;
+
+	return ERROR_DISPLAY;
+
+}
 
 int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
 
-	if(existingTask.isEqualTo(newTask)){
+	if(existingTask.isEqualTo(newTask))
 		return WARNING_UPDATE_SAME;
-	}
 
 	assert(remove(existingTask) == SUCCESS_REMOVE);
 
@@ -277,96 +164,47 @@ int TaskList::mark(bool mark, Task task){
 	if(task.getDone() == mark)
 		return WARNING_MARK_NO_CHANGE;
 
-	switch(task.getType()){
-
-	case FLOATING_TASK:
-		for(unsigned int i = 0; i < _floatingTask.size(); i++){
-
-			if(task.isEqualTo(_floatingTask[i])){
-				_floatingTask[i].toggleDone();
-				return SUCCESS_MARK;
-			}
-		}
-		break;
-	case DEADLINE_TASK:
-		for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-			if(task.isEqualTo(_deadlineTask[i])){
-				_deadlineTask[i].toggleDone();
-				return SUCCESS_MARK;
-			}
-		}
-		break;
-	case NORMAL_TASK:
-		for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-			if(task.isEqualTo(_normalTask[i])){
-				_normalTask[i].toggleDone();
-				return SUCCESS_MARK;
-			}
-		}
-		break;
-	}
-
-	return ERROR_MARK;
+	if(isSuccessfullyMarked(mark, task))
+		return SUCCESS_MARK;
+	else
+		return ERROR_MARK;
 }
 
 void TaskList::getOccupiedDates(vector<BasicDateTime>& usedDates){
 
 	usedDates.clear();
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		usedDates.push_back(_normalTask[i].getStart());
-		usedDates.push_back(_normalTask[i].getEnd());
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		usedDates.push_back(_deadlineTask[i].getEnd());
-	}
-}
-
-
-
-
-
-
-void TaskList::searchVector(vector<Task>& taskVector, vector<string> keywords, vector<Task>& _temp){
-
-	vector<Task> duplicateTaskList = taskVector;
-
-	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
-
-		if(duplicateTaskList[i].getTitle() == keywords[0]){
-			_temp.push_back(duplicateTaskList[i]);
-			duplicateTaskList.erase(duplicateTaskList.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < duplicateTaskList.size(); i++){
-
-		if(duplicateTaskList[i].getTitle().find(keywords[0]) != std::string::npos){
-			_temp.push_back(duplicateTaskList[i]);
-			duplicateTaskList.erase(duplicateTaskList.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 1; i < keywords.size(); i++){
-
-		for(unsigned int j = 0; j < duplicateTaskList.size(); j++)
-			if(duplicateTaskList[j].getTitle().find(keywords[i]) != std::string::npos){
-				_temp.push_back(duplicateTaskList[j]);
-				duplicateTaskList.erase(duplicateTaskList.begin()+j);
-				j--;
-			}
-			if(i == 6)
-				break;
-	}
+	pushOccupiedDates(usedDates);
 
 }
+
+
+
+
+
+
+void TaskList::searchVectors(vector<string> keywords, vector<Task>& _temp){
+
+	_duplicateFloating = _floatingTask;
+	_duplicateDeadline = _deadlineTask;
+	_duplicateNormal = _normalTask;
+
+	exactSearch(keywords[0], _temp);
+	containingExactStringSearch(keywords[0], _temp);
+	containingBreakdownStringSearch(keywords, _temp);
+
+}
+
+void TaskList::searchVectorsWithRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
+
+	_duplicateDeadline = _deadlineTask;
+	_duplicateNormal = _normalTask;
+
+	exactSearchWithRange(keywords[0], _temp, start, end);
+	containingExactStringSearchWithRange(keywords[0], _temp, start, end);
+	containingBreakdownStringSearchWithRange(keywords, _temp, start, end);
+
+}
+
 
 void TaskList::exactSearch(string exactString, vector<Task>& _temp){
 
@@ -526,6 +364,230 @@ bool TaskList::isInRange(BasicDateTime time, BasicDateTime start, BasicDateTime 
 
 }
 
+bool TaskList::isExisting(Task task){
+
+	switch(task.getType()){
+
+	case FLOATING_TASK:
+		for(unsigned int i = 0; i < _floatingTask.size(); i++){
+
+			if(task.isEqualTo(_floatingTask[i])){
+				return true;
+			}
+		}
+		break;
+	case DEADLINE_TASK:
+		for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+			if(task.isEqualTo(_deadlineTask[i])){
+				return true;
+			}
+		}
+		break;
+	case NORMAL_TASK:
+		for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+			if(task.isEqualTo(_normalTask[i])){
+				return true;
+			}
+		}
+		break;
+	}
+	return false;
+}
+
+bool TaskList::isSuccessfullyRemoved(Task task){
+
+	switch(task.getType()){
+
+	case FLOATING_TASK:
+		for(unsigned int i = 0; i < _floatingTask.size(); i++){
+
+			if(task.isEqualTo(_floatingTask[i])){
+				_floatingTask.erase(_floatingTask.begin()+i);
+				return true;
+			}
+		}
+		break;
+	case DEADLINE_TASK:
+		for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+			if(task.isEqualTo(_deadlineTask[i])){
+				_deadlineTask.erase(_deadlineTask.begin()+i);
+				return true;
+			}
+		}
+		break;
+	case NORMAL_TASK:
+		for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+			if(task.isEqualTo(_normalTask[i])){
+				_normalTask.erase(_normalTask.begin()+i);
+				return true;
+			}
+		}
+		break;
+	}
+
+	return false;
+
+}
+
+void TaskList::pushClashing(Task task, vector<Task>& _temp){
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(_normalTask[i].isClashingWith(task)){
+			_temp.push_back(_normalTask[i]);
+		}
+	}
+}
+
+void TaskList::searchTitle(string searchLine, vector<Task>& _temp){
+
+	for(unsigned int i = 0; i < _floatingTask.size(); i++){
+
+		if(_floatingTask[i].getTitle() == searchLine)
+			_temp.push_back(_floatingTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(_deadlineTask[i].getTitle() == searchLine)
+			_temp.push_back(_deadlineTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(_normalTask[i].getTitle() == searchLine)
+			_temp.push_back(_normalTask[i]);
+	}
+
+}
+
+void TaskList::appendVectors(vector<Task>& _temp){
+
+	_temp = _floatingTask;
+	_temp.insert(_temp.end(), _deadlineTask.begin(), _deadlineTask.end());
+	_temp.insert(_temp.end(), _normalTask.begin(), _normalTask.end());
+
+}
+
+void TaskList::pushStatus(bool done, vector<Task>& _temp){
+
+	for(unsigned int i = 0; i < _floatingTask.size(); i++){
+
+		if(_floatingTask[i].getDone() == done)
+			_temp.push_back(_floatingTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(_deadlineTask[i].getDone() == done)
+			_temp.push_back(_deadlineTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(_normalTask[i].getDone() == done)
+			_temp.push_back(_normalTask[i]);
+	}
+
+}
+
+void TaskList::pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
+
+	Task tempTask;
+
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(tempTask.isClashingWith(_normalTask[i]))
+			_temp.push_back(_normalTask[i]);
+
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(isInRange(_deadlineTask[i].getEnd(), start, end))
+			_temp.push_back(_deadlineTask[i]);
+
+	}
+
+}
+
+bool TaskList::isSuccessfullyMarked(bool mark, Task task){
+
+	switch(task.getType()){
+
+	case FLOATING_TASK:
+		for(unsigned int i = 0; i < _floatingTask.size(); i++){
+
+			if(task.isEqualTo(_floatingTask[i])){
+				_floatingTask[i].toggleDone();
+				return true;
+			}
+		}
+		break;
+	case DEADLINE_TASK:
+		for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+			if(task.isEqualTo(_deadlineTask[i])){
+				_deadlineTask[i].toggleDone();
+				return true;
+			}
+		}
+		break;
+	case NORMAL_TASK:
+		for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+			if(task.isEqualTo(_normalTask[i])){
+				_normalTask[i].toggleDone();
+				return true;
+			}
+		}
+		break;
+	}
+
+	return false;
+}
+
+void TaskList::pushOccupiedDates(vector<BasicDateTime>& usedDates){
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		usedDates.push_back(_normalTask[i].getStart());
+		usedDates.push_back(_normalTask[i].getEnd());
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		usedDates.push_back(_deadlineTask[i].getEnd());
+	}
+
+}
+
+void TaskList::pushStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	Task tempTask;
+
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(tempTask.isClashingWith(_normalTask[i]) && _normalTask[i].getDone() == done)
+			_temp.push_back(_normalTask[i]);
+
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(isInRange(_deadlineTask[i].getEnd(), start, end) && _normalTask[i].getDone() == done)
+			_temp.push_back(_deadlineTask[i]);
+
+	}
+}
 /*
 vector<Task>* TaskList::returnTaskListPointer(){
 return &(_taskList);

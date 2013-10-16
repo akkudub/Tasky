@@ -19,26 +19,8 @@ void UI::UI_interface(){
 
 void UI::displayWelcomeMessage(HANDLE hConsole){
 	cout << MESSAGE_WELCOME <<endl;
-	string message;
-	vector<string> feedback;
-	int output = _processor.UImainProcessor(COMMAND_DISPLAY_TASK_PENDING, message, feedback);
-	switch(output){
-	case -1:
-		SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-		break;
-	case 0:
-		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-		break;
-	case 1:
-		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN |FOREGROUND_RED | FOREGROUND_INTENSITY);
-		break;
-	}
-	cout << message << endl;
-
-	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
-	for (string str:feedback){
-		cout << str << endl;
-	}
+	bool alwaysFalse = false;
+	displayProcessorMessage(COMMAND_DISPLAY_TASK_PENDING,hConsole,alwaysFalse);
 }
 
 

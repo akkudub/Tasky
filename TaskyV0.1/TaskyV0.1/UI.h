@@ -2,6 +2,7 @@
 #define _UI_H_
 
 #include <iostream>
+#include <assert.h>
 #include "Processor.h"
 
 using namespace std;

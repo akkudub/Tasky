@@ -151,6 +151,7 @@ const char Processor::NEW_LINE = '\n';
 
 Processor::Processor(){
 	_statusFlag=0;
+	loadFile();
 }
 
 /*
@@ -546,7 +547,34 @@ int Processor::undoCommandProcessor(string input){
 }
 
 int Processor::redoCommandProcessor(string input){
-	return 0;//no api in history!
+	Task oldTask, newTask;
+	COMMAND_TYPES type = COMMAND_TYPES::ADD;//Just for initialization
+	int addResult;
+	HistoryCommand command(type, oldTask, newTask);
+	int returnCode = _history.redo(command);
+	_tempTaskList.clear();
+	if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UNDO){
+		switch (command.getCommandTypeRedo()){
+		case COMMAND_TYPES::ADD:
+			addResult = _taskList.add(command.getNew(), _tempTaskList);
+			if (addResult != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+				_tempTaskList.push_back(command.getNew());
+			}
+			return addResult;
+			break;
+		case COMMAND_TYPES::REMOVE:
+			_tempTaskList.push_back(command.getOld());
+			return _taskList.remove(command.getOld());
+			break;
+		case COMMAND_TYPES::UPDATE:
+			_tempTaskList.push_back(command.getOld());
+			_tempTaskList.push_back(command.getNew());
+			return _taskList.update(command.getOld(), command.getNew(), _tempTaskList);
+		default:
+			break;
+		}
+	}
+	return returnCode;
 }
 
 int Processor::otherCommandProcessor(){
@@ -565,7 +593,7 @@ int Processor::saveFile(){
 
 int Processor::loadFile(){
 	vector<string> stringsFromFile;
-	string currStr, tempStr;
+	string currStr, tempStr, statusString;
 	int count;
 	bool exitFlag;
 
@@ -595,14 +623,33 @@ int Processor::loadFile(){
 			case 1:
 				title = tempStr.substr(7);
 				count++;
+				break;
+			case 2:
+				statusString = tempStr.substr(8);
+				if (statusString == "done"){
+					status = true;
+				}else if (statusString == "pending"){
+					status = false;
+				}
 				if (type==0){
 					exitFlag = true;
 				}
+				count++;
 				break;
-			case 2:
-				if (type == 1){
-
+			case 3:
+				if(type == 1){
+					_interpreter.stringToBasicDateTime(tempStr.substr(10), end);
+					exitFlag = true;
+				}else if (type == 2){
+					_interpreter.stringToBasicDateTime(tempStr.substr(12), start);
 				}
+				count++;
+				break;
+			case 4:
+				if (type == 2){
+					_interpreter.stringToBasicDateTime(tempStr.substr(10), end);
+				}
+				exitFlag = true;
 				break;
 			}
 			Task tempTask(title, start, end, type, status, comment);

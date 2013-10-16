@@ -3,7 +3,8 @@
 enum COMMAND_TYPES{
 	ADD,
 	REMOVE,
-	UPDATE
+	UPDATE,
+	NONE,
 };
 
 class HistoryCommand{

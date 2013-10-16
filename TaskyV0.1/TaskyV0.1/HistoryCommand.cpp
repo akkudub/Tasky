@@ -21,7 +21,7 @@ COMMAND_TYPES HistoryCommand::getCommandTypeUndo(){
 		return COMMAND_TYPES::UPDATE;
 		break;
 	default:
-		break;
+		return COMMAND_TYPES::NONE;
 	}
 }
 

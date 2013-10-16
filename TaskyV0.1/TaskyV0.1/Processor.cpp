@@ -251,28 +251,40 @@ int Processor::addCommandProcessor(string input){
 */
 int Processor::removeCommandProcessor(string input){
 	int operationStatus;
+	Task oldTask;
+	vector<Task> removedTasks;
 	if(_statusFlag == 1){
-		unsigned int choice = _interpreter.stringToInt(input);
-		if((choice <=_tempTaskList.size()) && choice > 0){
-			operationStatus=_taskList.remove(_tempTaskList[choice-1]);
+		vector<int> choice = _interpreter.stringToIntVec(input);
+		if(choiceIsValid(choice)){
+			for (unsigned int i = 0; i < choice.size(); i++){
+				operationStatus=_taskList.remove(_tempTaskList[choice[i]]);
+				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
+					recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[choice[i]], oldTask);
+					removedTasks.push_back(_tempTaskList[choice[i]]);
+				}
+			}
 		}
+		_tempTaskList = removedTasks;
 		_statusFlag = 0;
 		return operationStatus;
 	}else if(_statusFlag == 0){
-			vector<string> keywords;
-			_interpreter.interpretRemove(input, _tempTitle);
-			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
-			if (_tempTaskList.size() == 1){
-				return _taskList.remove(_tempTaskList[0]);
+		vector<string> keywords;
+		_interpreter.interpretRemove(input, _tempTitle);
+		_tempTaskList.clear();
+		breakIntoStringVectorBySpace(_tempTitle, keywords);
+		_taskList.searchKeywords(keywords, _tempTaskList);
+		if (_tempTaskList.size() == 1){
+			operationStatus = _taskList.remove(_tempTaskList[0]);
+			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
+				recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[0], oldTask);
+			}
+			return operationStatus;
+		}else if(!_tempTaskList.empty()){
+			_statusFlag = 1;
+			return PROMPT_REMOVE_CHOOSE;
+		}else if(_tempTaskList.empty()){
+			return WARNING_SEARCH_NO_RESULT;
 
-			}else if(!_tempTaskList.empty()){
-				_statusFlag = 1;
-				return PROMPT_REMOVE_CHOOSE;
-			}else if(_tempTaskList.empty()){
-				return WARNING_SEARCH_NO_RESULT;
-			
 		}
 	}
 	return ERROR_REMOVE;
@@ -312,36 +324,52 @@ int Processor::renameCommandProcessor(string input){
 			string title, comment;
 			BasicDateTime startingDateTime;
 			BasicDateTime endingDateTime;
-			Task t = _tempTaskList[choice-1];
-			vector<Task> clash;
+			Task newTask = _tempTaskList[choice-1];
+			Task oldTask = newTask;
 
-			t.setTitle(_tempTitle);
-			operationStatus = _taskList.update(_tempTaskList[choice-1], t, clash);
-			_tempTaskList = clash;
+			newTask.setTitle(_tempTitle);
+			operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
+
+			if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+				_tempTaskList.push_back(oldTask);
+				_tempTaskList.push_back(newTask);
+			}
+			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+			}			
 		}
 
 		_statusFlag = 0;
 		return operationStatus;
 
 	}else if(_statusFlag == 0){
-			string oldTitle;
-			vector<string> keywords;
-			vector<Task> clash;
-			_interpreter.interpretRename(input, oldTitle, _tempTitle);
-			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(oldTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
-			if (_tempTaskList.size() == 1){
-				Task t = _tempTaskList[0];
-				t.setTitle(_tempTitle);
-				return _taskList.update(_tempTaskList[0], t, clash);
+		string oldTitle;
+		vector<string> keywords;
 
-			}else if(!_tempTaskList.empty()){
-				_statusFlag = 2;
-				return PROMPT_RENAME_CHOOSE;
-			}else if(_tempTaskList.empty()){
-				return WARNING_SEARCH_NO_RESULT;
+		_interpreter.interpretRename(input, oldTitle, _tempTitle);
+		_tempTaskList.clear();
+		breakIntoStringVectorBySpace(oldTitle, keywords);
+		_taskList.searchKeywords(keywords, _tempTaskList);
+		if (_tempTaskList.size() == 1){
+			Task newTask = _tempTaskList[0];
+			Task oldTask = newTask;
+			newTask.setTitle(_tempTitle);
+			operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
+			if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+				_tempTaskList.push_back(oldTask);				
+				_tempTaskList.push_back(newTask);
 			}
+			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+			}
+			return operationStatus;
+
+		}else if(!_tempTaskList.empty()){
+			_statusFlag = 2;
+			return PROMPT_RENAME_CHOOSE;
+		}else if(_tempTaskList.empty()){
+			return WARNING_SEARCH_NO_RESULT;
+		}
 	}
 	return ERROR_UPDATE;
 }
@@ -354,41 +382,56 @@ int Processor::rescheduleCommandProcessor(string input){
 			string title, comment;
 			BasicDateTime startingDateTime;
 			BasicDateTime endingDateTime;
-			Task t = _tempTaskList[choice-1];
-			vector<Task> clash;
+			Task newTask = _tempTaskList[choice-1];
+			Task oldTask = newTask;
 
-			t.setStartDate(_tempStart);
-			t.setEndDate(_tempEnd);
-			t.setType(_tempType);
-			operationStatus = _taskList.update(_tempTaskList[choice-1], t, clash);
-			_tempTaskList = clash;
+			newTask.setStartDate(_tempStart);
+			newTask.setEndDate(_tempEnd);
+			newTask.setType(_tempType);
+			operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
+			if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+				_tempTaskList.push_back(oldTask);
+				_tempTaskList.push_back(newTask);
+			}
+			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+			}
 		}
 
 		_statusFlag = 0;
 		return operationStatus;
 
 	}else if(_statusFlag == 0){
-			vector<string> keywords;
+		vector<string> keywords;
 
-			_interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
-			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
+		_interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
+		_tempTaskList.clear();
+		breakIntoStringVectorBySpace(_tempTitle, keywords);
+		_taskList.searchKeywords(keywords, _tempTaskList);
 
-			if (_tempTaskList.size() == 1){
-				Task t = _tempTaskList[0];
-				vector<Task> clash;
-				t.setStartDate(_tempStart);
-				t.setEndDate(_tempEnd);
-				t.setType(_tempType);
-				return _taskList.update(_tempTaskList[0], t, clash);
+		if (_tempTaskList.size() == 1){
+			Task newTask = _tempTaskList[0];
+			Task oldTask = newTask;
 
-			}else if(!_tempTaskList.empty()){
-				_statusFlag = 3;
-				return PROMPT_RESCHEDULE_CHOOSE;
-			}else if(_tempTaskList.empty()){
-				return WARNING_SEARCH_NO_RESULT;
-			
+			newTask.setStartDate(_tempStart);
+			newTask.setEndDate(_tempEnd);
+			newTask.setType(_tempType);
+			operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
+			if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+				_tempTaskList.push_back(oldTask);
+				_tempTaskList.push_back(newTask);
+			}
+			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+			}
+			return operationStatus;
+
+		}else if(!_tempTaskList.empty()){
+			_statusFlag = 3;
+			return PROMPT_RESCHEDULE_CHOOSE;
+		}else if(_tempTaskList.empty()){
+			return WARNING_SEARCH_NO_RESULT;
+
 		}
 	}
 	return ERROR_UPDATE;
@@ -403,32 +446,49 @@ int Processor::rescheduleCommandProcessor(string input){
 int Processor::markCommandProcessor(string input){
 	int operationStatus;
 	if(_statusFlag == 4){
-		//stringtointvec doenst seem to be working
+		vector<Task> markedTasks;
 		vector<int> choice = _interpreter.stringToIntVec(input);
 
 		if(choiceIsValid(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
 				operationStatus=_taskList.mark(_tempStatus, _tempTaskList[choice[i]]);
+				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_MARK){
+					Task oldTask = _tempTaskList[choice[i]];
+					Task newTask = oldTask;
+					if(newTask.getDone() != _tempStatus){
+						newTask.toggleDone();
+					}
+					markedTasks.push_back(_tempTaskList[choice[i]]);
+					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+				}
 			}
 		}
+		_tempTaskList = markedTasks;
 		_statusFlag = 0;
 		return operationStatus;
 	}else if(_statusFlag == 0){
-			vector<string> keywords;
+		vector<string> keywords;
 
-			_interpreter.interpretMark(input, _tempTitle, _tempStatus);
-			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
-			if (_tempTaskList.size() == 1){
-				return _taskList.mark(_tempStatus, _tempTaskList[0]);
+		_interpreter.interpretMark(input, _tempTitle, _tempStatus);
+		_tempTaskList.clear();
+		breakIntoStringVectorBySpace(_tempTitle, keywords);
+		_taskList.searchKeywords(keywords, _tempTaskList);
+		if (_tempTaskList.size() == 1){
+			operationStatus = _taskList.mark(_tempStatus, _tempTaskList[0]);
+			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_MARK){
+				Task oldTask = _tempTaskList[0];
+				Task newTask = oldTask;
+				if(newTask.getDone() != _tempStatus){
+					newTask.toggleDone();
+				}
+				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);				
 			}	
 			else if(!_tempTaskList.empty()){
 				_statusFlag = 4;
 				return PROMPT_MARK_CHOOSE;
 			}else if(_tempTaskList.empty()){
 				return WARNING_SEARCH_NO_RESULT;
-			
+			}
 		}
 	}
 	return ERROR_MARK;
@@ -446,10 +506,8 @@ int Processor::searchCommandProcessor(string input){
 
 	if (type == 0){
 		return _taskList.searchKeywords(keywords, _tempTaskList);
-
 	}else if(type == 2){
 		return _taskList.searchKeywordsInRange(keywords, _tempTaskList, start, end);
-
 	}else{
 		return ERROR_SEARCH;
 	}
@@ -458,7 +516,7 @@ int Processor::searchCommandProcessor(string input){
 
 int Processor::undoCommandProcessor(string input){
 	Task oldTask, newTask;
-	COMMAND_TYPES type;
+	COMMAND_TYPES type = COMMAND_TYPES::ADD;//Just for initialization
 	int addResult;
 	HistoryCommand command(type, oldTask, newTask);
 	int returnCode = _history.undo(command);
@@ -468,13 +526,18 @@ int Processor::undoCommandProcessor(string input){
 		case COMMAND_TYPES::ADD:
 			addResult = _taskList.add(command.getOld(), _tempTaskList);
 			if (addResult != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
-				_tempTaskList.push_back(command.getOld());return addResult;
+				_tempTaskList.push_back(command.getOld());
 			}
 			return addResult;
 			break;
 		case COMMAND_TYPES::REMOVE:
+			_tempTaskList.push_back(command.getNew());
 			return _taskList.remove(command.getNew());
 			break;
+		case COMMAND_TYPES::UPDATE:
+			_tempTaskList.push_back(command.getNew());
+			_tempTaskList.push_back(command.getOld());
+			return _taskList.update(command.getNew(), command.getOld(), _tempTaskList);
 		default:
 			break;
 		}
@@ -501,6 +564,51 @@ int Processor::saveFile(){
 }
 
 int Processor::loadFile(){
+	vector<string> stringsFromFile;
+	string currStr, tempStr;
+	int count;
+	bool exitFlag;
+
+	string title, comment;
+	int type;
+	bool status;
+	BasicDateTime start, end;
+
+	_fileProcessing.load(stringsFromFile);
+	for (unsigned int i = 0; i < stringsFromFile.size(); i++){
+		currStr = stringsFromFile[i];
+		stringstream ss(currStr);
+		count = 0;
+		exitFlag = false;
+		while (std::getline(ss, tempStr, NEW_LINE) && !exitFlag){
+			switch (count){
+			case 0:
+				if (tempStr.substr(6) == "Floating Task"){
+					type = 0;
+				}else if (tempStr.substr(6) == "Deadline Task"){
+					type = 1;
+				}else if (tempStr.substr(6) == "Timed Task"){
+					type = 2;			
+				}
+				count++;
+				break;
+			case 1:
+				title = tempStr.substr(7);
+				count++;
+				if (type==0){
+					exitFlag = true;
+				}
+				break;
+			case 2:
+				if (type == 1){
+
+				}
+				break;
+			}
+			Task tempTask(title, start, end, type, status, comment);
+			_taskList.add(tempTask, _tempTaskList);
+		}
+	}
 	return 0;
 }
 
@@ -633,7 +741,8 @@ int Processor::addNormalTask(string title, BasicDateTime dt1, BasicDateTime dt2,
 
 string Processor::getCommand(string& input){
 	stringstream ss(input);
-	string tempStr, command, tempOut;
+	string tempStr, command;
+	string tempOut = "";
 	int count = 0;
 	bool noSpace = true;
 	while (std::getline(ss, tempStr, SPACE)){
@@ -682,22 +791,6 @@ int Processor::breakIntoStringVectorBySpace(string longStr, vector<string>& outp
 }
 
 /*
-* Purpose:Formats all the task between start to end into 1 string
-*
-* Param: start - beginning of task to be combined in vector;
-*		 end - end of task to be combined in vector
-*
-* Returns: formatted task details
-*/
-string Processor::combineStringsWithNewLineOnVector(int start, int end){
-	string result=taskToString(_tempTaskList.at(start));
-	for (int i=start+1;i<end;i++){
-		result=combineStringsWithNewLine(result, taskToString(_tempTaskList.at(i)));
-	}
-	return result;
-}
-
-/*
 * Purpose:Formats 2 strings separated by a new line character
 *
 * Returns: formatted string
@@ -728,6 +821,24 @@ string Processor::taskToString(Task t){
 }
 
 /*
+* Purpose: combines the status message of adding task to task
+*(for display and search)
+*
+* Param: str- status message
+*
+* Returns: formatted status message of adding task
+*/
+vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
+	vector<string> temp;
+	int size=_tempTaskList.size();
+	temp.push_back(taskToString(_tempTaskList.at(0)));
+	for (int i=1;i<size;i++){
+		temp.push_back(taskToString(_tempTaskList.at(i)));
+	}
+	return temp;
+}
+
+/*
 * Purpose:Formats the details task into a string to be printed
 *
 * Param: t- task with details
@@ -736,11 +847,11 @@ string Processor::taskToString(Task t){
 */
 string Processor::printFloatingTask(Task t){
 	string result;
-	result="title: "+t.getTitle();
+	result="Type: Floating Task";
+	result=combineStringsWithNewLine(result, "Title: ");
+	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");
 	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Type: ");
-	result+="Floating task";
 	return result;
 }
 
@@ -753,11 +864,11 @@ string Processor::printFloatingTask(Task t){
 */
 string Processor::printDeadlineTask(Task t){
 	string result;
-	result="title: "+t.getTitle();
+	result="Type: Deadline Task";
+	result=combineStringsWithNewLine(result, "Title: ");
+	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");
 	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Type: ");
-	result+="Deadline task";
 	result=combineStringsWithNewLine(result, "Deadline: ");
 	result+= t.getEnd().getDateTimeString();
 	return result;
@@ -772,11 +883,11 @@ string Processor::printDeadlineTask(Task t){
 */
 string Processor::printTimedTask(Task t){
 	string result;
-	result="title: "+t.getTitle();
+	result="Type: Timed Task";
+	result=combineStringsWithNewLine(result, "Title: ");
+	result+=t.getTitle();
 	result=combineStringsWithNewLine(result, "Status: ");
 	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Type: ");
-	result+="Timed task";
 	result=combineStringsWithNewLine(result, "Start Date: ");
 	result+= t.getStart().getDateTimeString();
 	result=combineStringsWithNewLine(result, "End Date: ");
@@ -797,36 +908,6 @@ string Processor::printStatus(bool status){
 	}else{
 		return "pending";
 	}
-}
-
-/*
-* Purpose: trim spaces ahead of the string
-*
-* Param: str- string to be transformed
-*
-* Returns: string without spaces
-*/
-string Processor::removeLeadingSpaces(string str){
-	int num=str.find_first_not_of(SPACE);
-	return str.substr(num);
-}
-
-/*
-* Purpose: combines the status message of adding task to task
-*(for display and search)
-*
-* Param: str- status message
-*
-* Returns: formatted status message of adding task
-*/
-vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
-	vector<string> temp;
-	int size=_tempTaskList.size();
-	temp.push_back(taskToString(_tempTaskList.at(0)));
-	for (int i=1;i<size;i++){
-		temp.push_back(taskToString(_tempTaskList.at(i)));
-	}
-	return temp;
 }
 
 Processor::~Processor(){

@@ -40,6 +40,11 @@ public:
 	*@return Success in putting the record into history; Failure
 	*/
 	int record(HistoryCommand hist);
+	/**
+	* Retrieves the previously undone action
+	* @param hist previously undone action will be stored here
+	*/
+	int redo(HistoryCommand& hist);
 	
 };
 

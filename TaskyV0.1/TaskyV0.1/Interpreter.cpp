@@ -78,6 +78,7 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 }
 
 int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end){
+	str=removeLeadingSpaces(str);
 	int size=str.size(), pos1, pos2;
 	keywords.clear();
 	if (str.find(SINGLE_QUOTE)!=std::string::npos){
@@ -103,6 +104,7 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type
 }
 
 int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status){
+	str=removeLeadingSpaces(str);
 	bool statusFlag=false;
 	int pos=0, size=str.size();
 	if (str.find(ALL_KEY_WORD)!=std::string::npos){
@@ -140,6 +142,7 @@ int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, B
 }
 
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
+	str=removeLeadingSpaces(str);
 	int posQuote1=0, posKey=0, posQuote2=0;
 	if (str.find(RENAME_KEY_WORD)==str.find(RENAME_KEY_WORD)){
 		posKey=str.find(RENAME_KEY_WORD);
@@ -158,6 +161,7 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 }
 
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
+	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
@@ -183,6 +187,7 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 }
 
 int Interpreter::interpretMark(string str, string& title, bool& status){
+	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
 	if (extractTitle(str, title, posQuote1, posQuote2)){
 		if (str.size()==posQuote2+1){
@@ -202,6 +207,7 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 }
 
 int Interpreter::interpretRemove(string str, string& title){
+	str=removeLeadingSpaces(str);
 	int num1, num2;
 	if (!extractTitle(str, title, num1, num2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_REMOVE;
@@ -210,6 +216,7 @@ int Interpreter::interpretRemove(string str, string& title){
 }
 
 int Interpreter::stringToInt(string str){
+	str=removeLeadingSpaces(str);
 	int num=0;
 	int size=str.size();
 	for (int i=0;i<size;i++){
@@ -223,6 +230,7 @@ int Interpreter::stringToInt(string str){
 }
 
 vector<int> Interpreter::stringToIntVec(string str){
+	str=removeLeadingSpaces(str);
 	vector<int> vec;
 	vector<string> vecStr;
 	if (containChar(str, COMMA)){
@@ -269,6 +277,7 @@ string Interpreter::toLowerCase(string str){
 }
 
 int Interpreter::stringToBasicDateTime(string input, BasicDateTime& time){
+	input=removeLeadingSpaces(input);
 	vector<string> vec=breakStringWithDelim(input, SPACE);
 	bool flag=false;
 	if (vec.size()!=2){

@@ -45,9 +45,6 @@
     <ClInclude Include="HistoryCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TaskList-v2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI.cpp">
@@ -78,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HistoryCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TaskList-v2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

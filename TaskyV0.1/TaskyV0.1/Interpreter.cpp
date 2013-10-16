@@ -444,13 +444,12 @@ bool Interpreter::dateStandardInput(string str, int either){
 		yearFlag=true;
 	}
 	if (yearFlag&&monthFlag&&dayFlag){
-		try{
-			DateTime dt(year, month, day, 0, 0, 0);
-		}catch (const exception& e){
+		if (validateDate(year, month, day)){
+		    setDateParams(year, month, day, either);
+		    return true;
+		}else{
 			return false;
 		}
-		setDateParams(year, month, day, either);
-		return true;
 	}else{
 		return false;
 	}
@@ -603,6 +602,56 @@ void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue,
 		_end.setMinute(minuteValue);
 		_end.setSec(secondValue);
 	}
+}
+
+bool Interpreter::validateDate(int year, int month, int day){
+	if (!validateYear(year)){
+		return false;
+	}
+	if (System::DateTime::IsLeapYear(year)){
+		return validateMonthDay(month, day, false);
+	}else{
+		return validateMonthDay(month, day, true);
+	}
+	return true;
+}
+
+bool Interpreter::validateYear(int year){
+	if (year>=2000 && year<=3000){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::validateMonthDay(int month, int day, bool leap){
+	bool valid=false;
+	switch (month){
+	case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+		if (day>=1 && day<=31){
+			valid=true;
+		}
+		break;
+	case 4: case 6: case 9: case 11:
+		if (day>=1 && day<=30){
+			valid=true;
+		}
+		break;
+	case 2:
+		if (leap){
+			if (day>=1 && day<=29){
+				valid=true;
+			}
+		}else{
+			if (day>=1 && day<=28){
+				valid=true;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return valid;
 }
 
 vector<string> Interpreter::breakStringWithDelim(string str, char delim){

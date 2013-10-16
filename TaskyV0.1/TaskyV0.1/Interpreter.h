@@ -205,6 +205,9 @@ private:
 	int mapDayOfWeekToInt(const string& str);
 	void setDateParams(int yearValue, int monthValue, int dayValue, int either);
 	void setTimeParams(int hourValue, int minuteValue, int secondValue, int either);
+	bool validateDate(int year, int month, int day);
+	bool validateYear(int year);
+	bool validateMonthDay(int month, int day, bool leap);
 
 	vector<string> breakStringWithDelim(string str, char delim);
 	string removeLeadingSpaces(string str);

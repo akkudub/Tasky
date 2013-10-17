@@ -124,6 +124,7 @@ public:
 	void getOccupiedDates(vector<BasicDateTime>& usedDates);
 
 	/** Abstraction Level 2 */
+	void addTask(Task toAdd);
 	bool isExisting(Task task);
 	void pushClashing(Task task, vector<Task>& _temp);
 	bool isSuccessfullyRemoved(Task task);

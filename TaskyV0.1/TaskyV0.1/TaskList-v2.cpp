@@ -18,6 +18,8 @@ int TaskList::add(Task toAdd, vector<Task>& _temp){
 	if(toAdd.getType() == NORMAL_TASK)
 		pushClashing(toAdd, _temp);
 
+	addTask(toAdd);
+
 	if(!_temp.empty())
 		return WARNING_ADD_CLASH;
 	else	
@@ -180,7 +182,21 @@ void TaskList::getOccupiedDates(vector<BasicDateTime>& usedDates){
 
 
 
+void TaskList::addTask(Task toAdd){
 
+	switch(toAdd.getType()){
+
+	case FLOATING_TASK:
+		_floatingTask.push_back(toAdd);
+		break;
+	case DEADLINE_TASK:
+		_deadlineTask.push_back(toAdd);
+		break;
+	case NORMAL_TASK:
+		_normalTask.push_back(toAdd);
+		break;
+	}
+}
 
 void TaskList::searchVectors(vector<string> keywords, vector<Task>& _temp){
 

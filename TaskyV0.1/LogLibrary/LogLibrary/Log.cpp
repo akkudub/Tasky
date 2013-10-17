@@ -30,16 +30,16 @@ namespace LogLibrary{
 				output << str << endl;
 			}
 			switch(logType) {
-			case STATUS_CODE_SET_LOG::INFO:
+			case STATUS_CODE_SET_LOG::LOG_INFO:
 				output << "Info: ";
 				break;
-			case STATUS_CODE_SET_LOG::DEBUG:
+			case STATUS_CODE_SET_LOG::LOG_DEBUG:
 				output << "Debug: ";
 				break;
-			case STATUS_CODE_SET_LOG::WARNING:
+			case STATUS_CODE_SET_LOG::LOG_WARNING:
 				output << "Warning: ";
 				break;
-			case STATUS_CODE_SET_LOG::ERROR:
+			case STATUS_CODE_SET_LOG::LOG_ERROR:
 				output << "Error: ";
 				break;
 			default:

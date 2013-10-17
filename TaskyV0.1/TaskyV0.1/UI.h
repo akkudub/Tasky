@@ -36,12 +36,6 @@ private:
 	*@param command - user input to be passed to Processor
 	*/
 	void displayProcessorMessage(string command,HANDLE hConsole,bool& statusFlag);
-	/**
-	* Purpose:
-	* Display Closing Message before exiting the program
-	* Possible to save the tasks to the Log before exiting
-	*/
-	void displayExitMessage();
 	void setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs);
 public:
 	/**

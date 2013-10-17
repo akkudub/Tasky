@@ -43,11 +43,11 @@ int TaskList::search(string searchLine, vector<Task>& _temp){
 
 	searchTitle(searchLine, _temp);
 
-	if(_temp.empty())
-		return WARNING_SEARCH_NO_RESULT;
-	else
+	if(!_temp.empty())
 		return SUCCESS_SEARCH;
-
+	else
+		return WARNING_SEARCH_NO_RESULT;
+	
 	return ERROR_SEARCH;
 
 }

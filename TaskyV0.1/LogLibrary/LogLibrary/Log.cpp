@@ -4,7 +4,7 @@ using namespace std;
 
 namespace LogLibrary{
 
-	void Log::writeLog(std::string data, std::string logName){
+	void Log::writeLog(int logType, std::string data, std::string logName){
 
 		vector<string> storage;
 		ifstream input(logName);
@@ -28,6 +28,22 @@ namespace LogLibrary{
 		if (output.good()) {
 			for (std::string str:storage){
 				output << str << endl;
+			}
+			switch(logType) {
+			case STATUS_CODE_SET_LOG::INFO:
+				output << "Info: ";
+				break;
+			case STATUS_CODE_SET_LOG::DEBUG:
+				output << "Debug: ";
+				break;
+			case STATUS_CODE_SET_LOG::WARNING:
+				output << "Warning: ";
+				break;
+			case STATUS_CODE_SET_LOG::ERROR:
+				output << "Error: ";
+				break;
+			default:
+				break;
 			}
 			output << data << endl;
 		}

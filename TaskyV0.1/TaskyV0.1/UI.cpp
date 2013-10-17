@@ -52,9 +52,10 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 
 	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 	for (string str:feedback){
-		cout << endl;
 		cout << str << endl;
+		cout << endl;
 	}
+	cout << endl;
 }
 
 

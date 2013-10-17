@@ -53,7 +53,7 @@ int FileProcessing::save(vector<string>& data){
 			return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;
 		}
 		output.close();
-		return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_SAVE;
 	}catch(exception e){
 		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in saving file","FileProcessingLog");
 		return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;

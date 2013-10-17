@@ -3,7 +3,7 @@
 
 void UI::UI_interface(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	
+
 	string command;
 	bool statusFlag = false;
 	while (!statusFlag) {
@@ -47,8 +47,24 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 		statusFlag = true;
 		break;
 	}
-	cout << endl;
-	cout << message << endl;
+
+	if (output ==  STATUS_CODE_SET_OVERALL::OVERALL_WARNING || output ==  STATUS_CODE_SET_OVERALL::OVERALL_PROMPT
+		|| output ==  STATUS_CODE_SET_OVERALL::OVERALL_ERROR ) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		int x;
+		int y;
+		if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+			x = csbi.dwCursorPosition.X;
+			y = csbi.dwCursorPosition.Y;	 
+		}
+		char buf[1000];
+		strcpy(buf, message.c_str());
+		setBlinkingText(x, y, buf, 3, 800);
+		cout<<endl;
+	}else {
+		cout << endl;
+		cout << message << endl;
+	}
 
 	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 	for (string str:feedback){
@@ -56,16 +72,14 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 		cout << endl;
 	}
 	cout << endl;
-	/*displayWelcomeMessage(hConsole);*/
-	/*char buf[] = "I am Blinking!!!!\n";
-	setBlinkingText(0, 1, buf, 5, 1000);
-	*/
+
+
 }
 
 
 void UI::setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs){
 	assert(buf != NULL);
-	::system("cls");
+
 	COORD ord;
 	ord.X = x;
 	ord.Y = y; 

@@ -3,17 +3,14 @@
 
 void UI::UI_interface(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	/*displayWelcomeMessage(hConsole);*/
-	/*char buf[] = "I am Blinking!!!!\n";
-	setBlinkingText(0, 1, buf, 5, 1000);
-	*/
+	
 	string command;
 	bool statusFlag = false;
 	while (!statusFlag) {
 		displayCommandMessage(command, hConsole);
 		displayProcessorMessage(command, hConsole, statusFlag);
 	}
-	displayExitMessage();
+	system("pause");
 }
 
 
@@ -46,6 +43,9 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 	case STATUS_CODE_SET_OVERALL::OVERALL_PROMPT:
 		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN |FOREGROUND_RED | FOREGROUND_INTENSITY);
 		break;
+	case STATUS_CODE_SET_OVERALL::OVERALL_EXIT:
+		statusFlag = true;
+		break;
 	}
 	cout << endl;
 	cout << message << endl;
@@ -56,12 +56,12 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 		cout << endl;
 	}
 	cout << endl;
+	/*displayWelcomeMessage(hConsole);*/
+	/*char buf[] = "I am Blinking!!!!\n";
+	setBlinkingText(0, 1, buf, 5, 1000);
+	*/
 }
 
-
-void UI::displayExitMessage(){
-	cout << MESSAGE_GOODBYE <<endl;
-}
 
 void UI::setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs){
 	assert(buf != NULL);

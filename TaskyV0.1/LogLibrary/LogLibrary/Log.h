@@ -6,10 +6,10 @@
 namespace LogLibrary{	
 
 	enum STATUS_CODE_SET_LOG{
-		INFO,
-		DEBUG,
-		WARNING,
-		ERROR
+		LOG_INFO,
+		LOG_DEBUG,
+		LOG_WARNING,
+		LOG_ERROR
 	};
 
 	class Log {

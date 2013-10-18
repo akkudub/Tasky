@@ -2,9 +2,9 @@
 #define _TASKLIST_H_
 
 /*
- *This class is mainly to store tasks and manipulate tasks according to processor's command.
- *
- *Main author: Kai Wen
+*This class is mainly to store tasks and manipulate tasks according to processor's command.
+*
+*Main author: Kai Wen
 */
 
 #include "Essential.h"
@@ -12,9 +12,17 @@
 
 class TaskList{
 private:
-	vector<Task> _taskList;
-	
+	vector<Task> _floatingTask;
+	vector<Task> _deadlineTask;
+	vector<Task> _normalTask;
+
+	vector<Task> _duplicateFloating;
+	vector<Task> _duplicateDeadline;
+	vector<Task> _duplicateNormal;
+
+
 public:
+	/** Abstraction Level 1 */
 	TaskList();
 	/**
 	* Purpose:
@@ -83,6 +91,16 @@ public:
 	int displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	/**
 	* Purpose:
+	* pushes tasks with matching status and in range to referenced vector
+	* @param done
+	* @param start
+	* @param end
+	* @param _temp for Logic to put in tasks within the range
+	* @return status code
+	*/
+	int displayStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+	/**
+	* Purpose:
 	* updates the existing task into the new task. any tasks that clashes will be pushed into referenced vector.
 	* @param exisitngTask old task
 	* @param newTask task with new details
@@ -101,9 +119,37 @@ public:
 	/**
 	* Purpose:
 	* pushes BasicDateTimes that are used into the referenced vector
-	* @param vector<BasicDateTime> to push in the BasicDateTimes that are used
+	* @param usedDates to push in the BasicDateTimes that are used
 	*/
 	void getOccupiedDates(vector<BasicDateTime>& usedDates);
+
+	/** Abstraction Level 2 */
+	void addTask(Task toAdd);
+	bool isExisting(Task task);
+	void pushClashing(Task task, vector<Task>& _temp);
+	bool isSuccessfullyRemoved(Task task);
+	void searchTitle(string searchLine, vector<Task>& _temp);
+	void searchVectors(vector<string> keywords, vector<Task>& _temp);
+	void searchVectorsWithRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+	void appendVectors(vector<Task>& _temp);
+	void pushStatus(bool done, vector<Task>& _temp);
+	void pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+	void pushStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+	bool isSuccessfullyMarked(bool mark, Task task);
+	void pushOccupiedDates(vector<BasicDateTime>& usedDates);
+
+	/** Abstraction Level 3 */
+	void exactSearch(string exactString, vector<Task>& _temp);
+	void containingExactStringSearch(string exactString, vector<Task>& _temp);
+	void containingBreakdownStringSearch(vector<string> keywords, vector<Task>& _temp);
+
+	void exactSearchWithRange(string exactString, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+	void containingExactStringSearchWithRange(string exactString, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+	void containingBreakdownStringSearchWithRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+
+	/** Abstraction Level 4 */
+	bool isInRange(BasicDateTime time, BasicDateTime start, BasicDateTime end);
+
 };
 
 #endif

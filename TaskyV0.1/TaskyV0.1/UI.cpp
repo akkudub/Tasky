@@ -48,6 +48,7 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 		break;
 	}
 
+	/*
 	if (output ==  STATUS_CODE_SET_OVERALL::OVERALL_WARNING || output ==  STATUS_CODE_SET_OVERALL::OVERALL_PROMPT
 		|| output ==  STATUS_CODE_SET_OVERALL::OVERALL_ERROR ) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -65,6 +66,9 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 		cout << endl;
 		cout << message << endl;
 	}
+	*/
+	cout << endl;
+	cout << message << endl;
 
 	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 	for (string str:feedback){

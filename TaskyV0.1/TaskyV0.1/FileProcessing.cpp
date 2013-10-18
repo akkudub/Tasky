@@ -17,17 +17,18 @@ int FileProcessing::load(vector<string>& data){
 					}
 				} else {
 					input.close();
+					LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_WARNING,"Empty file","FileProcessingLog");
 					return STATUS_CODE_SET_WARNING::WARNING_LOAD_EMPTY_FILE;	
 				}
 			} else {
-				LogLibrary::Log::writeLog("Error in opening file","FileProcessingLog");
+				LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR, "Error in opening file","FileProcessingLog");
 				return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
 			}
 		}
 		input.close();
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
 	}catch(exception e) {
-		LogLibrary::Log::writeLog("Error in opening file","FileProcessingLog");
+		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in opening file","FileProcessingLog");
 		return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
 	}
 }
@@ -48,13 +49,13 @@ int FileProcessing::save(vector<string>& data){
 			}
 		} else {
 			output.close();
-			LogLibrary::Log::writeLog("Error in saving file","FileProcessingLog");
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in saving file","FileProcessingLog");
 			return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;
 		}
 		output.close();
-		return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_SAVE;
 	}catch(exception e){
-		LogLibrary::Log::writeLog("Error in saving file","FileProcessingLog");
+		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in saving file","FileProcessingLog");
 		return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;
 	}
 }

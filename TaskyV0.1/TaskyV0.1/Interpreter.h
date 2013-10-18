@@ -88,7 +88,10 @@ private:
 	static const int MINUTE_UPPER_BOUND=59;
 	static const int SECOND_LOWER_BOUND=0;
 	static const int SECOND_UPPER_BOUND=59;
-	static const int TEN_FOR_STR_INT_CONVERTION=10;
+
+	static const int RADIX_TEN=10;
+	static const int RADIX_HUNDRED=100;
+	static const int STRING_TO_INT_ERROR=-1;
 
 	static const int EITHER_AS_START=1;
 	static const int EITHER_AS_END=2;
@@ -245,6 +248,8 @@ private:
 	string removeSpacesFromBothEnds(string str);
 	int findFirstOfWord(const string& source, const string& word);
 	int findLastOfWord(const string& source, const string& word);
+	vector<int> pushNumsWithComma(const vector<string>& strVec);
+	vector<int> pushNumsWithDash(const vector<string>& strVec);
 	bool containChar(string input, char ch);
 };
 

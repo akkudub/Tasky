@@ -66,32 +66,28 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end){
 	str=removeLeadingSpaces(str);
 	int size=str.size(), pos1, pos2;
+	bool fromToFlag=false, byFlag=false;
+	string title;
 	keywords.clear();
-	if (str.find(SINGLE_QUOTE)!=std::string::npos){
-		pos1=str.find_first_of(SINGLE_QUOTE);
-		pos2=str.find_last_of(SINGLE_QUOTE);
-		if (pos1==pos2){
-			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
-		}
-	}else{
+	if (!extractTitle(str, title, pos1, pos2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
-	vector<string> temp=breakStringWithDelim(str.substr(pos1+1,pos2-pos1-1), SPACE);
+	vector<string> temp=breakStringWithDelim(title, SPACE);
 	keywords.push_back(str.substr(pos1+1,pos2-pos1-1));
 	keywords.insert(keywords.end(),temp.begin(), temp.end());
-	if (fromToCheck(str.substr(pos1))){
-		start=_start;
-		end=_end;
-		type=TWO_DATETIME;
-	}else{
-		type=ONE_DATETIME;
+	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
+		type = NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
+	}
+	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 }
 
 int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status){
 	str=removeLeadingSpaces(str);
-	bool statusFlag=false;
+	bool statusFlag=false, fromToFlag=false, byFlag=false;
 	int pos=0, size=str.size();
 	if (str.find(ALL_KEY_WORD)!=std::string::npos){
 		type=NO_DATETIME;
@@ -109,15 +105,13 @@ int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, B
 		if (pos>=size-1){
 			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
 		}else{
-			if (fromToCheck(str.substr(pos))){
-				start=_start;
-				end=_end;
-			}else if(byCheck(str.substr(pos))){
-				start=_start;
-				end=_end;
-            }else{
-				return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
-			}
+			if (!firstCheckForFromToOrBy(str, fromToFlag, byFlag)){
+		        type = NO_DATETIME;
+		        return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
+	        }
+	        if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
+	        }
 		}
 	}
 	if (statusFlag){
@@ -128,24 +122,21 @@ int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, B
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
 }
 
+//refacoting!!! and stricter checking
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
 	str=removeLeadingSpaces(str);
 	int posQuote1=0, posKey=0, posQuote2=0;
-	if (str.find(RENAME_KEY_WORD)==str.find(RENAME_KEY_WORD)){
-		posKey=str.find(RENAME_KEY_WORD);
-		posQuote1=str.find_first_of(SINGLE_QUOTE);
-		posQuote2=str.find_last_of(SINGLE_QUOTE);
-		if (posKey==INTERNAL_ERROR_CODE){
-            return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
-		}
-		if (posQuote2-posQuote1<=5){
-			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
-		}else{
-			oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
-			newTitle=str.substr(posKey+6, posQuote2-posKey-6);
-		}
-	}else{
+	posKey=str.find(RENAME_KEY_WORD);
+	posQuote1=str.find_first_of(SINGLE_QUOTE);
+	posQuote2=str.find_last_of(SINGLE_QUOTE);
+	if (posKey==INTERNAL_ERROR_CODE){
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+	}
+	if (posQuote2-posQuote1<=5){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+	}else{
+		oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
+		newTitle=str.substr(posKey+6, posQuote2-posKey-6);
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME;
 }
@@ -173,6 +164,9 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
 	}
+	if (str.size()==posQuote2+1){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
+	}
 	if (str.find(DONE_KEY_WORD, posQuote2+1)!=std::string::npos){
 		status=true;
 	}else if(str.find(PENDING_KEY_WORD, posQuote2+1)!=std::string::npos){
@@ -198,9 +192,9 @@ int Interpreter::stringToInt(string str){
 	int size=str.size();
 	for (int i=0;i<size;i++){
 		if (str[i]>=ZERO && str[i]<=NINE){
-			num=num*TEN_FOR_STR_INT_CONVERTION+str[i]-ZERO;
+			num=num*RADIX_TEN+str[i]-ZERO;
 		}else{
-			return INTERNAL_ERROR_CODE;
+			return STRING_TO_INT_ERROR;
 		}
 	}
 	return num;
@@ -212,33 +206,10 @@ vector<int> Interpreter::stringToIntVec(string str){
 	vector<string> vecStr;
 	if (containChar(str, COMMA)){
 		vecStr=breakStringWithDelim(str, COMMA);
-		int size=vecStr.size();
-		for (int i=0;i<size;i++){
-			int temp=stringToInt(vecStr.at(i));
-			if (temp>=0){
-				vec.push_back(temp);
-			}else{
-				vec.clear();
-				return vec;
-			}
-		}
+		vec=pushNumsWithComma(vecStr);
 	}else if(containChar(str, DASH)){
 		vecStr=breakStringWithDelim(str, DASH);
-		int size=vecStr.size();
-		if (size!=2){
-			return vec;
-		}else{
-			int temp1=stringToInt(vecStr.at(0));
-			int temp2=stringToInt(vecStr.at(1));
-			if (temp1>=0 && temp2>=temp1){
-				for (int i=temp1;i<=temp2; i++){
-					vec.push_back(i);
-				}
-			}else{
-				vec.clear();
-				return vec;
-			}
-		}
+		vec=pushNumsWithDash(vecStr);
 	}else{
 		int temp=stringToInt(str);
 		if (temp!=-1){
@@ -690,6 +661,36 @@ int Interpreter::findLastOfWord(const string& source, const string& word){
 		num=source.find(word, num+1);
 	}
 	return prev;
+}
+
+vector<int> Interpreter::pushNumsWithComma(const vector<string>& strVec){
+	vector<int> vec;
+	int size=strVec.size();
+	for (int i=0;i<size;i++){
+		int temp=stringToInt(strVec.at(i));
+		if (temp>=0){
+			vec.push_back(temp);
+		}else{
+			vec.clear();
+			return vec;
+		}
+	}
+	return vec;
+}
+
+vector<int> Interpreter::pushNumsWithDash(const vector<string>& strVec){
+	vector<int> vec;
+	int temp1=stringToInt(strVec.at(0));
+	int temp2=stringToInt(strVec.at(1));
+	if (temp1>=0 && temp2>=temp1){
+		for (int i=temp1;i<=temp2; i++){
+			vec.push_back(i);
+		}
+	}else{
+		vec.clear();
+		return vec;
+	}
+	return vec;
 }
 
 bool Interpreter::containChar(string input, char ch){

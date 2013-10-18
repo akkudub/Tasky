@@ -470,7 +470,7 @@ int Processor::markCommandProcessor(string input){
 					if(newTask.getDone() != _tempStatus){
 						newTask.toggleDone();
 					}
-					markedTasks.push_back(_tempTaskList[choice[i]-1]);
+					markedTasks.push_back(newTask);
 					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
 				}
 			}
@@ -494,13 +494,12 @@ int Processor::markCommandProcessor(string input){
 					newTask.toggleDone();
 				}
 				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);				
-			}	
-			else if(!_tempTaskList.empty()){
-				_statusFlag = 4;
-				return PROMPT_MARK_CHOOSE;
-			}else if(_tempTaskList.empty()){
-				return WARNING_SEARCH_NO_RESULT;
 			}
+		}else if(!_tempTaskList.empty()){
+			_statusFlag = 4;
+			return PROMPT_MARK_CHOOSE;
+		}else if(_tempTaskList.empty()){
+			return WARNING_SEARCH_NO_RESULT;
 		}
 	}
 	return ERROR_MARK;
@@ -513,7 +512,7 @@ int Processor::searchCommandProcessor(string input){
 	int type;
 
 	_tempTaskList.clear();
-	breakIntoStringVectorBySpace(_tempTitle, keywords);
+
 	int return_code = _interpreter.interpretSearch(input, keywords, type, start, end);
 
 	if (type == 0){
@@ -811,7 +810,7 @@ string Processor::getCommand(string& input){
 		}else{
 			tempOut += (SPACE + tempStr);
 		}
-		
+
 		count ++;
 		noSpace = false;
 	}

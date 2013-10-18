@@ -63,12 +63,14 @@ bool Task::isEqualTo(Task another){
 		break;
 	case DEADLINE_TASK:
 		return another.getTitle() == _title
-			&& another.getEnd().compareTo(_end) == 0;
+			&& another.getEnd().compareTo(_end) == 0
+			&& another.getType() == _type;
 		break;
 	case NORMAL_TASK:
 		return another.getTitle() == _title
 			&& another.getStart().compareTo(_start) == 0
-			&& another.getEnd().compareTo(_end) == 0;
+			&& another.getEnd().compareTo(_end) == 0
+			&& another.getType() == _type;
 		break;
 
 	}

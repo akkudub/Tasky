@@ -66,25 +66,21 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end){
 	str=removeLeadingSpaces(str);
 	int size=str.size(), pos1, pos2;
+	bool fromToFlag=false, byFlag=false;
+	string title;
 	keywords.clear();
-	if (str.find(SINGLE_QUOTE)!=std::string::npos){
-		pos1=str.find_first_of(SINGLE_QUOTE);
-		pos2=str.find_last_of(SINGLE_QUOTE);
-		if (pos1==pos2){
-			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
-		}
-	}else{
+	if (!extractTitle(str, title, pos1, pos2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
-	vector<string> temp=breakStringWithDelim(str.substr(pos1+1,pos2-pos1-1), SPACE);
+	vector<string> temp=breakStringWithDelim(title, SPACE);
 	keywords.push_back(str.substr(pos1+1,pos2-pos1-1));
 	keywords.insert(keywords.end(),temp.begin(), temp.end());
-	if (fromToCheck(str.substr(pos1))){
-		start=_start;
-		end=_end;
-		type=TWO_DATETIME;
-	}else{
-		type=ONE_DATETIME;
+	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
+		type = NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
+	}
+	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 }
@@ -130,21 +126,17 @@ int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, B
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
 	str=removeLeadingSpaces(str);
 	int posQuote1=0, posKey=0, posQuote2=0;
-	if (!str.find(RENAME_KEY_WORD)==std::string::npos){
+	posKey=str.find(RENAME_KEY_WORD);
+	posQuote1=str.find_first_of(SINGLE_QUOTE);
+	posQuote2=str.find_last_of(SINGLE_QUOTE);
+	if (posKey==INTERNAL_ERROR_CODE){
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+	}
+	if (posQuote2-posQuote1<=5){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
 	}else{
-		posKey=str.find(RENAME_KEY_WORD);
-		posQuote1=str.find_first_of(SINGLE_QUOTE);
-		posQuote2=str.find_last_of(SINGLE_QUOTE);
-		if (posKey==INTERNAL_ERROR_CODE){
-            return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
-		}
-		if (posQuote2-posQuote1<=5){
-			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
-		}else{
-			oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
-			newTitle=str.substr(posKey+6, posQuote2-posKey-6);
-		}
+		oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
+		newTitle=str.substr(posKey+6, posQuote2-posKey-6);
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME;
 }
@@ -217,12 +209,7 @@ vector<int> Interpreter::stringToIntVec(string str){
 		vec=pushNumsWithComma(vecStr);
 	}else if(containChar(str, DASH)){
 		vecStr=breakStringWithDelim(str, DASH);
-		int size=vecStr.size();
-		if (size!=2){
-			return vec;
-		}else{
-			vec=pushNumsWithDash(vecStr);
-		}
+		vec=pushNumsWithDash(vecStr);
 	}else{
 		int temp=stringToInt(str);
 		if (temp!=-1){

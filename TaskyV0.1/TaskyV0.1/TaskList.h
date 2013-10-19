@@ -126,6 +126,7 @@ public:
 	/** Abstraction Level 2 */
 	void addTask(Task toAdd);
 	bool isExisting(Task task);
+	bool isExistingDate(BasicDateTime date, vector<BasicDateTime> vector);
 	void pushClashing(Task task, vector<Task>& _temp);
 	bool isSuccessfullyRemoved(Task task);
 	void searchTitle(string searchLine, vector<Task>& _temp);
@@ -149,6 +150,7 @@ public:
 
 	/** Abstraction Level 4 */
 	bool isInRange(BasicDateTime time, BasicDateTime start, BasicDateTime end);
+	string stringToLower(string& toLowerString);
 
 };
 

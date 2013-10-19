@@ -1,152 +1,6 @@
 #include <assert.h>
 #include "Processor.h"
 
-const string Processor::EMPTY_STRING = "";
-const string Processor::FROM_KEY_WORD = "from";
-const string Processor::TO_KEY_WORD = "to";
-const string Processor::BY_KEY_WORD = "by";
-const string Processor::NEW_LINE_STRING = "\n";
-
-const string Processor::MESSAGE_OVERALL_SUCCESS =		"Success!";
-const string Processor::MESSAGE_OVERALL_WARNING =		"Warning!";
-const string Processor::MESSAGE_OVERALL_ERROR =			"Error!";
-const string Processor::MESSAGE_OVERALL_PROMPT =		"Please enter your choice:";
-const string Processor::MESSAGE_OVERALL_EXIT =			"The program will now exit, Goodbye!";
-
-const string Processor::MESSAGE_SUCCESS_ADD =			"Success! Task added";
-const string Processor::MESSAGE_SUCCESS_REMOVE =		"Success! Task removed";
-const string Processor::MESSAGE_SUCCESS_DISPLAY =		"Success! Tasks displayed";
-const string Processor::MESSAGE_SUCCESS_UPDATE =		"Success! Task updated";
-const string Processor::MESSAGE_SUCCESS_RESHCEDULE =	"Success! Task rescheduled";
-const string Processor::MESSAGE_SUCCESS_MARK =			"Success! Task(s) marked";
-const string Processor::MESSAGE_SUCCESS_SEARCH =		"Success! Search successful";
-const string Processor::MESSAGE_SUCCESS_LOAD =			"Success! File loaded";
-const string Processor::MESSAGE_SUCCESS_SAVE =			"Success! File saved";
-const string Processor::MESSAGE_SUCCESS_UNDO =			"Success! Undo successful";
-const string Processor::MESSAGE_SUCCESS_REDO =			"Success! Redo successful";
-const string Processor::MESSAGE_SUCCESS_RECORD =		"Success! Previous action recorded";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_ADD = "Success! Interpreted add";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_REMOVE = "Success! Interpreted remove";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_DISPLAY = "Success! Interpreted display";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_RENAME = "Success! Interpreted rename";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_RESCHEDULE = "Success! Interpreted reschedule";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_MARK = "Success! Interpreted mark";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_SEARCH = "Success! Interpreted search";
-const string Processor::MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME = "Success! Interpreted Date";
-
-const string Processor::MESSAGE_WARNING_ADD_CLASH =		"Warning! Task clashes with existing ones";
-const string Processor::MESSAGE_WARNING_ADD_DUPLICATE = "Warning! Task already exists";
-const string Processor::MESSAGE_WARNING_DISPLAY_NO_RESULT = "Warning! No tasks match the parameters";
-const string Processor::MESSAGE_WARNING_UPDATE_SAME =	"Warning! The new data is the same as the old data";
-const string Processor::MESSAGE_WARNING_UPDATE_CLASH =	"Warning! The new data will make the task clash with the following:";
-const string Processor::MESSAGE_WARNING_MARK_NO_CHANGE = "Warning! There is no change in the status";
-const string Processor::MESSAGE_WARNING_SEARCH_NO_RESULT = "Warning! No such task";
-const string Processor::MESSAGE_WARNING_UNDO_NO_TASKS = "Warning! There is nothing to undo";
-const string Processor::MESSAGE_WARNING_REDO_NO_TASKS = "Warning! There is nothing to redo";
-const string Processor::MESSAGE_WARNING_LOAD_EMPTY_FILE = "Warning! The file being loaded is empty";	
-const string Processor::MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE = "Warning! No title interpreted";
-const string Processor::MESSAGE_WARNING_WRONG_INPUT =	"Warning! Wrong input";
-
-const string Processor::MESSAGE_ERROR_ADD =				"Error! Unexpected error while adding task";
-const string Processor::MESSAGE_ERROR_REMOVE =			"Error! Unexpected error while removing task" ;
-const string Processor::MESSAGE_ERROR_DISPLAY =			"Error! Unexpected error while displaying tasks";
-const string Processor::MESSAGE_ERROR_UPDATE =		"Error! Unexpected error while rescheduling task";
-const string Processor::MESSAGE_ERROR_MARK =			"Error! Unexpected error while marking task(s)";
-const string Processor::MESSAGE_ERROR_SEARCH =			"Error! Unexpected error while searching for tasks";
-const string Processor::MESSAGE_ERROR_UNDO =			"Error! Unexpected error while undoing task";
-const string Processor::MESSAGE_ERROR_REDO =			"Error! Unexpected error while redoing task";
-const string Processor::MESSAGE_ERROR_LOAD_OPENFILE =	"Error! Unexpected error while loading file";
-const string Processor::MESSAGE_ERROR_SAVE_SAVEFILE =	"Error! Unexpected error while saving to file";
-const string Processor::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
-const string Processor::MESSAGE_ERROR_INTERPRET_EMPTY_INPUT = "Error! Empty input";
-const string Processor::MESSAGE_ERROR_INTERPRET_TITLE_FORMAT = "Error! Invalid title format";
-const string Processor::MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT = "Error! Invalid datetime format";
-const string Processor::MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD = "Error! Missing Keyword";
-const string Processor::MESSAGE_ERROR_INTERPRET_ADD = "Error! Unexpected error while interpreting add";
-const string Processor::MESSAGE_ERROR_INTERPRET_REMOVE = "Error! Unexpected error while interpreting remove";
-const string Processor::MESSAGE_ERROR_INTERPRET_DISPLAY = "Error! Unexpected error while interpreting display";
-const string Processor::MESSAGE_ERROR_INTERPRET_RENAME = "Error! Unexpected error while interpreting rename";
-const string Processor::MESSAGE_ERROR_INTERPRET_RESCHEDULE = "Error! Unexpected error while interpreting reschedule";
-const string Processor::MESSAGE_ERROR_INTERPRET_MARK = "Error! Unexpected error while interpreting mark";
-const string Processor::MESSAGE_ERROR_INTERPRET_SEARCH = "Error! Unexpected error while interpreting search";
-const string Processor::MESSAGE_ERROR_INTERPRET_STRINGTODATETIME = "Error! Unexpected error while interpreting datetime";
-
-const string Processor::MESSAGE_PROMPT_REMOVE_CHOOSE =	"Enter task number to remove:";
-const string Processor::MESSAGE_PROMPT_RENAME_CHOOSE =	"Enter task number to rename:";
-const string Processor::MESSAGE_PROMPT_RESCHEDULE_CHOOSE = "Enter task number to reschedule:";
-const string Processor::MESSAGE_PROMPT_MARK_CHOOSE =	"Enter task number to mark:";
-
-const string Processor::MESSAGE_ARRAY [MAX_MESSAGES] = {
-	MESSAGE_OVERALL_SUCCESS,
-	MESSAGE_OVERALL_WARNING,
-	MESSAGE_OVERALL_ERROR,
-	MESSAGE_OVERALL_PROMPT,
-	MESSAGE_OVERALL_EXIT,
-
-	MESSAGE_SUCCESS_ADD,
-	MESSAGE_SUCCESS_REMOVE,
-	MESSAGE_SUCCESS_DISPLAY,
-	MESSAGE_SUCCESS_UPDATE,
-	MESSAGE_SUCCESS_RESHCEDULE,
-	MESSAGE_SUCCESS_MARK,
-	MESSAGE_SUCCESS_SEARCH,
-	MESSAGE_SUCCESS_LOAD,
-	MESSAGE_SUCCESS_SAVE,
-	MESSAGE_SUCCESS_UNDO,
-	MESSAGE_SUCCESS_REDO,
-	MESSAGE_SUCCESS_RECORD,
-	MESSAGE_SUCCESS_INTERPRET_ADD,
-	MESSAGE_SUCCESS_INTERPRET_REMOVE,
-	MESSAGE_SUCCESS_INTERPRET_DISPLAY,
-	MESSAGE_SUCCESS_INTERPRET_RENAME,
-	MESSAGE_SUCCESS_INTERPRET_RESCHEDULE,	
-	MESSAGE_SUCCESS_INTERPRET_MARK,
-	MESSAGE_SUCCESS_INTERPRET_SEARCH,
-	MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME,
-
-	MESSAGE_WARNING_ADD_CLASH,	
-	MESSAGE_WARNING_ADD_DUPLICATE,
-	MESSAGE_WARNING_DISPLAY_NO_RESULT,
-	MESSAGE_WARNING_UPDATE_SAME,	
-	MESSAGE_WARNING_UPDATE_CLASH,
-	MESSAGE_WARNING_MARK_NO_CHANGE,
-	MESSAGE_WARNING_SEARCH_NO_RESULT,
-	MESSAGE_WARNING_UNDO_NO_TASKS,
-	MESSAGE_WARNING_REDO_NO_TASKS,
-	MESSAGE_WARNING_LOAD_EMPTY_FILE,	
-	MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE,
-	MESSAGE_WARNING_WRONG_INPUT,
-
-	MESSAGE_ERROR_ADD,
-	MESSAGE_ERROR_REMOVE,
-	MESSAGE_ERROR_DISPLAY,
-	MESSAGE_ERROR_UPDATE,
-	MESSAGE_ERROR_MARK,
-	MESSAGE_ERROR_SEARCH,
-	MESSAGE_ERROR_UNDO,
-	MESSAGE_ERROR_REDO,
-	MESSAGE_ERROR_LOAD_OPENFILE,
-	MESSAGE_ERROR_SAVE_SAVEFILE,
-	MESSAGE_ERROR_RECORD,
-	MESSAGE_ERROR_INTERPRET_EMPTY_INPUT,
-	MESSAGE_ERROR_INTERPRET_TITLE_FORMAT,
-	MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT,
-	MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD,
-	MESSAGE_ERROR_INTERPRET_ADD,
-	MESSAGE_ERROR_INTERPRET_REMOVE,
-	MESSAGE_ERROR_INTERPRET_DISPLAY,
-	MESSAGE_ERROR_INTERPRET_RENAME,	
-	MESSAGE_ERROR_INTERPRET_RESCHEDULE,
-	MESSAGE_ERROR_INTERPRET_MARK,
-	MESSAGE_ERROR_INTERPRET_SEARCH,
-	MESSAGE_ERROR_INTERPRET_STRINGTODATETIME,
-
-	MESSAGE_PROMPT_REMOVE_CHOOSE,
-	MESSAGE_PROMPT_RENAME_CHOOSE,
-	MESSAGE_PROMPT_RESCHEDULE_CHOOSE,
-	MESSAGE_PROMPT_MARK_CHOOSE,
-};
-
 const char Processor::SLASH = '/';
 const char Processor::BACK_SLASH = '\\';
 const char Processor::DOT = '.';
@@ -156,6 +10,9 @@ const char Processor::ZERO = '0';
 const char Processor::NINE = '9';
 const char Processor::SPACE = ' ';
 const char Processor::NEW_LINE = '\n';
+
+const string Processor::EMPTY_STRING = "";
+const string Processor::NEW_LINE_STRING = "\n";
 
 Processor::Processor(){
 	_statusFlag=0;
@@ -685,10 +542,10 @@ int Processor::feedbackToUI(int returnCode, string& message, vector<string>& lis
 	assert(returnCode>=STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS &&
 		returnCode<=STATUS_CODE_SET_PROPMT::PROMPT_MARK_CHOOSE);
 
-	message = MESSAGE_ARRAY[returnCode];
+	message = _messages.getMessage(returnCode);
 
 	if (returnCode == STATUS_CODE_SET_OVERALL::OVERALL_EXIT){
-		message += MESSAGE_ARRAY[saveFile()];
+		message += _messages.getMessage(saveFile());
 		list.clear();
 		saveFile();
 		return STATUS_CODE_SET_OVERALL::OVERALL_EXIT;

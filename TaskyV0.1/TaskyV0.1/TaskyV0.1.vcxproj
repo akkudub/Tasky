@@ -88,6 +88,7 @@
     <ClInclude Include="History.h" />
     <ClInclude Include="HistoryCommand.h" />
     <ClInclude Include="Interpreter.h" />
+    <ClInclude Include="Messages.h" />
     <ClInclude Include="Processor.h" />
     <ClInclude Include="TaskList.h" />
     <ClInclude Include="Task.h" />
@@ -99,6 +100,7 @@
     <ClCompile Include="History.cpp" />
     <ClCompile Include="HistoryCommand.cpp" />
     <ClCompile Include="Interpreter.cpp" />
+    <ClCompile Include="Messages.cpp" />
     <ClCompile Include="Processor.cpp" />
     <ClCompile Include="TaskList.cpp" />
     <ClCompile Include="Main.cpp" />

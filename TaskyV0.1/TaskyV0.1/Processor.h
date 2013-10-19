@@ -16,9 +16,6 @@
 */
 
 #include <sstream>
-#include <iostream>
-#include <algorithm>
-#include <msclr\marshal_cppstd.h>
 #include "Task.h"
 #include "BasicDateTime.h"
 #include "History.h"
@@ -26,6 +23,7 @@
 #include "TaskList.h"
 #include "Interpreter.h"
 #include "Essential.h"
+#include "Messages.h"
 
 using namespace System;
 using namespace msclr::interop;
@@ -60,86 +58,10 @@ private:
 	History _history;
 	Interpreter _interpreter;
 	FileProcessing _fileProcessing;
+	Messages _messages;
 	int _statusFlag; 
 
 private:
-	static const string EMPTY_STRING;
-	static const string NEW_LINE_STRING;
-	static const string FROM_KEY_WORD;
-	static const string TO_KEY_WORD;
-	static const string BY_KEY_WORD;
-
-	static const string MESSAGE_OVERALL_SUCCESS;
-	static const string MESSAGE_OVERALL_WARNING;
-	static const string MESSAGE_OVERALL_ERROR;
-	static const string MESSAGE_OVERALL_PROMPT;
-	static const string MESSAGE_OVERALL_EXIT;
-
-	static const string MESSAGE_SUCCESS_ADD;
-	static const string MESSAGE_SUCCESS_REMOVE;
-	static const string MESSAGE_SUCCESS_DISPLAY;
-	static const string MESSAGE_SUCCESS_UPDATE;
-	static const string MESSAGE_SUCCESS_RESHCEDULE;
-	static const string MESSAGE_SUCCESS_MARK;
-	static const string MESSAGE_SUCCESS_SEARCH;
-	static const string MESSAGE_SUCCESS_LOAD;
-	static const string MESSAGE_SUCCESS_SAVE;
-	static const string MESSAGE_SUCCESS_UNDO;
-	static const string MESSAGE_SUCCESS_REDO;
-	static const string MESSAGE_SUCCESS_RECORD;
-	static const string MESSAGE_SUCCESS_INTERPRET_ADD;
-	static const string MESSAGE_SUCCESS_INTERPRET_REMOVE;
-	static const string MESSAGE_SUCCESS_INTERPRET_DISPLAY;
-	static const string MESSAGE_SUCCESS_INTERPRET_RENAME;
-	static const string MESSAGE_SUCCESS_INTERPRET_RESCHEDULE;	
-	static const string MESSAGE_SUCCESS_INTERPRET_MARK;
-	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH;
-	static const string MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME;
-	static const string MESSAGE_ERROR_INTERPRET_STRINGTODATETIME;
-
-	static const string MESSAGE_WARNING_ADD_CLASH;	
-	static const string MESSAGE_WARNING_ADD_DUPLICATE;
-	static const string MESSAGE_WARNING_DISPLAY_NO_RESULT;
-	static const string MESSAGE_WARNING_UPDATE_SAME;	
-	static const string MESSAGE_WARNING_UPDATE_CLASH;
-	static const string MESSAGE_WARNING_MARK_NO_CHANGE;
-	static const string MESSAGE_WARNING_SEARCH_NO_RESULT;
-	static const string MESSAGE_WARNING_UNDO_NO_TASKS;
-	static const string MESSAGE_WARNING_REDO_NO_TASKS;
-	static const string MESSAGE_WARNING_LOAD_EMPTY_FILE;	
-	static const string MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE;
-	static const string MESSAGE_WARNING_WRONG_INPUT;
-
-	static const string MESSAGE_ERROR_ADD;
-	static const string MESSAGE_ERROR_REMOVE;
-	static const string MESSAGE_ERROR_DISPLAY;
-	static const string MESSAGE_ERROR_UPDATE;
-	static const string MESSAGE_ERROR_MARK;
-	static const string MESSAGE_ERROR_SEARCH;
-	static const string MESSAGE_ERROR_UNDO;
-	static const string MESSAGE_ERROR_REDO;
-	static const string MESSAGE_ERROR_LOAD_OPENFILE;
-	static const string MESSAGE_ERROR_SAVE_SAVEFILE;
-	static const string MESSAGE_ERROR_RECORD;
-	static const string MESSAGE_ERROR_INTERPRET_EMPTY_INPUT;
-	static const string MESSAGE_ERROR_INTERPRET_TITLE_FORMAT;
-	static const string MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT;
-	static const string MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD;
-	static const string MESSAGE_ERROR_INTERPRET_ADD;
-	static const string MESSAGE_ERROR_INTERPRET_REMOVE;
-	static const string MESSAGE_ERROR_INTERPRET_DISPLAY;
-	static const string MESSAGE_ERROR_INTERPRET_RENAME;	
-	static const string MESSAGE_ERROR_INTERPRET_RESCHEDULE;
-	static const string MESSAGE_ERROR_INTERPRET_MARK;
-	static const string MESSAGE_ERROR_INTERPRET_SEARCH;
-
-	static const string MESSAGE_PROMPT_REMOVE_CHOOSE;
-	static const string MESSAGE_PROMPT_RENAME_CHOOSE;
-	static const string MESSAGE_PROMPT_RESCHEDULE_CHOOSE;
-	static const string MESSAGE_PROMPT_MARK_CHOOSE;
-	
-	static const int MAX_MESSAGES = 100;
-	static const string MESSAGE_ARRAY [MAX_MESSAGES];
 
 	static const char NEW_LINE;
 	static const char SLASH;
@@ -150,6 +72,9 @@ private:
 	static const char ZERO;
 	static const char NINE;
 	static const char SPACE;
+
+	static const string EMPTY_STRING;
+	static const string NEW_LINE_STRING;
 
 public:
 	Processor();

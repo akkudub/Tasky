@@ -12,7 +12,7 @@
 #include "Essential.h"
 #include "LogLibrary\Log.h"
 
-static const string _LOGNAME = "TaskyLog";
+static const string _LOGNAME = "Tasky.txt";
 
 class FileProcessing{
 private:

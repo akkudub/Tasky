@@ -67,6 +67,7 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 		cout << message << endl;
 	}
 	*/
+	assert(!message.empty());
 	cout << endl;
 	cout << message << endl;
 
@@ -82,7 +83,7 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 
 
 void UI::setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs){
-	assert(buf != NULL);
+	//assert(buf != NULL);
 
 	COORD ord;
 	ord.X = x;

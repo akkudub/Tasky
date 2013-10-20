@@ -636,6 +636,9 @@ vector<string> Interpreter::breakStringWithDelim(string str, char delim){
 }
 
 string Interpreter::removeLeadingSpaces(string str){
+	if (str==EMPTY_STRING){
+		return str;
+	}
 	int num=str.find_first_not_of(SPACE);
 	return str.substr(num);
 }

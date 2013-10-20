@@ -111,14 +111,9 @@ private:
 	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
 	bool choiceIsValid(vector<int> choice);
 	string combineStringsWithNewLine(string, string);
-	string taskToString(Task);
 	vector<string> taskVecToStringVec(vector<Task> taskList);
 
 	bool commandIsNormal(string command);
-	string printFloatingTask(Task);
-	string printDeadlineTask(Task);
-	string printTimedTask(Task);
-	string printStatus(bool);
 };
 
 #endif

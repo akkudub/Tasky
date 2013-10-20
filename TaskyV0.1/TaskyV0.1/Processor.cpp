@@ -182,7 +182,7 @@ int Processor::displayCommandProcessor(string input){
 	if (type == 0){
 		return _taskList.displayAll(_tempTaskList);
 	}else if(type == 2){
-		return _taskList.displayInRange(start, end, _tempTaskList);
+		return ERROR_DISPLAY;//needs to be removed later
 	}else if (type == 3){//no api in taskList, skipping the dates
 		return _taskList.displayStatus(status, _tempTaskList);
 	}else{
@@ -459,19 +459,16 @@ int Processor::otherCommandProcessor(){
 
 int Processor::saveFile(){
 	vector<Task> allTasks;
-	vector<string> allTasksString;
 	_taskList.displayAll(allTasks);
-	for (unsigned int i = 0; i < allTasks.size(); i++){
-		allTasksString.push_back(taskToString(allTasks[i]));
-	}
+
+	vector<string> allTasksString = taskVecToStringVec(allTasks);
 	return _fileProcessing.save(allTasksString);
 }
 
 int Processor::loadFile(){
 	vector<string> stringsFromFile;
-	string currStr, tempStr, statusString;
+	string currStr, tempStr, statusString, typeString;
 	int count;
-	bool exitFlag;
 
 	string title, comment;
 	int type;
@@ -483,15 +480,15 @@ int Processor::loadFile(){
 		currStr = stringsFromFile[i];
 		stringstream ss(currStr);
 		count = 0;
-		exitFlag = false;
-		while (std::getline(ss, tempStr, NEW_LINE) && !exitFlag){
+		while (std::getline(ss, tempStr, NEW_LINE)){
 			switch (count){
 			case 0:
-				if (tempStr.substr(6) == "Floating Task"){
+				typeString = tempStr.substr(6);
+				if (typeString == "Floating"){
 					type = 0;
-				}else if (tempStr.substr(6) == "Deadline Task"){
+				}else if (typeString == "Deadline"){
 					type = 1;
-				}else if (tempStr.substr(6) == "Timed Task"){
+				}else if (typeString == "Timed"){
 					type = 2;			
 				}
 				count++;
@@ -502,35 +499,26 @@ int Processor::loadFile(){
 				break;
 			case 2:
 				statusString = tempStr.substr(8);
-				if (statusString == "done"){
+				if (statusString == "Done"){
 					status = true;
-				}else if (statusString == "pending"){
+				}else{
 					status = false;
-				}
-				if (type==0){
-					exitFlag = true;
 				}
 				count++;
 				break;
 			case 3:
-				if(type == 1){
-					_interpreter.stringToBasicDateTime(tempStr.substr(10), end);
-					exitFlag = true;
-				}else if (type == 2){
-					_interpreter.stringToBasicDateTime(tempStr.substr(12), start);
-				}
+				_interpreter.stringToBasicDateTime(tempStr.substr(7), start);
 				count++;
 				break;
 			case 4:
-				if (type == 2){
-					_interpreter.stringToBasicDateTime(tempStr.substr(10), end);
-				}
-				exitFlag = true;
+				_interpreter.stringToBasicDateTime(tempStr.substr(5), end);
 				break;
+			case 5:
+				comment = tempStr.substr(9);
 			}
-			Task tempTask(title, start, end, type, status, comment);
-			_taskList.add(tempTask, _tempTaskList);
 		}
+		Task tempTask(title, start, end, type, status, comment);
+		_taskList.add(tempTask, _tempTaskList);
 	}
 	return 0;
 }
@@ -737,27 +725,6 @@ string Processor::combineStringsWithNewLine(string str1, string str2){
 }
 
 /*
-* Purpose: Checks the type of the task,
-* and print the details of task according to type 
-*
-* Param: t- task with details
-*
-* Returns: formatted task details
-*/
-string Processor::taskToString(Task t){
-	if(t.getType() == 0)
-	{
-		return printFloatingTask(t);
-	}else if(t.getType() == 1){
-		return printDeadlineTask(t);
-	}else if(t.getType() == 2){
-		return printTimedTask(t);
-	}else{
-		return EMPTY_STRING;
-	}
-}
-
-/*
 * Purpose: combines the status message of adding task to task
 *(for display and search)
 *
@@ -767,13 +734,12 @@ string Processor::taskToString(Task t){
 */
 vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
 	vector<string> temp;
-	if (!_tempTaskList.empty()){
-		int size=_tempTaskList.size();
-		temp.push_back(taskToString(_tempTaskList.at(0)));
+	if (!taskList.empty()){
+		int size=taskList.size();
+		temp.push_back(taskList[0].toString());
 		for (int i=1;i<size;i++){
-			temp.push_back(taskToString(_tempTaskList.at(i)));
+			temp.push_back(taskList[i].toString());
 		}
-
 	}
 	return temp;
 }
@@ -788,78 +754,6 @@ bool Processor::commandIsNormal(string command){
 		return true;
 	}else{
 		return false;
-	}
-}
-
-/*
-* Purpose:Formats the details task into a string to be printed
-*
-* Param: t- task with details
-*
-* Returns: formatted task details
-*/
-string Processor::printFloatingTask(Task t){
-	string result;
-	result="Type: Floating Task";
-	result=combineStringsWithNewLine(result, "Title: ");
-	result+=t.getTitle();
-	result=combineStringsWithNewLine(result, "Status: ");
-	result+= printStatus(t.getDone());
-	return result;
-}
-
-/*
-* Purpose:Formats the details task into a string to be printed
-*
-* Param: t- task with details
-*
-* Returns: formatted task details
-*/
-string Processor::printDeadlineTask(Task t){
-	string result;
-	result="Type: Deadline Task";
-	result=combineStringsWithNewLine(result, "Title: ");
-	result+=t.getTitle();
-	result=combineStringsWithNewLine(result, "Status: ");
-	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Deadline: ");
-	result+= t.getEnd().getDateTimeString();
-	return result;
-}
-
-/*
-* Purpose:Formats the details task into a string to be printed
-*
-* Param: t- task with details
-*
-* Returns: formatted task details
-*/
-string Processor::printTimedTask(Task t){
-	string result;
-	result="Type: Timed Task";
-	result=combineStringsWithNewLine(result, "Title: ");
-	result+=t.getTitle();
-	result=combineStringsWithNewLine(result, "Status: ");
-	result+= printStatus(t.getDone());
-	result=combineStringsWithNewLine(result, "Start Date: ");
-	result+= t.getStart().getDateTimeString();
-	result=combineStringsWithNewLine(result, "End Date: ");
-	result+= t.getEnd().getDateTimeString();
-	return result;
-}
-
-/*
-* Purpose:Retrieves status of task
-*
-* Param: status - true - done; false - pending
-*
-* Returns: string with status of task
-*/
-string Processor::printStatus(bool status){
-	if(status){
-		return "done";
-	}else{
-		return "pending";
 	}
 }
 

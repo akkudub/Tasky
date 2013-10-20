@@ -115,7 +115,7 @@ int TaskList::displayStatus(bool done, vector<Task>& _temp){
 
 }
 
-int TaskList::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+int TaskList::searchInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
 
 	_temp.clear();
 
@@ -129,7 +129,7 @@ int TaskList::displayInRange(BasicDateTime start, BasicDateTime end, vector<Task
 	return ERROR_DISPLAY;
 }
 
-int TaskList::displayStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+int TaskList::searchStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
 
 	_temp.clear();
 

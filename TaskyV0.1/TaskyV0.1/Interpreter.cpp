@@ -72,9 +72,7 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type
 	if (!extractTitle(str, title, pos1, pos2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
-	vector<string> temp=breakStringWithDelim(title, SPACE);
-	keywords.push_back(str.substr(pos1+1,pos2-pos1-1));
-	keywords.insert(keywords.end(),temp.begin(), temp.end());
+	keywords=extractKeywords(title);
 	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
 		type = NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
@@ -82,6 +80,32 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type
 	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
+}
+
+int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchingStatus, int& type, BasicDateTime& start, BasicDateTime& end){
+	str=removeLeadingSpaces(str);
+	int size=str.size(), pos1, pos2;
+	bool fromToFlag=false, byFlag=false, slotFlag=false, keywordFlag=false, statusFlag=false, timeFlag=false;
+	string title;
+	keywords.clear();
+
+	if (!extractTitle(str, title, pos1, pos2)){
+		keywordFlag=false;
+	}else{
+		keywordFlag=true;
+		keywords=extractKeywords(title);
+	}
+
+	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
+		timeFlag=false;
+		type = NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
+	}
+	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
+	}
+
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 }
 
@@ -122,7 +146,6 @@ int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, B
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
 }
 
-//refacoting!!! and stricter checking
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
 	str=removeLeadingSpaces(str);
 	int posQuote1=0, posKey=0, posQuote2=0;
@@ -264,6 +287,18 @@ bool Interpreter::extractComment(const string& str, string& comment, int& pos){
 		comment=EMPTY_STRING;
 	}
 	return true;
+}
+
+bool Interpreter::extractFirstWord(const string& str, string& firstWord){
+	return false;
+}
+
+vector<string> Interpreter::extractKeywords(const string& str){
+	vector<string> keywords;
+	vector<string> temp=breakStringWithDelim(str, SPACE);
+	keywords.push_back(str);
+	keywords.insert(keywords.end(),temp.begin(), temp.end());
+	return keywords;
 }
 
 bool Interpreter::firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){

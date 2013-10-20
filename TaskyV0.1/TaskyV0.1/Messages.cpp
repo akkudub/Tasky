@@ -51,7 +51,9 @@ const string Messages::MESSAGE_ERROR_SEARCH =			"Error! Unexpected error while s
 const string Messages::MESSAGE_ERROR_UNDO =			"Error! Unexpected error while undoing task";
 const string Messages::MESSAGE_ERROR_REDO =			"Error! Unexpected error while redoing task";
 const string Messages::MESSAGE_ERROR_LOAD_OPENFILE =	"Error! Unexpected error while loading file";
+const string Messages::MESSAGE_ERROR_LOAD_CORRUPTED_DATA =	"Error! File corrupted!";
 const string Messages::MESSAGE_ERROR_SAVE_SAVEFILE =	"Error! Unexpected error while saving to file";
+const string Messages::MESSAGE_ERROR_SAVE_CORRUPTED_DATA =	"Error! Data corrupted!";
 const string Messages::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
 const string Messages::MESSAGE_ERROR_INVALID_CHOICE =			"Error! Invalid Choice";
 const string Messages::MESSAGE_ERROR_INTERPRET_EMPTY_INPUT = "Error! Empty input";
@@ -122,7 +124,9 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_ERROR_UNDO,
 	MESSAGE_ERROR_REDO,
 	MESSAGE_ERROR_LOAD_OPENFILE,
+	MESSAGE_ERROR_LOAD_CORRUPTED_DATA,
 	MESSAGE_ERROR_SAVE_SAVEFILE,
+	MESSAGE_ERROR_SAVE_CORRUPTED_DATA,
 	MESSAGE_ERROR_RECORD,
 	MESSAGE_ERROR_INVALID_CHOICE,
 	MESSAGE_ERROR_INTERPRET_EMPTY_INPUT,

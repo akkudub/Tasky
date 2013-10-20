@@ -10,10 +10,20 @@ int FileProcessing::load(vector<string>& data){
 			if (input.good()) {
 				if (!emptyFile()) {
 					data.clear();
+					int count = 1;
 					while(input) {
 						string line;
 						getline(input, line);
-						data.push_back(line);
+						if (line != "\n" && line != ""){
+							if (count < TASKLINES) {
+								line += "\n";
+							}
+							data.push_back(line);
+							count++;
+							if (count > TASKLINES) {
+								count = 1;
+							}
+						}
 					}
 				} else {
 					input.close();
@@ -26,6 +36,10 @@ int FileProcessing::load(vector<string>& data){
 			}
 		}
 		input.close();
+		if (data.size() % TASKLINES != 0) {
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR, "Corrupted data while loading file","FileProcessingLog");
+			return STATUS_CODE_SET_ERROR::ERROR_LOAD_CORRUPTED_DATA;
+		}
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
 	}catch(exception e) {
 		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in opening file","FileProcessingLog");
@@ -35,6 +49,11 @@ int FileProcessing::load(vector<string>& data){
 
 
 int FileProcessing::save(vector<string>& data){
+	if (data.size() % TASKLINES != 0) {
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR, "Corrupted data while saving file","FileProcessingLog");
+			return STATUS_CODE_SET_ERROR::ERROR_SAVE_CORRUPTED_DATA;
+	}
+
 	try{
 		ofstream output(_LOGNAME);
 		//check if file exist
@@ -44,8 +63,15 @@ int FileProcessing::save(vector<string>& data){
 		}
 		//check if file is created, ready for writing
 		if (output.good()) {
+			int countLine = 0;
 			for(string s:data) {
-				output << s << endl;
+				output << s;
+				countLine++;
+				if (countLine >= TASKLINES){
+					output << endl;
+					output << endl;
+					countLine = 0;
+				}
 			}
 		} else {
 			output.close();

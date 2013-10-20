@@ -36,7 +36,6 @@ private:
 	*@param command - user input to be passed to Processor
 	*/
 	void displayProcessorMessage(string command,HANDLE hConsole,bool& statusFlag);
-	void setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs);
 public:
 	/**
 	* Purpose:

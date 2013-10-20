@@ -48,25 +48,6 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 		break;
 	}
 
-	/*
-	if (output ==  STATUS_CODE_SET_OVERALL::OVERALL_WARNING || output ==  STATUS_CODE_SET_OVERALL::OVERALL_PROMPT
-		|| output ==  STATUS_CODE_SET_OVERALL::OVERALL_ERROR ) {
-		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		int x;
-		int y;
-		if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-			x = csbi.dwCursorPosition.X;
-			y = csbi.dwCursorPosition.Y;	 
-		}
-		char buf[1000];
-		strcpy(buf, message.c_str());
-		setBlinkingText(x, y, buf, 3, 800);
-		cout<<endl;
-	}else {
-		cout << endl;
-		cout << message << endl;
-	}
-	*/
 	assert(!message.empty());
 	cout << endl;
 	cout << message << endl;
@@ -81,25 +62,3 @@ void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFl
 
 }
 
-
-void UI::setBlinkingText(int x, int y, char *buf, int timestoBlink, int delayMilliSecs){
-	//assert(buf != NULL);
-
-	COORD ord;
-	ord.X = x;
-	ord.Y = y; 
-
-	int len = strlen(buf);
-	char *p = new char[len + 1];
-	memset(p, 32, len);
-	p[len] = '\0';
-	for(int i = 0; i < timestoBlink; i++){
-
-		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
-		std::cout << p;
-		::Sleep(300);
-		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), ord);
-		std::cout << buf;
-		::Sleep(delayMilliSecs);
-	}
-}

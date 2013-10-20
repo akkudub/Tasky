@@ -17,12 +17,28 @@ using namespace System;
 
 class Task{
 private:
+
+private:
 	string _title;
 	BasicDateTime _start;
 	BasicDateTime _end;
 	int _type;
 	bool _done;
 	string _comment;
+	/**
+	* Purpose:Retrieves status of task
+	*
+	* @param status - true - done; false - pending
+	*
+	* @return string with status of task
+	*/
+	string printStatus();
+	/**
+	* 
+	*/
+	string printType();
+	string printStart();
+	string printEnd();
 
 public:
 
@@ -54,6 +70,13 @@ public:
 	* @return True - Tasks clash, False - No clash
 	*/
 	bool isClashingWith(Task another);
+	/**
+	* Purpose:
+	* converts the Task object to a string for saving and displaying,
+	* returns that string
+	*/
+	string toString();
+	
 	void setTitle(string title);
 	void setStartDate(BasicDateTime start);
 	void setEndDate(BasicDateTime end);

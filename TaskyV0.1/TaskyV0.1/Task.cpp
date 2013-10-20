@@ -97,6 +97,71 @@ bool Task::isClashingWith(Task another){
 
 }
 
+string Task::toString(){
+	string outputString = "Type: " + printType() + "\n";
+	outputString += "Title: " + _title + "\n";
+	outputString += "Status: " + printStatus() + "\n";
+	outputString += "Start: " + printStart() + "\n";
+	outputString += "End: " + printEnd() + "\n";
+	outputString += "Comment: " + _comment;
+
+	return outputString;
+}
+
+
+string Task::printStatus(){
+	if(_done){
+		return "done";
+	}else{
+		return "pending";
+	}
+}
+
+string Task::printType(){
+	switch (_type)
+	{
+	case 0:
+		return "Floating";
+		break;
+	case 1:
+		return "Deadline";
+		break;
+	case 2:
+		return "Timed";
+		break;
+	default:
+		return "";
+		break;
+	}
+}
+
+string Task::printStart(){
+	switch (_type){
+	case 0:  case 1:
+		return "None";
+		break;
+	case 2:
+		return _start.getDateTimeString();
+		break;
+	default:
+		return "";
+		break;
+	}
+}
+string Task::printEnd(){
+	switch (_type){
+	case 0:
+		return "None";
+		break;
+	case 1:	case 2:
+		return _end.getDateTimeString();
+		break;
+	default:
+		return "";
+		break;
+	}
+}
+
 void Task::setTitle(string title){
 	_title = title;
 }

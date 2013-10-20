@@ -88,7 +88,7 @@ public:
 	* @param _temp for Logic to put in tasks within the range
 	* @return status code
 	*/
-	int displayInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+	int searchInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	/**
 	* Purpose:
 	* pushes tasks with matching status and in range to referenced vector
@@ -98,7 +98,7 @@ public:
 	* @param _temp for Logic to put in tasks within the range
 	* @return status code
 	*/
-	int displayStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+	int searchStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	/**
 	* Purpose:
 	* updates the existing task into the new task. any tasks that clashes will be pushed into referenced vector.

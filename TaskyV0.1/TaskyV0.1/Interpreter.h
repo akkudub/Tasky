@@ -110,7 +110,7 @@ public:
 	 *@param start (BasicDateTime reference) will change the value of start if format is correct
 	 *@param start (BasicDateTime reference) will change the value of end if format is correct
 	 *@param start (BasicDateTime reference) will change the value of comment if format is correct, will be empty string not input
-	 *@return int status code, will be further defined later
+	 *@return int status code
 	 */
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
 	/**
@@ -126,6 +126,9 @@ public:
 	 *@return int status code, -1: failue; 0: no dates; 2: with two dates;
 	 */
 	int interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end);
+	/**
+	 */
+	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchingStatus, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *a method for Processor::displayCommandProcessor, as this will take in a string without command type and try to parse the string
 	 *according to 'display' format on the user guide
@@ -216,6 +219,8 @@ public:
 private:
 	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
 	bool extractComment(const string& str, string& comment, int& pos);
+	bool extractFirstWord(const string& str, string& firstWord);
+	vector<string> extractKeywords(const string& str);
 
 	bool firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
 	bool judgeFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);

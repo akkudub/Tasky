@@ -29,6 +29,7 @@ private:
 	static const string MESSAGE_SUCCESS_UNDO;
 	static const string MESSAGE_SUCCESS_REDO;
 	static const string MESSAGE_SUCCESS_RECORD;
+	static const string MESSAGE_ERROR_INVALID_CHOICE;
 	static const string MESSAGE_SUCCESS_INTERPRET_ADD;
 	static const string MESSAGE_SUCCESS_INTERPRET_REMOVE;
 	static const string MESSAGE_SUCCESS_INTERPRET_DISPLAY;

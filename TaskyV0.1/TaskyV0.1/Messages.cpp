@@ -31,7 +31,7 @@ const string Messages::MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME = "Success! In
 
 const string Messages::MESSAGE_WARNING_ADD_CLASH =		"Warning! Task clashes with existing ones";
 const string Messages::MESSAGE_WARNING_ADD_DUPLICATE = "Warning! Task already exists";
-const string Messages::MESSAGE_WARNING_DISPLAY_NO_RESULT = "Warning! No tasks match the parameters";
+const string Messages::MESSAGE_WARNING_DISPLAY_NO_RESULT = "Warning! No tasks to display";
 const string Messages::MESSAGE_WARNING_UPDATE_SAME =	"Warning! The new data is the same as the old data";
 const string Messages::MESSAGE_WARNING_UPDATE_CLASH =	"Warning! The new data will make the task clash with the following:";
 const string Messages::MESSAGE_WARNING_MARK_NO_CHANGE = "Warning! There is no change in the status";
@@ -53,6 +53,7 @@ const string Messages::MESSAGE_ERROR_REDO =			"Error! Unexpected error while red
 const string Messages::MESSAGE_ERROR_LOAD_OPENFILE =	"Error! Unexpected error while loading file";
 const string Messages::MESSAGE_ERROR_SAVE_SAVEFILE =	"Error! Unexpected error while saving to file";
 const string Messages::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
+const string Messages::MESSAGE_ERROR_INVALID_CHOICE =			"Error! Invalid Choice";
 const string Messages::MESSAGE_ERROR_INTERPRET_EMPTY_INPUT = "Error! Empty input";
 const string Messages::MESSAGE_ERROR_INTERPRET_TITLE_FORMAT = "Error! Invalid title format";
 const string Messages::MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT = "Error! Invalid datetime format";
@@ -123,6 +124,7 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_ERROR_LOAD_OPENFILE,
 	MESSAGE_ERROR_SAVE_SAVEFILE,
 	MESSAGE_ERROR_RECORD,
+	MESSAGE_ERROR_INVALID_CHOICE,
 	MESSAGE_ERROR_INTERPRET_EMPTY_INPUT,
 	MESSAGE_ERROR_INTERPRET_TITLE_FORMAT,
 	MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT,

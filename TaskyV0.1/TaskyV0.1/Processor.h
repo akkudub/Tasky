@@ -106,6 +106,7 @@ private:
 
 	//additional helper methods
 	string getCommand(string& input);
+	bool isEscape(string command);
 	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
 	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
 	bool choiceIsValid(vector<int> choice);
@@ -113,6 +114,7 @@ private:
 	string taskToString(Task);
 	vector<string> taskVecToStringVec(vector<Task> taskList);
 
+	bool commandIsNormal(string command);
 	string printFloatingTask(Task);
 	string printDeadlineTask(Task);
 	string printTimedTask(Task);

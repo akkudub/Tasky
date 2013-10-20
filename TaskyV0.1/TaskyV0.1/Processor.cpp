@@ -30,9 +30,17 @@ Processor::Processor(){
 * formatted string of feedback and with user command (including task)
 */
 int Processor::UImainProcessor(string input, string& message, vector<string>& list){
-	string command = _interpreter.toLowerCase(getCommand(input));
+	string command, tempCommand;
 	int returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
 	assert(_statusFlag >= 0 && _statusFlag < 5);
+	if (_statusFlag == 0){
+		command = _interpreter.toLowerCase(getCommand(input));
+	}else{
+		command = input;
+	}
+	if (isEscape(command)){
+		_statusFlag = 0;
+	}
 	if (command != "exit"){
 		switch (_statusFlag){
 		case 0:
@@ -549,6 +557,8 @@ int Processor::feedbackToUI(int returnCode, string& message, vector<string>& lis
 		list.clear();
 		saveFile();
 		return STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
+	}else if(returnCode == STATUS_CODE_SET_WARNING::WARNING_WRONG_INPUT){
+		return STATUS_CODE_SET_OVERALL::OVERALL_WARNING;
 	}else{
 		list = taskVecToStringVec(_tempTaskList);
 
@@ -680,6 +690,16 @@ string Processor::getCommand(string& input){
 	}
 }
 
+
+bool Processor::isEscape(string command){
+	if (_statusFlag != 0 && (commandIsNormal(command))){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
 int Processor::recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask){
 	HistoryCommand tempCommand(commandType, oldTask, newTask);
 	return _history.record(tempCommand);
@@ -747,12 +767,28 @@ string Processor::taskToString(Task t){
 */
 vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
 	vector<string> temp;
-	int size=_tempTaskList.size();
-	temp.push_back(taskToString(_tempTaskList.at(0)));
-	for (int i=1;i<size;i++){
-		temp.push_back(taskToString(_tempTaskList.at(i)));
+	if (!_tempTaskList.empty()){
+		int size=_tempTaskList.size();
+		temp.push_back(taskToString(_tempTaskList.at(0)));
+		for (int i=1;i<size;i++){
+			temp.push_back(taskToString(_tempTaskList.at(i)));
+		}
+
 	}
 	return temp;
+}
+
+bool Processor::commandIsNormal(string command){
+	if (command == "exit" || command == "add"
+		||command == "remove" || command == "display"
+		||command == "rename" ||command == "reschedule"
+		||command == "mark" || command == "search"
+		||command == "undo" || command == "redo")
+	{
+		return true;
+	}else{
+		return false;
+	}
 }
 
 /*

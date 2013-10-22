@@ -111,9 +111,9 @@ string Task::toString(){
 
 string Task::printStatus(){
 	if(_done){
-		return "done";
+		return "Done";
 	}else{
-		return "pending";
+		return "Pending";
 	}
 }
 
@@ -148,6 +148,7 @@ string Task::printStart(){
 		break;
 	}
 }
+
 string Task::printEnd(){
 	switch (_type){
 	case 0:

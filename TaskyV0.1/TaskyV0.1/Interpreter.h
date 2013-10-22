@@ -1,6 +1,14 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+/**
+ *this is to interpret a string from processor to the format that processor can understand and 
+ *make use of. all the public APIs are set up to meet the requirement of processor.
+ *(logic flow in this class will follow later)
+ *
+ *Author: Junchao
+ */
+
 #include <sstream>
 #include "BasicDateTime.h"
 #include "Essential.h"
@@ -24,7 +32,9 @@ private:
 	static const string RENAME_KEY_WORD;
 	static const string ALL_KEY_WORD;
 	static const string TODAY_KEY_WORD;
+	static const string TODAY_KEY_WORD_SHORTCUT;
 	static const string TOMORROW_KEY_WORD;
+	static const string TOMORROW_KEY_WORD_SHORTCUT;
 	static const string THIS_KEY_WORD;
 	static const string NEXT_KEY_WORD;
 	static const string MON_KEY_WORD;
@@ -205,21 +215,13 @@ public:
 	 *@return string of the input string 
 	 */
 	string toLowerCase(string input);
-	/**
-	 *take a standard string and try to parse it into the format of BasicDateTime
-	 *e.g. "30/09/2013 12:00:04"
-	 *@param input (string)
-	 *@param time (BasicDateTime reference)
-	 *@return status code
-	 */
-	int stringToBasicDateTime(string input, BasicDateTime& time);
 	///destructor
 	~Interpreter();
 
 private:
 	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
 	bool extractComment(const string& str, string& comment, int& pos);
-	bool extractFirstWord(const string& str, string& firstWord);
+	bool extractFirstWord(string str, string& firstWord);
 	vector<string> extractKeywords(const string& str);
 
 	bool firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
@@ -256,6 +258,7 @@ private:
 	vector<int> pushNumsWithComma(const vector<string>& strVec);
 	vector<int> pushNumsWithDash(const vector<string>& strVec);
 	bool containChar(string input, char ch);
+	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
 };
 
 #endif

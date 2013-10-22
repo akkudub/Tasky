@@ -1,5 +1,5 @@
-#ifndef _BASICDATETIME_H_
-#define _BASICDATETIME_H_
+#ifndef BASICDATETIME_H
+#define BASICDATETIME_H
 
 #include <iostream>
 #include <string>
@@ -66,53 +66,17 @@ public:
 	* setter 3 : year, month, day, hour, minute, sec
 	*/
 	void setDateTime(int year, int month, int day, int hour, int minute, int sec);
-	/**
-	* getter for year
-	*/
 	int getYear();
-	/** 
-	* setter for year
-	*/
 	void setYear(int year);
-	/**
-	* getter for month
-	*/
 	int getMonth();
-	/**
-	* setter for month
-	*/
 	void setMonth(int month);
-	/** 
-	* getter for day
-	*/
 	int getDay();
-	/**
-	* setter for day
-	*/
 	void setDay(int day);
-	/**
-	* getter for hour
-	*/
 	int getHour();
-	/**
-	* setter for hour
-	*/
 	void setHour(int hour);
-	/**
-	* getter for minute
-	*/
 	int getMinute();
-	/**
-	* setter for minute
-	*/
 	void setMinute(int minute);
-	/**
-	* getter for sec
-	*/
 	int getSec();
-	/**
-	* setter for sec
-	*/
 	void setSec(int sec);
 	/**
 	* Purpose : translate the datetime into string
@@ -128,12 +92,6 @@ public:
 	int compareTo(BasicDateTime another);
 
 private:
-	/*
-	* Purpose :
-	* determines if the string needs to add 0 to make it date/time compatible
-	* @param str date/time to be checked
-	* @return formatted string
-	*/
 	string addZeroFromFront(string str);
 };
 

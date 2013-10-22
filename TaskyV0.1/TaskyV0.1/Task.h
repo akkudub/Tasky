@@ -1,14 +1,12 @@
-#ifndef _TASK_H_
-#define _TASK_H_
+#ifndef TASK_H
+#define TASK_H
 
 /**
-*This class is mainly to model a task in the real world. It uses
-*the BasicDateTime class for the date and time of a task.
-*
-*
-*
-*Main author: Kai Wen
-*/
+ *This class is mainly to model a task in the real world. It uses
+ *the BasicDateTime class for the date and time of a task.
+ *
+ *Main author: Kai Wen, Akshat, Junchao
+ */
 
 #include "Essential.h"
 #include "BasicDateTime.h"
@@ -25,20 +23,26 @@ private:
 	int _type;
 	bool _done;
 	string _comment;
-	/**
-	* Purpose:Retrieves status of task
-	*
-	* @param status - true - done; false - pending
-	*
-	* @return string with status of task
-	*/
-	string printStatus();
-	/**
-	* 
-	*/
-	string printType();
-	string printStart();
-	string printEnd();
+
+private:
+	static const string TYPE_KEY_WORD;
+	static const string TITLE_KEY_WORD;
+	static const string STATUS_KEY_WORD;
+	static const string START_KEY_WORD;
+	static const string END_KEY_WORD;
+	static const string COMMENT_KEY_WORD;
+	static const string DONE_KEY_WORD;
+	static const string PENDING_KEY_WORD;
+	static const string NONE_KEY_WORD;
+	static const string TIMED_TASK_KEY_WORD;
+	static const string DEADLINE_TASK_KEY_WORD;
+	static const string FLOATING_TASK_KEY_WORD;
+	static const string EMPTY_STRING;
+	static const string NEW_LINE;
+	
+    static const int FLOATING_TASK = 0;
+    static const int DEADLINE_TASK = 1;
+    static const int TIMED_TASK = 2;
 
 public:
 
@@ -77,11 +81,16 @@ public:
 	*/
 	/*string toString();*/
 	vector<string> toStringVector();
-	
 	void setTitle(string title);
 	void setStartDate(BasicDateTime start);
 	void setEndDate(BasicDateTime end);
 	void setType(int type);
+
+private:
+	string statusToString();
+	string typeToString();
+	string startToString();
+	string endToString();
 };
 
 #endif

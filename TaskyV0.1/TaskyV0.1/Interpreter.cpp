@@ -12,7 +12,9 @@ const string Interpreter::DONE_KEY_WORD = "done";
 const string Interpreter::RENAME_KEY_WORD = "' to '";
 const string Interpreter::ALL_KEY_WORD = "all";
 const string Interpreter::TODAY_KEY_WORD = "today";
+const string Interpreter::TODAY_KEY_WORD_SHORTCUT = "tdy";
 const string Interpreter::TOMORROW_KEY_WORD = "tomorrow";
+const string Interpreter::TOMORROW_KEY_WORD_SHORTCUT = "tmr";
 const string Interpreter::THIS_KEY_WORD = "this";
 const string Interpreter::NEXT_KEY_WORD = "next";
 const string Interpreter::MON_KEY_WORD = "mon";
@@ -247,23 +249,6 @@ string Interpreter::toLowerCase(string str){
 	return str;
 }
 
-int Interpreter::stringToBasicDateTime(string input, BasicDateTime& time){
-	input=removeLeadingSpaces(input);
-	vector<string> vec=breakStringWithDelim(input, SPACE);
-	bool flag=false;
-	if (vec.size()!=2){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_STRINGTODATETIME;
-	}else{
-		flag=translateDateTime(vec.at(0), vec.at(1), 2);
-	}
-	if (!flag){
-        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_STRINGTODATETIME;
-	}else{
-		time=_end;
-	}
-	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_STRINGTODATETIME;
-}
-
 bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int& pos2){
 	if (str.find_first_of(SINGLE_QUOTE)!=std::string::npos){
 		pos1=str.find_first_of(SINGLE_QUOTE);
@@ -271,7 +256,7 @@ bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int&
 	}else{
 		return false;
 	}
-	if (pos1 != pos2){
+	if (pos1 < pos2-1){
 		title=str.substr(pos1+1, pos2-pos1-1);
 	}else{
 		return false;
@@ -289,8 +274,14 @@ bool Interpreter::extractComment(const string& str, string& comment, int& pos){
 	return true;
 }
 
-bool Interpreter::extractFirstWord(const string& str, string& firstWord){
-	return false;
+bool Interpreter::extractFirstWord(string str, string& firstWord){
+	vector<string> vec=breakStringWithDelim(str, SPACE);
+	if (vec.size()==0){
+		return false;
+	}else{
+		firstWord=vec.at(0);
+		return true;
+	}
 }
 
 vector<string> Interpreter::extractKeywords(const string& str){
@@ -467,10 +458,10 @@ bool Interpreter::dateStandardInput(string str, int either){
 bool Interpreter::dateTodayOrTomorrow(string str, int either){
 	DateTime dt=DateTime::Now;
 	str=removeSpacesFromBothEnds(str);
-	if (str==TODAY_KEY_WORD){
+	if (str==TODAY_KEY_WORD || str==TODAY_KEY_WORD_SHORTCUT){
 		setDateParams(dt.Year, dt.Month, dt.Day, either);
 		return true;
-	}else if(str==TOMORROW_KEY_WORD){
+	}else if(str==TOMORROW_KEY_WORD || str==TOMORROW_KEY_WORD_SHORTCUT){
 		dt=dt.AddDays(1);
 		setDateParams(dt.Year, dt.Month, dt.Day, either);
 		return true;
@@ -733,6 +724,11 @@ vector<int> Interpreter::pushNumsWithDash(const vector<string>& strVec){
 
 bool Interpreter::containChar(string input, char ch){
 	return input.find(ch)!=std::string::npos;
+}
+
+bool Interpreter::isEqualToKeyWordWithoutCase(string str, const string& keyword){
+	str=toLowerCase(str);
+	return str==keyword;
 }
 
 Interpreter::~Interpreter(){

@@ -10,19 +10,11 @@ int FileProcessing::load(vector<string>& data){
 			if (input.good()) {
 				if (!emptyFile()) {
 					data.clear();
-					int count = 1;
 					while(input) {
 						string line;
 						getline(input, line);
 						if (line != "\n" && line != ""){
-							if (count < TASKLINES) {
-								line += "\n";
-							}
 							data.push_back(line);
-							count++;
-							if (count > TASKLINES) {
-								count = 1;
-							}
 						}
 					}
 				} else {
@@ -65,10 +57,9 @@ int FileProcessing::save(vector<string>& data){
 		if (output.good()) {
 			int countLine = 0;
 			for(string s:data) {
-				output << s;
+				output << s << endl;
 				countLine++;
 				if (countLine >= TASKLINES){
-					output << endl;
 					output << endl;
 					countLine = 0;
 				}

@@ -41,11 +41,6 @@ int FileProcessing::load(vector<string>& data){
 
 
 int FileProcessing::save(vector<string>& data){
-	if (data.size() % TASKLINES != 0) {
-			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR, "Corrupted data while saving file","FileProcessingLog");
-			return STATUS_CODE_SET_ERROR::ERROR_SAVE_CORRUPTED_DATA;
-	}
-
 	try{
 		ofstream output(_LOGNAME);
 		//check if file exist
@@ -55,14 +50,9 @@ int FileProcessing::save(vector<string>& data){
 		}
 		//check if file is created, ready for writing
 		if (output.good()) {
-			int countLine = 0;
 			for(string s:data) {
 				output << s << endl;
-				countLine++;
-				if (countLine >= TASKLINES){
-					output << endl;
-					countLine = 0;
-				}
+				output << endl;
 			}
 		} else {
 			output.close();

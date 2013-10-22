@@ -75,7 +75,8 @@ public:
 	* converts the Task object to a string for saving and displaying,
 	* returns that string
 	*/
-	string toString();
+	/*string toString();*/
+	vector<string> toStringVector();
 	
 	void setTitle(string title);
 	void setStartDate(BasicDateTime start);

@@ -97,15 +97,33 @@ bool Task::isClashingWith(Task another){
 
 }
 
-string Task::toString(){
-	string outputString = "Type: " + printType() + "\n";
-	outputString += "Title: " + _title + "\n";
-	outputString += "Status: " + printStatus() + "\n";
-	outputString += "Start: " + printStart() + "\n";
-	outputString += "End: " + printEnd() + "\n";
-	outputString += "Comment: " + _comment;
+//string Task::toString(){
+//	string outputString = "Type: " + printType() + "\n";
+//	outputString += "Title: " + _title + "\n";
+//	outputString += "Status: " + printStatus() + "\n";
+//	outputString += "Start: " + printStart() + "\n";
+//	outputString += "End: " + printEnd() + "\n";
+//	outputString += "Comment: " + _comment;
+//
+//	return outputString;
+//}
 
-	return outputString;
+vector<string> Task::toStringVector(){
+
+	vector<string> stringVector;
+
+	string s[6] = {"Type: " + printType(),
+		"Title: " + _title, 
+		"Status: " + printStatus(), 
+		"Start: " + printStart(), 
+		"End: " + printEnd(), 
+		"Comment: " + _comment};
+
+	for(unsigned int i = 0; i < 6; i++){
+		stringVector.push_back(s[i]);
+	}
+
+	return stringVector;
 }
 
 

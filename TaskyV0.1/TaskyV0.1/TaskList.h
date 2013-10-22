@@ -9,6 +9,7 @@
 
 #include "Essential.h"
 #include "Task.h"
+#include "FileProcessing.h"
 
 class TaskList{
 private:
@@ -20,6 +21,7 @@ private:
 	vector<Task> _duplicateDeadline;
 	vector<Task> _duplicateNormal;
 
+	FileProcessing _fileProcessing;
 
 public:
 	/** Abstraction Level 1 */
@@ -122,6 +124,8 @@ public:
 	* @param usedDates to push in the BasicDateTimes that are used
 	*/
 	void getOccupiedDates(vector<BasicDateTime>& usedDates);
+	int saveFile();
+	int loadFile();
 
 	/** Abstraction Level 2 */
 	void addTask(Task toAdd);
@@ -138,6 +142,7 @@ public:
 	void pushStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	bool isSuccessfullyMarked(bool mark, Task task);
 	void pushOccupiedDates(vector<BasicDateTime>& usedDates);
+	vector<string> taskVecToStringVec(vector<Task>& allTasks);
 
 	/** Abstraction Level 3 */
 	void exactSearch(string exactString, vector<Task>& _temp);

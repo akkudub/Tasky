@@ -5,6 +5,10 @@
 static const int FLOATING_TASK = 0;
 static const int DEADLINE_TASK = 1;
 static const int NORMAL_TASK = 2;
+static const string STRING_DONE = "Done";
+static const string STRING_FLOATING = "Floating";
+static const string STRING_DEADLINE = "Deadline";
+static const string STRING_TIMED = "Timed";
 
 TaskList::TaskList(){
 }
@@ -180,8 +184,73 @@ void TaskList::getOccupiedDates(vector<BasicDateTime>& usedDates){
 
 }
 
+int TaskList::saveFile(){
 
+	vector<Task> allTasks;
 
+	appendVectors(allTasks);
+
+	vector<string> allTasksString = taskVecToStringVec(allTasks);
+	return _fileProcessing.save(allTasksString);
+}
+
+int TaskList::loadFile(){
+	vector<string> stringsFromFile;
+	string currStr;
+	int count;
+
+	string title, comment;
+	int type;
+	bool status;
+	BasicDateTime start, end;
+
+	_fileProcessing.load(stringsFromFile);
+
+	for (unsigned int i = 0; i < stringsFromFile.size(); i++){
+
+		currStr = stringsFromFile[i];
+
+		switch (i % 6){
+		case 0:
+			if (currStr.substr(6) == STRING_FLOATING){
+				type = 0;
+			}else if (currStr.substr(6) == STRING_DEADLINE){
+				type = 1;
+			}else if (currStr.substr(6) == STRING_TIMED){
+				type = 2;			
+			}
+			count++;
+			break;
+		case 1:
+			title = currStr.substr(7);
+			count++;
+			break;
+		case 2:
+			if (currStr.substr(8) == STRING_DONE){
+				status = true;
+			}else{
+				status = false;
+			}
+			count++;
+			break;
+		case 3:
+			_interpreter.stringToBasicDateTime(currStr.substr(7), start);
+			count++;
+			break;
+		case 4:
+			_interpreter.stringToBasicDateTime(currStr.substr(5), end);
+			count++;
+			break;
+		case 5:
+			comment = currStr.substr(9);
+			Task tempTask(title, start, end, type, status, comment);
+			addTask(tempTask);
+			count++;
+			break;
+		}
+	}
+	return 0;
+}
 
 void TaskList::addTask(Task toAdd){
 
@@ -627,6 +696,19 @@ void TaskList::pushStatusInRange(bool done, BasicDateTime start, BasicDateTime e
 			_temp.push_back(_deadlineTask[i]);
 
 	}
+}
+
+vector<string> TaskList::taskVecToStringVec(vector<Task>& allTasks){
+
+	vector<string> taskLines;
+	vector<string> temp;
+
+	for (unsigned int i = 0; i < allTasks.size(); i++){
+		temp = allTasks[i].toStringVector();
+		taskLines.insert(taskLines.end(), temp.begin(), temp.end());
+	}
+
+	return taskLines;
 }
 
 string TaskList::stringToLower(string& toLowerString){

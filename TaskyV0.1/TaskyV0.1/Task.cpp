@@ -1,8 +1,19 @@
 #include "Task.h"
 
-static const int FLOATING_TASK = 0;
-static const int DEADLINE_TASK = 1;
-static const int NORMAL_TASK = 2;
+const string Task::TITLE_KEY_WORD = "Title: ";
+const string Task::TYPE_KEY_WORD = "Type: ";
+const string Task::STATUS_KEY_WORD = "Status: ";
+const string Task::START_KEY_WORD = "Start time: ";
+const string Task::END_KEY_WORD = "End time: ";
+const string Task::COMMENT_KEY_WORD = "Comment: ";
+const string Task::DONE_KEY_WORD = "Done";
+const string Task::PENDING_KEY_WORD = "Pending";
+const string Task::NONE_KEY_WORD = "None";
+const string Task::TIMED_TASK_KEY_WORD = "Timed task";
+const string Task::DEADLINE_TASK_KEY_WORD = "Deadline task";
+const string Task::FLOATING_TASK_KEY_WORD = "Floating task" ;
+const string Task::EMPTY_STRING = "";
+const string Task::NEW_LINE = "\n";
 
 string Task::getTitle(){
 	return _title;
@@ -33,24 +44,19 @@ void Task::toggleDone(){
 }
 
 Task::Task(){
-
 }
 
 
 Task::Task(string title, BasicDateTime start, BasicDateTime end, int type, bool done, string comment){
-
 	_title = title;
 	_start = start;
 	_end = end;
 	_type = type;
 	_done = done;
 	_comment = comment;
-
 }
 
-Task::~Task()
-{
-
+Task::~Task(){
 }
 
 bool Task::isEqualTo(Task another){
@@ -66,20 +72,21 @@ bool Task::isEqualTo(Task another){
 			&& another.getEnd().compareTo(_end) == 0
 			&& another.getType() == _type;
 		break;
-	case NORMAL_TASK:
+	case TIMED_TASK:
 		return another.getTitle() == _title
 			&& another.getStart().compareTo(_start) == 0
 			&& another.getEnd().compareTo(_end) == 0
 			&& another.getType() == _type;
 		break;
-
+	default:
+		return false;
+		break;
 	}
 	return false;
 }
 
 
 bool Task::isClashingWith(Task another){
-
 	bool startClash = false;
 	bool endClash = false;
 	bool spanClash = false;
@@ -94,70 +101,68 @@ bool Task::isClashingWith(Task another){
 		spanClash = true;
 
 	return startClash || endClash || spanClash;
-
 }
 
 string Task::toString(){
-	string outputString = "Type: " + printType() + "\n";
-	outputString += "Title: " + _title + "\n";
-	outputString += "Status: " + printStatus() + "\n";
-	outputString += "Start: " + printStart() + "\n";
-	outputString += "End: " + printEnd() + "\n";
-	outputString += "Comment: " + _comment;
+	string outputString = TYPE_KEY_WORD + typeToString() + NEW_LINE;
+	outputString += TITLE_KEY_WORD + _title + NEW_LINE;
+	outputString += STATUS_KEY_WORD + statusToString() + NEW_LINE;
+	outputString += START_KEY_WORD + startToString() + NEW_LINE;
+	outputString += END_KEY_WORD + endToString() + NEW_LINE;
+	outputString += COMMENT_KEY_WORD + _comment;
 
 	return outputString;
 }
 
 
-string Task::printStatus(){
+string Task::statusToString(){
 	if(_done){
-		return "done";
+		return DONE_KEY_WORD;
 	}else{
-		return "pending";
+		return PENDING_KEY_WORD;
 	}
 }
 
-string Task::printType(){
-	switch (_type)
-	{
+string Task::typeToString(){
+	switch (_type){
 	case 0:
-		return "Floating";
+		return FLOATING_TASK_KEY_WORD;
 		break;
 	case 1:
-		return "Deadline";
+		return DEADLINE_TASK_KEY_WORD;
 		break;
 	case 2:
-		return "Timed";
+		return TIMED_TASK_KEY_WORD;
 		break;
 	default:
-		return "";
+		return EMPTY_STRING;
 		break;
 	}
 }
 
-string Task::printStart(){
+string Task::startToString(){
 	switch (_type){
 	case 0:  case 1:
-		return "None";
+		return NONE_KEY_WORD;
 		break;
 	case 2:
 		return _start.getDateTimeString();
 		break;
 	default:
-		return "";
+		return EMPTY_STRING;
 		break;
 	}
 }
-string Task::printEnd(){
+string Task::endToString(){
 	switch (_type){
 	case 0:
-		return "None";
+		return NONE_KEY_WORD;
 		break;
 	case 1:	case 2:
 		return _end.getDateTimeString();
 		break;
 	default:
-		return "";
+		return EMPTY_STRING;
 		break;
 	}
 }

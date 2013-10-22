@@ -115,9 +115,7 @@ bool Task::isClashingWith(Task another){
 //}
 
 vector<string> Task::toStringVector(){
-
 	vector<string> stringVector;
-
 	string s[6] = {"Type: " + typeToString(),
 		"Title: " + _title, 
 		"Status: " + statusToString(), 

@@ -104,12 +104,12 @@ bool Task::isClashingWith(Task another){
 }
 
 //string Task::toString(){
-	string outputString = TYPE_KEY_WORD + typeToString() + NEW_LINE;
-	outputString += TITLE_KEY_WORD + _title + NEW_LINE;
-	outputString += STATUS_KEY_WORD + statusToString() + NEW_LINE;
-	outputString += START_KEY_WORD + startToString() + NEW_LINE;
-	outputString += END_KEY_WORD + endToString() + NEW_LINE;
-	outputString += COMMENT_KEY_WORD + _comment;
+//	string outputString = TYPE_KEY_WORD + typeToString() + NEW_LINE;
+//	outputString += TITLE_KEY_WORD + _title + NEW_LINE;
+//	outputString += STATUS_KEY_WORD + statusToString() + NEW_LINE;
+//	outputString += START_KEY_WORD + startToString() + NEW_LINE;
+//	outputString += END_KEY_WORD + endToString() + NEW_LINE;
+//	outputString += COMMENT_KEY_WORD + _comment;
 //
 //	return outputString;
 //}
@@ -118,11 +118,11 @@ vector<string> Task::toStringVector(){
 
 	vector<string> stringVector;
 
-	string s[6] = {"Type: " + printType(),
+	string s[6] = {"Type: " + typeToString(),
 		"Title: " + _title, 
-		"Status: " + printStatus(), 
-		"Start: " + printStart(), 
-		"End: " + printEnd(), 
+		"Status: " + statusToString(), 
+		"Start: " + startToString(), 
+		"End: " + endToString(), 
 		"Comment: " + _comment};
 
 	for(unsigned int i = 0; i < 6; i++){

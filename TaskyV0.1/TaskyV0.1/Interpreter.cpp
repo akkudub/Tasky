@@ -86,10 +86,10 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 }
 
-int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchingStatus, int& type, BasicDateTime& start, BasicDateTime& end){
+int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end){
 	str=removeLeadingSpaces(str);
 	int size=str.size(), pos1=0, pos2=0;
-	bool fromToFlag=false, byFlag=false, slotFlag=false, keywordFlag=false, statusFlag=false, timeFlag=false;
+	bool fromToFlag=false, byFlag=false, slotFlag=false, keywordFlag=false, statusFlag=false, timeFlag=true;
 	string title;
 	keywords.clear();
 
@@ -99,31 +99,36 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 		keywordFlag=true;
 		keywords=extractKeywords(title);
 	}
-	if (str.substr(pos2).find(SLOT_KEY_WORD)!=std::string::npos){
+	if (containKeywordWithoutCase(str.substr(pos2), SLOT_KEY_WORD)){
 		slotFlag=true;
 		slotEnabled=true;
 	}
-	if (str.substr(pos2).find(PENDING_KEY_WORD)!=std::string::npos){
-		searchingStatus=-1;  //pending, magical number
+	if (containKeywordWithoutCase(str.substr(pos2), PENDING_KEY_WORD)){
+		searchStatus=-1;  //pending, magical number
 		statusFlag=true;
-	}else if(str.substr(pos2).find(PENDING_KEY_WORD)!=std::string::npos){
-		searchingStatus=1;
+	}else if(containKeywordWithoutCase(str.substr(pos2), DONE_KEY_WORD)){
+		searchStatus=1;
 		statusFlag=true;
 	}else{
-		searchingStatus=0;
+		searchStatus=0;
+		statusFlag=false;
 	}
 
 	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
 		timeFlag=false;
 		type = NO_DATETIME;
-		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 	}
 	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 
-	if (!(fromToFlag || byFlag || slotFlag || keywordFlag || statusFlag || timeFlag)){
+	if (!(fromToFlag || byFlag || slotFlag || keywordFlag || statusFlag)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
+	}
+	if ((fromToFlag || byFlag) && !(keywordFlag || statusFlag)){
+		slotEnabled=true;
+	}else{
+		slotEnabled=false;
 	}
 
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
@@ -132,13 +137,13 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 int Interpreter::interpretDisplay(const string& str, int& displayType){
 	bool statusFlag=false, fromToFlag=false, byFlag=false;
 	int pos=0, size=str.size();
-	if (str.find(ALL_KEY_WORD)!=std::string::npos){
+	if (containKeywordWithoutCase(str, ALL_KEY_WORD)){
 		displayType=DISPLAY_TYPE_ALL;
-	}else if(str.find(PENDING_KEY_WORD)!=std::string::npos){
+	}else if(containKeywordWithoutCase(str, PENDING_KEY_WORD)){
 		displayType=DISPLAY_TYPE_PENDING;
-	}else if(str.find(DONE_KEY_WORD)!=std::string::npos){
+	}else if(containKeywordWithoutCase(str, DONE_KEY_WORD)){
 		displayType=DISPLAY_TYPE_DONE;
-	}else if(str.find(TODAY_KEY_WORD)!=std::string::npos){
+	}else if(containKeywordWithoutCase(str, TODAY_KEY_WORD)){
 		displayType=DISPLAY_TYPE_TODAY;
 	}else{
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
@@ -147,25 +152,28 @@ int Interpreter::interpretDisplay(const string& str, int& displayType){
 }
 
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
-	str=removeLeadingSpaces(str);
 	int posQuote1=0, posKey=0, posQuote2=0;
-	posKey=str.find(RENAME_KEY_WORD);
+	string str1, str2;
 	posQuote1=str.find_first_of(SINGLE_QUOTE);
 	posQuote2=str.find_last_of(SINGLE_QUOTE);
-	if (posKey==INTERNAL_ERROR_CODE){
+	if (!findStartingPosOfKeywordWithoutCase(str, RENAME_KEY_WORD, posKey)){
         return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
 	}
-	if (posQuote2-posQuote1<=5){
+	if (posQuote1>=posKey || posQuote2<=posKey+5){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
 	}else{
-		oldTitle=str.substr(posQuote1+1,posKey-posQuote1-1);
-		newTitle=str.substr(posKey+6, posQuote2-posKey-6);
+		str1=str.substr(posQuote1+1, posKey-posQuote1-1);
+		str2=str.substr(posKey+6, posQuote2-posKey-6);
 	}
+	if (str1==EMPTY_STRING || str2==EMPTY_STRING){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+	}
+	oldTitle=str1;
+	newTitle=str2;
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME;
 }
 
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
-	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
@@ -279,6 +287,26 @@ bool Interpreter::extractFirstWord(string str, string& firstWord){
 	}else{
 		firstWord=vec.at(0);
 		return true;
+	}
+}
+
+bool Interpreter::isEqualToKeyWordWithoutCase(string str, const string& keyword){
+	str=toLowerCase(str);
+	return str==keyword;
+}
+
+bool Interpreter::containKeywordWithoutCase(string str, const string& keyword){
+	str=toLowerCase(str);
+	return (str.find(keyword)!=std::string::npos);
+}
+
+bool Interpreter::findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos){
+	if (containKeywordWithoutCase(str, keyword)){
+		str=toLowerCase(str);
+		pos=str.find(keyword);
+		return true;
+	}else{
+		return false;
 	}
 }
 
@@ -722,11 +750,6 @@ vector<int> Interpreter::pushNumsWithDash(const vector<string>& strVec){
 
 bool Interpreter::containChar(string input, char ch){
 	return input.find(ch)!=std::string::npos;
-}
-
-bool Interpreter::isEqualToKeyWordWithoutCase(string str, const string& keyword){
-	str=toLowerCase(str);
-	return str==keyword;
 }
 
 Interpreter::~Interpreter(){

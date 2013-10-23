@@ -139,25 +139,21 @@ public:
 	 *       so type will only be 0 or 2
 	 *@param start (BasicDateTime reference) will have the new value if the input format is right
 	 *@param end (BasicDateTime reference) will have the new value if the input format is right
-	 *@return int status code, -1: failue; 0: no dates; 2: with two dates;
+	 *@return int status code
 	 */
 	int interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 */
-	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchingStatus, int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *a method for Processor::displayCommandProcessor, as this will take in a string without command type and try to parse the string
 	 *according to 'display' format on the user guide
-	 *e.g.: "pending from 12/10/2013 12.00 to 13/11/2014 13:05:05"
-	 *@param str (string) input from processor
-	 *@param type (int reference) similar to type for add, just for by case the start will be assigned to the current time and type will be 2.
-	 *       so type will only be 0--all, 2--two datetimes, 3--with status
-	 *@param start (BasicDateTime reference) will have the new value if the input format is right
-	 *@param end (BasicDateTime reference) will have the new value if the input format is right
-	 *@param status (bool refernce) will have true--done false pending if the user has specified
+	 *e.g.: "pending" or "done" or "all" or "today"
+	 *@param str (string) the input from the input
+	 *@param displayType: all-0; pending-1; done-2; today-3;
+	 *return int status code
 	 */
 	int interpretDisplay(const string& str, int& displayType);
-	int interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status);
 	/**
 	 *a method for Processor::renameCommandProcessor, as this will take in a strin with command type and try to parse the string
 	 *according to 'rename' format on the user guide
@@ -229,6 +225,9 @@ private:
 	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
 	bool extractComment(const string& str, string& comment, int& pos);
 	bool extractFirstWord(string str, string& firstWord);
+	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
+	bool containKeywordWithoutCase(string str, const string& keyword);
+	bool findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos);
 	vector<string> extractKeywords(const string& str);
 
 	bool firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
@@ -265,7 +264,6 @@ private:
 	vector<int> pushNumsWithComma(const vector<string>& strVec);
 	vector<int> pushNumsWithDash(const vector<string>& strVec);
 	bool containChar(string input, char ch);
-	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
 };
 
 #endif

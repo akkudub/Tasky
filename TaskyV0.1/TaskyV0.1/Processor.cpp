@@ -168,7 +168,7 @@ int Processor::displayCommandProcessor(string input){
 		}else if(type == 2){
 			return _taskList.displayStatus(done, _tempTaskList);
 		}else if (type == 3){
-			return _taskList.displayAll(_tempTaskList);//need to change to display today
+			return _taskList.displayToday(_tempTaskList);
 		}else{
 			return ERROR_DISPLAY;
 		}
@@ -209,7 +209,7 @@ int Processor::renameCommandProcessor(string input){
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
-			_taskList.search(_tempTitle, _tempTaskList);
+			_taskList.search(oldTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				Task newTask = _tempTaskList[0];
 				Task oldTask = newTask;

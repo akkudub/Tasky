@@ -726,7 +726,7 @@ void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
 	setMin(min, dateTimeString);
 	setSec(sec, dateTimeString);
 
-	if(isValidDateTime)
+	if(isValidDateTime(day, month, year, hour, min, sec))
 		bdt = BasicDateTime(year, month, day, hour, min, sec);
 	else
 		return;
@@ -756,6 +756,46 @@ void TaskList::setYear(int& year, string& dateTimeString){
 		year = 2000;
 	else if(dateTimeString.at(6) == '3')
 		year = 3000;
+
+	if(dateTimeString.at(7) == '1')
+		year += 100;
+	else if(dateTimeString.at(7) == '2')
+		year += 200;
+	else if(dateTimeString.at(7) == '3')
+		year += 300;
+	else if(dateTimeString.at(7) == '4')
+		year += 400;
+	else if(dateTimeString.at(7) == '5')
+		year += 500;
+	else if(dateTimeString.at(7) == '6')
+		year += 600;
+	else if(dateTimeString.at(7) == '7')
+		year += 700;
+	else if(dateTimeString.at(7) == '8')
+		year += 800;
+	else if(dateTimeString.at(7) == '9')
+		year += 900;
+
+	if(dateTimeString.at(8) == '1')
+		year += 10;
+	else if(dateTimeString.at(8) == '2')
+		year += 20;
+	else if(dateTimeString.at(8) == '3')
+		year += 30;
+	else if(dateTimeString.at(8) == '4')
+		year += 40;
+	else if(dateTimeString.at(8) == '5')
+		year += 50;
+	else if(dateTimeString.at(8) == '6')
+		year += 60;
+	else if(dateTimeString.at(8) == '7')
+		year += 70;
+	else if(dateTimeString.at(8) == '8')
+		year += 80;
+	else if(dateTimeString.at(8) == '9')
+		year += 90;
+
+	year += dateTimeString.at(9) - 48;
 }
 
 void TaskList::setHour(int& hour, string& dateTimeString){
@@ -802,6 +842,20 @@ void TaskList::setSec(int& sec, string& dateTimeString){
 
 bool TaskList::isValidDateTime(int day, int month, int year, int hour, int minute, int sec){
 
+	if(day < 1 || day > 31)
+		return false;
+	if(month < 1 || month > 12)
+		return false;
+	if(year < 2000 || year > 3999)
+		return false;
+	if(hour < 0 || hour > 24)
+		return false;
+	if(minute < 0 || minute > 59)
+		return false;
+	if(sec < 0 || sec > 59)
+		return false;
+
+	return true;
 
 }
 
@@ -821,6 +875,7 @@ bool TaskList::isExistingDate(BasicDateTime date, vector<BasicDateTime> vector){
 			return true;
 
 	}
+	return false;
 }
 
 /*

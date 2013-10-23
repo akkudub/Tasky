@@ -6,9 +6,9 @@ static const int FLOATING_TASK = 0;
 static const int DEADLINE_TASK = 1;
 static const int NORMAL_TASK = 2;
 static const string STRING_DONE = "Done";
-static const string STRING_FLOATING = "Floating";
-static const string STRING_DEADLINE = "Deadline";
-static const string STRING_TIMED = "Timed";
+static const string STRING_FLOATING = "Floating task";
+static const string STRING_DEADLINE = "Deadline task";
+static const string STRING_TIMED = "Timed task";
 static const string STRING_NON = "None";
 
 bool keywordsFlag;

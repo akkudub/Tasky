@@ -50,9 +50,14 @@ int FileProcessing::save(vector<string>& data){
 		}
 		//check if file is created, ready for writing
 		if (output.good()) {
+			int countLine = 0;
 			for(string s:data) {
 				output << s << endl;
-				output << endl;
+				countLine++;
+				if (countLine >= TASKLINES){
+					output << endl;
+					countLine = 0;
+				}
 			}
 		} else {
 			output.close();

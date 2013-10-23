@@ -71,9 +71,7 @@ int TaskList::searchTasks(vector<string> keywords, int statusPresent, int type, 
 	if(statusFlag && statusPresent == -1)
 		done = false;
 
-	if(keywordsFlag == false && statusFlag == false && typeFlag == false)
-		return ERROR_SEARCH;
-	else if(keywordsFlag == false && statusFlag == false && typeFlag == true)
+	if(keywordsFlag == false && statusFlag == false && typeFlag == true)
 		return searchInRange(start, end, _temp);
 	else if(keywordsFlag == false && statusFlag == true && typeFlag == false)
 		return displayStatus(done, _temp);
@@ -87,6 +85,8 @@ int TaskList::searchTasks(vector<string> keywords, int statusPresent, int type, 
 		return searchKeywordsWithStatus(keywords, done, _temp);
 	else if(keywordsFlag == true && statusFlag == true && typeFlag == true)
 		return searchKeywordsWithRangeAndStatus(keywords, start, end, done, _temp);
+
+	return ERROR_SEARCH;
 }
 
 void TaskList::setFlags(vector<string> keywords, int statusPresent, int type){
@@ -197,6 +197,16 @@ int TaskList::displayStatus(bool done, vector<Task>& _temp){
 		return WARNING_DISPLAY_NO_RESULT;
 
 	return ERROR_DISPLAY;
+}
+
+int TaskList::displayToday(vector<Task>& _temp){
+
+	BasicDateTime start;
+	BasicDateTime end;
+
+	setToday(start, end);
+
+	return searchInRange(start, end, _temp);
 }
 
 int TaskList::searchInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
@@ -960,6 +970,22 @@ void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
 		bdt = BasicDateTime(year, month, day, hour, min, sec);
 	else
 		return;
+}
+
+void setToday(BasicDateTime& start, BasicDateTime& end){
+
+	System::DateTime today;
+
+	today = today.Now;
+
+	int day, month, year;
+
+	day = today.Day;
+	month = today.Month;
+	year = today.Year;
+
+	start = BasicDateTime(year, month, day);
+	end = BasicDateTime(year, month, day, 23, 59, 59);
 }
 
 void TaskList::setDay(int& day, string& dateTimeString){

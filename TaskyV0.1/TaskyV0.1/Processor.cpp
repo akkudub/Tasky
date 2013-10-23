@@ -340,6 +340,7 @@ int Processor::markCommandProcessor(string input){
 					}
 					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);				
 				}
+				return operationStatus;
 			}else if(!_tempTaskList.empty()){
 				_statusFlag = 4;
 				return PROMPT_MARK_CHOOSE;

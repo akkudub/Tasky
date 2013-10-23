@@ -143,6 +143,7 @@ public:
 	bool isSuccessfullyMarked(bool mark, Task task);
 	void pushOccupiedDates(vector<BasicDateTime>& usedDates);
 	vector<string> taskVecToStringVec(vector<Task>& allTasks);
+	void stringToBasicDateTime(string, BasicDateTime&);
 
 	/** Abstraction Level 3 */
 	void exactSearch(string exactString, vector<Task>& _temp);

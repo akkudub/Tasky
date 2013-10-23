@@ -9,6 +9,7 @@ static const string STRING_DONE = "Done";
 static const string STRING_FLOATING = "Floating";
 static const string STRING_DEADLINE = "Deadline";
 static const string STRING_TIMED = "Timed";
+static const string STRING_NON = "None";
 
 TaskList::TaskList(){
 }
@@ -234,11 +235,11 @@ int TaskList::loadFile(){
 			count++;
 			break;
 		case 3:
-			_interpreter.stringToBasicDateTime(currStr.substr(7), start);
+			stringToBasicDateTime(currStr.substr(7), start);
 			count++;
 			break;
 		case 4:
-			_interpreter.stringToBasicDateTime(currStr.substr(5), end);
+			stringToBasicDateTime(currStr.substr(5), end);
 			count++;
 			break;
 		case 5:
@@ -709,6 +710,15 @@ vector<string> TaskList::taskVecToStringVec(vector<Task>& allTasks){
 	}
 
 	return taskLines;
+}
+
+void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
+
+	if(dateTimeString == STRING_NON)
+		return;
+	
+
+
 }
 
 string TaskList::stringToLower(string& toLowerString){

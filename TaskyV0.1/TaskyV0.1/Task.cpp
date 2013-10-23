@@ -103,16 +103,16 @@ bool Task::isClashingWith(Task another){
 	return startClash || endClash || spanClash;
 }
 
-//string Task::toString(){
-//	string outputString = TYPE_KEY_WORD + typeToString() + NEW_LINE;
-//	outputString += TITLE_KEY_WORD + _title + NEW_LINE;
-//	outputString += STATUS_KEY_WORD + statusToString() + NEW_LINE;
-//	outputString += START_KEY_WORD + startToString() + NEW_LINE;
-//	outputString += END_KEY_WORD + endToString() + NEW_LINE;
-//	outputString += COMMENT_KEY_WORD + _comment;
-//
-//	return outputString;
-//}
+string Task::toString(){
+	string outputString = TYPE_KEY_WORD + typeToString() + NEW_LINE;
+	outputString += TITLE_KEY_WORD + _title + NEW_LINE;
+	outputString += STATUS_KEY_WORD + statusToString() + NEW_LINE;
+	outputString += START_KEY_WORD + startToString() + NEW_LINE;
+	outputString += END_KEY_WORD + endToString() + NEW_LINE;
+	outputString += COMMENT_KEY_WORD + _comment;
+
+	return outputString;
+}
 
 vector<string> Task::toStringVector(){
 

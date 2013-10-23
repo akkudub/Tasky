@@ -376,7 +376,7 @@ int Processor::searchCommandProcessor(string input){
 		if (type == 0){
 			return _taskList.searchKeywords(keywords, _tempTaskList);
 		}else if(type == 2){
-			return _taskList.searchKeywordsInRange(keywords, _tempTaskList, start, end);
+			return _taskList.searchKeywordsInRange(keywords, start, end, _tempTaskList);
 		}else{
 			return ERROR_SEARCH;
 		}

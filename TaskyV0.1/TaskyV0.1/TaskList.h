@@ -69,6 +69,15 @@ public:
 	int searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
 	/**
 	* Purpose:
+	* same as searchKeywords but only searches for tasks that matches the status.
+	* @param keywords
+	* @param done status of task to search for
+	* @param _temp for Logic to push in tasks that match
+	* @return status code
+	*/
+	int searchKeywordsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
+	/**
+	* Purpose:
 	* pushes all tasks into referenced vector
 	* @param _temp for Logic to put in all tasks
 	* @return status code
@@ -135,7 +144,9 @@ public:
 	bool isSuccessfullyRemoved(Task task);
 	void searchTitle(string searchLine, vector<Task>& _temp);
 	void searchVectors(vector<string> keywords, vector<Task>& _temp);
-	void searchVectorsWithRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+	void searchVectorsWithRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+	void searchVectorsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
+	
 	void appendVectors(vector<Task>& _temp);
 	void pushStatus(bool done, vector<Task>& _temp);
 	void pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
@@ -150,9 +161,13 @@ public:
 	void containingExactStringSearch(string exactString, vector<Task>& _temp);
 	void containingBreakdownStringSearch(vector<string> keywords, vector<Task>& _temp);
 
-	void exactSearchWithRange(string exactString, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
-	void containingExactStringSearchWithRange(string exactString, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
-	void containingBreakdownStringSearchWithRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+	void exactSearchWithRange(string exactString, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+	void containingExactStringSearchWithRange(string exactString, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+	void containingBreakdownStringSearchWithRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
+
+	void exactSearchWithStatus(string exactString, bool done, vector<Task>& _temp);
+	void containingExactStringSearchWithStatus(string exactString, bool done, vector<Task>& _temp);
+	void containingBreakdownStringSearchWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
 
 	void setDay(int& day, string& dateTimeString);
 	void setMonth(int& month, string& dateTimeString);

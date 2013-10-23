@@ -716,7 +716,91 @@ void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
 
 	if(dateTimeString == STRING_NON)
 		return;
-	
+
+	int day, month, year, hour, min, sec;
+
+	setDay(day, dateTimeString);
+	setMonth(month, dateTimeString);
+	setYear(year, dateTimeString);
+	setHour(hour, dateTimeString);
+	setMin(min, dateTimeString);
+	setSec(sec, dateTimeString);
+
+	if(isValidDateTime)
+		bdt = BasicDateTime(year, month, day, hour, min, sec);
+	else
+		return;
+}
+
+void TaskList::setDay(int& day, string& dateTimeString){
+
+	if(dateTimeString.at(0) == '0')
+		day = dateTimeString.at(1) - 48;
+	else if(dateTimeString.at(0) == '1')
+		day = dateTimeString.at(1) - 48 + 10;
+	else if(dateTimeString.at(0) == '2')
+		day = dateTimeString.at(1) - 48 + 20;
+}
+
+void TaskList::setMonth(int& month, string& dateTimeString){
+
+	if(dateTimeString.at(3) == '0')
+		month = dateTimeString.at(4) - 48;
+	else if(dateTimeString.at(3) == '1')
+		month = dateTimeString.at(4) - 48 + 10;
+}
+
+void TaskList::setYear(int& year, string& dateTimeString){
+
+	if(dateTimeString.at(6) == '2')
+		year = 2000;
+	else if(dateTimeString.at(6) == '3')
+		year = 3000;
+}
+
+void TaskList::setHour(int& hour, string& dateTimeString){
+
+	if(dateTimeString.at(11) == '0')
+		hour = dateTimeString.at(12) - 48;
+	else if(dateTimeString.at(11) == '1')
+		hour = dateTimeString.at(12) - 48 + 10;
+	else if(dateTimeString.at(11) == '2')
+		hour = dateTimeString.at(12) - 48 + 20;
+}
+
+void TaskList::setMin(int& min, string& dateTimeString){
+
+	if(dateTimeString.at(14) == '0')
+		min = dateTimeString.at(15) - 48;
+	else if(dateTimeString.at(14) == '1')
+		min = dateTimeString.at(15) - 48 + 10;
+	else if(dateTimeString.at(14) == '2')
+		min = dateTimeString.at(15) - 48 + 20;
+	else if(dateTimeString.at(14) == '3')
+		min = dateTimeString.at(15) - 48 + 30;
+	else if(dateTimeString.at(14) == '4')
+		min = dateTimeString.at(15) - 48 + 40;
+	else if(dateTimeString.at(14) == '5')
+		min = dateTimeString.at(15) - 48 + 50;
+}
+
+void TaskList::setSec(int& sec, string& dateTimeString){
+
+	if(dateTimeString.at(17) == '0')
+		sec = dateTimeString.at(18) - 48;
+	else if(dateTimeString.at(17) == '1')
+		sec = dateTimeString.at(18) - 48 + 10;
+	else if(dateTimeString.at(17) == '2')
+		sec = dateTimeString.at(18) - 48 + 20;
+	else if(dateTimeString.at(17) == '3')
+		sec = dateTimeString.at(18) - 48 + 30;
+	else if(dateTimeString.at(17) == '4')
+		sec = dateTimeString.at(18) - 48 + 40;
+	else if(dateTimeString.at(17) == '5')
+		sec = dateTimeString.at(18) - 48 + 50;
+}
+
+bool TaskList::isValidDateTime(int day, int month, int year, int hour, int minute, int sec){
 
 
 }

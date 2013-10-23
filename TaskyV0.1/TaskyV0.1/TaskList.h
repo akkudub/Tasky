@@ -154,6 +154,14 @@ public:
 	void containingExactStringSearchWithRange(string exactString, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
 	void containingBreakdownStringSearchWithRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
 
+	void setDay(int& day, string& dateTimeString);
+	void setMonth(int& month, string& dateTimeString);
+	void setYear(int& year, string& dateTimeString);
+	void setHour(int& hour, string& dateTimeString);
+	void setMin(int& min, string& dateTimeString);
+	void setSec(int& sec, string& dateTimeString);
+	bool isValidDateTime(int day, int month, int year, int hour, int minute, int sec);
+
 	/** Abstraction Level 4 */
 	bool isInRange(BasicDateTime time, BasicDateTime start, BasicDateTime end);
 	string stringToLower(string& toLowerString);

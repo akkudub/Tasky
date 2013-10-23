@@ -87,20 +87,23 @@ int Processor::addCommandProcessor(string input){
 	BasicDateTime startingDateTime;
 	BasicDateTime endingDateTime;
 
-	_interpreter.interpretAdd(input, title, type, startingDateTime, endingDateTime, comment);
-
-	switch (type){
-	case 0:
-		return addFloatingTask(title, comment);
-		break;
-	case 1:
-		return addDeadlineTask(title, endingDateTime, comment);
-		break;
-	case 2:
-		return addTimedTask(title, startingDateTime, endingDateTime, comment);
-		break;
-	default:
-		return ERROR_ADD;
+	int returnCode = _interpreter.interpretAdd(input, title, type, startingDateTime, endingDateTime, comment);
+	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD){
+		return returnCode;
+	}else{
+		switch (type){
+		case 0:
+			return addFloatingTask(title, comment);
+			break;
+		case 1:
+			return addDeadlineTask(title, endingDateTime, comment);
+			break;
+		case 2:
+			return addTimedTask(title, startingDateTime, endingDateTime, comment);
+			break;
+		default:
+			return ERROR_ADD;
+		}
 	}
 }
 
@@ -125,22 +128,26 @@ int Processor::removeCommandProcessor(string input){
 		return operationStatus;
 	}else if(_statusFlag == 0){
 		vector<string> keywords;
-		_interpreter.interpretRemove(input, _tempTitle);
-		_tempTaskList.clear();
-		breakIntoStringVectorBySpace(_tempTitle, keywords);
-		_taskList.searchKeywords(keywords, _tempTaskList);
-		if (_tempTaskList.size() == 1){
-			operationStatus = _taskList.remove(_tempTaskList[0]);
-			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
-				recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[0], oldTask);
-			}
-			return operationStatus;
-		}else if(!_tempTaskList.empty()){
-			_statusFlag = 1;
-			return PROMPT_REMOVE_CHOOSE;
-		}else if(_tempTaskList.empty()){
-			return WARNING_SEARCH_NO_RESULT;
+		int returnCode = _interpreter.interpretRemove(input, _tempTitle);
+		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE){
+			return returnCode;
+		}else{
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(_tempTitle, keywords);
+			_taskList.searchKeywords(keywords, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				operationStatus = _taskList.remove(_tempTaskList[0]);
+				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
+					recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[0], oldTask);
+				}
+				return operationStatus;
+			}else if(!_tempTaskList.empty()){
+				_statusFlag = 1;
+				return PROMPT_REMOVE_CHOOSE;
+			}else if(_tempTaskList.empty()){
+				return WARNING_SEARCH_NO_RESULT;
 
+			}
 		}
 	}
 	return ERROR_REMOVE;
@@ -148,21 +155,26 @@ int Processor::removeCommandProcessor(string input){
 
 
 int Processor::displayCommandProcessor(string input){
-	string user_command;
-	BasicDateTime start, end;
-	bool status;
+	bool done = true;
+	bool pending = false;
 	int type;
-	int return_code = _interpreter.interpretDisplay(input, type, start, end, status);
-	if (type == 0){
-		return _taskList.displayAll(_tempTaskList);
-	}else if(type == 2){
-		return ERROR_DISPLAY;//needs to be removed later
-	}else if (type == 3){//no api in taskList, skipping the dates
-		return _taskList.displayStatus(status, _tempTaskList);
+	//int returnCode = _interpreter.interpretDisplay(input, type, start, end, status);
+	int returnCode = _interpreter.interpretDisplay(input, type);
+	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY){
+		return returnCode;
 	}else{
-		return ERROR_DISPLAY;
+		if (type == 0){
+			return _taskList.displayAll(_tempTaskList);
+		}else if (type == 1){
+			return _taskList.displayStatus(pending, _tempTaskList);
+		}else if(type == 2){
+			return _taskList.displayStatus(done, _tempTaskList);
+		}else if (type == 3){
+			return _taskList.displayAll(_tempTaskList);//need to change to display today
+		}else{
+			return ERROR_DISPLAY;
+		}
 	}
-
 }
 
 int Processor::renameCommandProcessor(string input){
@@ -195,29 +207,33 @@ int Processor::renameCommandProcessor(string input){
 		string oldTitle;
 		vector<string> keywords;
 
-		_interpreter.interpretRename(input, oldTitle, _tempTitle);
-		_tempTaskList.clear();
-		breakIntoStringVectorBySpace(oldTitle, keywords);
-		_taskList.searchKeywords(keywords, _tempTaskList);
-		if (_tempTaskList.size() == 1){
-			Task newTask = _tempTaskList[0];
-			Task oldTask = newTask;
-			newTask.setTitle(_tempTitle);
-			operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
-			if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-				_tempTaskList.push_back(oldTask);				
-				_tempTaskList.push_back(newTask);
-			}
-			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-			}
-			return operationStatus;
+		int returnCode = _interpreter.interpretRename(input, oldTitle, _tempTitle);
+		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME){
+			return returnCode;
+		}else{
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(oldTitle, keywords);
+			_taskList.searchKeywords(keywords, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				Task newTask = _tempTaskList[0];
+				Task oldTask = newTask;
+				newTask.setTitle(_tempTitle);
+				operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
+				if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+					_tempTaskList.push_back(oldTask);				
+					_tempTaskList.push_back(newTask);
+				}
+				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+				}
+				return operationStatus;
 
-		}else if(!_tempTaskList.empty()){
-			_statusFlag = 2;
-			return PROMPT_RENAME_CHOOSE;
-		}else if(_tempTaskList.empty()){
-			return WARNING_SEARCH_NO_RESULT;
+			}else if(!_tempTaskList.empty()){
+				_statusFlag = 2;
+				return PROMPT_RENAME_CHOOSE;
+			}else if(_tempTaskList.empty()){
+				return WARNING_SEARCH_NO_RESULT;
+			}
 		}
 	}
 	return ERROR_UPDATE;
@@ -253,34 +269,38 @@ int Processor::rescheduleCommandProcessor(string input){
 	}else if(_statusFlag == 0){
 		vector<string> keywords;
 
-		_interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
-		_tempTaskList.clear();
-		breakIntoStringVectorBySpace(_tempTitle, keywords);
-		_taskList.searchKeywords(keywords, _tempTaskList);
+		int returnCode = _interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
+		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE){
+			return returnCode;
+		}else{
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(_tempTitle, keywords);
+			_taskList.searchKeywords(keywords, _tempTaskList);
 
-		if (_tempTaskList.size() == 1){
-			Task newTask = _tempTaskList[0];
-			Task oldTask = newTask;
+			if (_tempTaskList.size() == 1){
+				Task newTask = _tempTaskList[0];
+				Task oldTask = newTask;
 
-			newTask.setStartDate(_tempStart);
-			newTask.setEndDate(_tempEnd);
-			newTask.setType(_tempType);
-			operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
-			if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-				_tempTaskList.push_back(oldTask);
-				_tempTaskList.push_back(newTask);
+				newTask.setStartDate(_tempStart);
+				newTask.setEndDate(_tempEnd);
+				newTask.setType(_tempType);
+				operationStatus = _taskList.update(oldTask, newTask, _tempTaskList);
+				if (operationStatus != STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+					_tempTaskList.push_back(oldTask);
+					_tempTaskList.push_back(newTask);
+				}
+				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+				}
+				return operationStatus;
+
+			}else if(!_tempTaskList.empty()){
+				_statusFlag = 3;
+				return PROMPT_RESCHEDULE_CHOOSE;
+			}else if(_tempTaskList.empty()){
+				return WARNING_SEARCH_NO_RESULT;
+
 			}
-			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-			}
-			return operationStatus;
-
-		}else if(!_tempTaskList.empty()){
-			_statusFlag = 3;
-			return PROMPT_RESCHEDULE_CHOOSE;
-		}else if(_tempTaskList.empty()){
-			return WARNING_SEARCH_NO_RESULT;
-
 		}
 	}
 	return ERROR_UPDATE;
@@ -313,25 +333,29 @@ int Processor::markCommandProcessor(string input){
 	}else if(_statusFlag == 0){
 		vector<string> keywords;
 
-		_interpreter.interpretMark(input, _tempTitle, _tempStatus);
-		_tempTaskList.clear();
-		breakIntoStringVectorBySpace(_tempTitle, keywords);
-		_taskList.searchKeywords(keywords, _tempTaskList);
-		if (_tempTaskList.size() == 1){
-			operationStatus = _taskList.mark(_tempStatus, _tempTaskList[0]);
-			if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_MARK){
-				Task oldTask = _tempTaskList[0];
-				Task newTask = oldTask;
-				if(newTask.getDone() != _tempStatus){
-					newTask.toggleDone();
+		int returnCode = _interpreter.interpretMark(input, _tempTitle, _tempStatus);
+		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK){
+			return returnCode;
+		}else{
+			_tempTaskList.clear();
+			breakIntoStringVectorBySpace(_tempTitle, keywords);
+			_taskList.searchKeywords(keywords, _tempTaskList);
+			if (_tempTaskList.size() == 1){
+				operationStatus = _taskList.mark(_tempStatus, _tempTaskList[0]);
+				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_MARK){
+					Task oldTask = _tempTaskList[0];
+					Task newTask = oldTask;
+					if(newTask.getDone() != _tempStatus){
+						newTask.toggleDone();
+					}
+					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);				
 				}
-				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);				
+			}else if(!_tempTaskList.empty()){
+				_statusFlag = 4;
+				return PROMPT_MARK_CHOOSE;
+			}else if(_tempTaskList.empty()){
+				return WARNING_SEARCH_NO_RESULT;
 			}
-		}else if(!_tempTaskList.empty()){
-			_statusFlag = 4;
-			return PROMPT_MARK_CHOOSE;
-		}else if(_tempTaskList.empty()){
-			return WARNING_SEARCH_NO_RESULT;
 		}
 	}
 	return ERROR_MARK;
@@ -345,14 +369,17 @@ int Processor::searchCommandProcessor(string input){
 
 	_tempTaskList.clear();
 
-	int return_code = _interpreter.interpretSearch(input, keywords, type, start, end);
-
-	if (type == 0){
-		return _taskList.searchKeywords(keywords, _tempTaskList);
-	}else if(type == 2){
-		return _taskList.searchKeywordsInRange(keywords, _tempTaskList, start, end);
+	int returnCode = _interpreter.interpretSearch(input, keywords, type, start, end);
+	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH){
+		return returnCode;
 	}else{
-		return ERROR_SEARCH;
+		if (type == 0){
+			return _taskList.searchKeywords(keywords, _tempTaskList);
+		}else if(type == 2){
+			return _taskList.searchKeywordsInRange(keywords, _tempTaskList, start, end);
+		}else{
+			return ERROR_SEARCH;
+		}
 	}
 }
 

@@ -19,16 +19,9 @@ Processor::Processor(){
 	loadFile();
 }
 
-/*
-* Purpose: Handle user input based on first keyword
-* and call appropriate functions to handle
-*
-* Param: 
-* command - first keyword of user input
-*
-* Returns: 
-* formatted string of feedback and with user command (including task)
-*/
+Processor::~Processor(){
+}
+
 int Processor::UImainProcessor(string input, string& message, vector<string>& list){
 	string command, tempCommand;
 	int returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
@@ -87,16 +80,7 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 	return feedbackToUI(returnCode, message, list);
 }
 
-//level 1 abstraction
-/*
-* Purpose: Add tasks according to type
-* 0 - Floating tasks
-* 1 - Deadline tasks
-* 2 - Normal tasks
-*
-* Returns: 
-* Message if task is successfully added (or not with reason)
-*/
+
 int Processor::addCommandProcessor(string input){
 	int type;
 	string title, comment;
@@ -113,19 +97,14 @@ int Processor::addCommandProcessor(string input){
 		return addDeadlineTask(title, endingDateTime, comment);
 		break;
 	case 2:
-		return addNormalTask(title, startingDateTime, endingDateTime, comment);
+		return addTimedTask(title, startingDateTime, endingDateTime, comment);
 		break;
 	default:
 		return ERROR_ADD;
 	}
 }
 
-/*
-* Purpose: Remove task (from search results)
-*
-* Returns: 
-* Task successfully removed; Ask user to choose task to remove; No such task found
-*/
+
 int Processor::removeCommandProcessor(string input){
 	int operationStatus;
 	Task oldTask;
@@ -167,12 +146,7 @@ int Processor::removeCommandProcessor(string input){
 	return ERROR_REMOVE;
 }
 
-/*
-* Purpose: Display to user type of task
-*
-* Returns: 
-* Tasks of type; Unable to display
-*/
+
 int Processor::displayCommandProcessor(string input){
 	string user_command;
 	BasicDateTime start, end;
@@ -191,8 +165,6 @@ int Processor::displayCommandProcessor(string input){
 
 }
 
-//pass the created task and the task in the vector at position
-//create a new vector and pass in that for new clashes
 int Processor::renameCommandProcessor(string input){
 	int operationStatus;
 	if(_statusFlag == 2){
@@ -314,12 +286,7 @@ int Processor::rescheduleCommandProcessor(string input){
 	return ERROR_UPDATE;
 }
 
-/*
-* Purpose: Mark Task as Done/Pending (from search results)
-*
-* Returns: 
-* Task is marked; Ask user to choose task to mark from results; No such task found
-*/
+
 int Processor::markCommandProcessor(string input){
 	int operationStatus;
 	if(_statusFlag == 4){
@@ -458,82 +425,14 @@ int Processor::otherCommandProcessor(){
 }
 
 int Processor::saveFile(){
-	vector<Task> allTasks;
-	_taskList.displayAll(allTasks);
-
-	vector<string> allTasksString = taskVecToStringVec(allTasks);
-	return _fileProcessing.save(allTasksString);
+	return _taskList.saveFile();
 }
 
 int Processor::loadFile(){
-	vector<string> stringsFromFile;
-	string currStr, tempStr, statusString, typeString;
-	int count;
-
-	string title, comment;
-	int type;
-	bool status;
-	BasicDateTime start, end;
-
-	_fileProcessing.load(stringsFromFile);
-	for (unsigned int i = 0; i < stringsFromFile.size(); i++){
-		currStr = stringsFromFile[i];
-		stringstream ss(currStr);
-		count = 0;
-		while (std::getline(ss, tempStr, NEW_LINE)){
-			switch (count){
-			case 0:
-				typeString = tempStr.substr(6);
-				if (typeString == "Floating"){
-					type = 0;
-				}else if (typeString == "Deadline"){
-					type = 1;
-				}else if (typeString == "Timed"){
-					type = 2;			
-				}
-				count++;
-				break;
-			case 1:
-				title = tempStr.substr(7);
-				count++;
-				break;
-			case 2:
-				statusString = tempStr.substr(8);
-				if (statusString == "Done"){
-					status = true;
-				}else{
-					status = false;
-				}
-				count++;
-				break;
-			case 3:
-				_interpreter.stringToBasicDateTime(tempStr.substr(7), start);
-				count++;
-				break;
-			case 4:
-				_interpreter.stringToBasicDateTime(tempStr.substr(5), end);
-				break;
-			case 5:
-				comment = tempStr.substr(9);
-			}
-		}
-		Task tempTask(title, start, end, type, status, comment);
-		_taskList.add(tempTask, _tempTaskList);
-	}
-	return 0;
+	return _taskList.loadFile();
 }
 
-/*
-* Purpose: To get feedback to tell user is command is succesful/unsuccessful
-*
-* Param: 
-* returnCode - feedback from commandProcessors
-* message - message to be passed to the UI
-* list - the list of strings that need to be printed out with the message
-*
-* Returns: 
-* int telling the UI which type of feedback is being given
-*/
+
 int Processor::feedbackToUI(int returnCode, string& message, vector<string>& list){
 	assert(returnCode>=STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS &&
 		returnCode<=STATUS_CODE_SET_PROPMT::PROMPT_MARK_CHOOSE);
@@ -579,19 +478,10 @@ bool Processor::choiceIsValid(vector<int> choice){
 }
 
 
-
-/*
-* Purpose: Add task of type Floating tasks 
-* puts the successfully created task into _tempTaskList
-*
-* Param: 
-* title - name of task
-* comment - additional description
-*/
 int Processor::addFloatingTask(string title, string comment){
-	BasicDateTime dt1, dt2;
+	BasicDateTime start, end;
 	Task tNew, tOld;
-	tNew = Task(title, dt1, dt2, 0, false, comment);
+	tNew = Task(title, start, end, 0, false, comment);
 	_tempTaskList.clear();
 	int statusCode = _taskList.add(tNew, _tempTaskList);
 	if (statusCode != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -603,19 +493,11 @@ int Processor::addFloatingTask(string title, string comment){
 	return statusCode;
 }
 
-/*
-* Purpose: Add task of type Dealine tasks 
-* puts the successfully created task into _tempTaskList
-*
-* Param: 
-* title - name of task
-* dt - deadline of task in DateTime format
-* comment - additional description
-*/
-int Processor::addDeadlineTask(string title, BasicDateTime dt, string comment){
-	BasicDateTime dt1;
+
+int Processor::addDeadlineTask(string title, BasicDateTime end, string comment){
+	BasicDateTime start;
 	Task tNew, tOld;
-	tNew = Task(title, dt1, dt, 1, false, comment);
+	tNew = Task(title, start, end, 1, false, comment);
 	_tempTaskList.clear();
 	int statusCode = _taskList.add(tNew, _tempTaskList);
 	if (statusCode != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -628,19 +510,10 @@ int Processor::addDeadlineTask(string title, BasicDateTime dt, string comment){
 	return statusCode;
 }
 
-/*
-* Purpose: Add task of type Normal tasks 
-* puts the successfully created task into _tempTaskList
-*
-* Param: 
-* title - name of task
-* dt1 - starting time of task in DateTime format
-* dt2 - ending time of task in DateTime format
-* comment - additional description
-*/
-int Processor::addNormalTask(string title, BasicDateTime dt1, BasicDateTime dt2, string comment){
+
+int Processor::addTimedTask(string title, BasicDateTime start, BasicDateTime end, string comment){
 	Task tNew, tOld;
-	tNew = Task(title, dt1, dt2, 2, false, comment);
+	tNew = Task(title, start, end, 2, false, comment);
 	_tempTaskList.clear();
 	int statusCode = _taskList.add(tNew, _tempTaskList);
 	if (statusCode != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -693,14 +566,8 @@ int Processor::recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTa
 	return _history.record(tempCommand);
 }
 
-/*
-* Purpose: Separates the user input word by word into output vector
-*
-* Param: longStr - user input
-*
-* Returns: success
-*/
-int Processor::breakIntoStringVectorBySpace(string longStr, vector<string>& outputVector){
+
+void Processor::breakIntoStringVectorBySpace(string longStr, vector<string>& outputVector){
 	stringstream ss(longStr);
 	string tempStr;
 	bool noSpace = true;
@@ -712,26 +579,9 @@ int Processor::breakIntoStringVectorBySpace(string longStr, vector<string>& outp
 	if (noSpace){
 		outputVector.push_back(longStr);
 	}
-	return 0;
 }
 
-/*
-* Purpose:Formats 2 strings separated by a new line character
-*
-* Returns: formatted string
-*/
-string Processor::combineStringsWithNewLine(string str1, string str2){
-	return str1+NEW_LINE_STRING+str2;
-}
 
-/*
-* Purpose: combines the status message of adding task to task
-*(for display and search)
-*
-* Param: str- status message
-*
-* Returns: formatted status message of adding task
-*/
 vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
 	vector<string> temp;
 	if (!taskList.empty()){
@@ -755,7 +605,4 @@ bool Processor::commandIsNormal(string command){
 	}else{
 		return false;
 	}
-}
-
-Processor::~Processor(){
 }

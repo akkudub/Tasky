@@ -26,7 +26,6 @@
 #include "Messages.h"
 
 using namespace System;
-using namespace msclr::interop;
 
 class Processor{
 	/*
@@ -78,41 +77,222 @@ private:
 
 public:
 	Processor();
+	/*
+	* Purpose:
+	* Handle user input based on first keyword
+	* and call appropriate functions to handle the command
+	*
+	* @param input the raw user input passed in from the UI
+	* @param message the feedback message to be passed to the UI
+	* @param list the list of tasks to be displayed by the UI
+	* @return overall status code
+	*/
 	int UImainProcessor(string input, string& message, vector<string>& list);
 	int GUImainProcessor(string);
 	~Processor();
 
 private:
 	//level 1 abstraction
-	int addCommandProcessor(string input);
-	int removeCommandProcessor(string input);
-	int displayCommandProcessor(string input);
-	int renameCommandProcessor(string input);
-	int rescheduleCommandProcessor(string input);
-	int markCommandProcessor(string input);
-	int searchCommandProcessor(string input);
-	int undoCommandProcessor(string input);
-	int redoCommandProcessor(string input);
-	int otherCommandProcessor();
-	int saveFile();
-	int loadFile();
 
+	/*
+	* Purpose:
+	* Handle add commands
+	*
+	* @param input the input passed in from the main processor without the add keyword
+	* @return status code
+	*/
+	int addCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle remove commands
+	*
+	* @param input the input passed in from the main processor without the remove keyword
+	* @return status code
+	*/
+	int removeCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle display commands
+	*
+	* @param input the input passed in from the main processor without the display keyword
+	* @return status code
+	*/
+	int displayCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle rename commands from update
+	*
+	* @param input the input passed in from the main processor without the update keyword
+	* @return status code
+	*/
+	int renameCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle reschedule commands from update
+	*
+	* @param input the input passed in from the main processor without the update keyword
+	* @return status code
+	*/
+	int rescheduleCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle mark commands
+	*
+	* @param input the input passed in from the main processor without the mark keyword
+	* @return status code
+	*/
+	int markCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle search commands
+	*
+	* @param input the input passed in from the main processor without the search keyword
+	* @return status code
+	*/
+	int searchCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle undo commands
+	*
+	* @param input the input passed in from the main processor without the undo keyword(single undo)
+	* @return status code
+	*/
+	int undoCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle redo commands
+	*
+	* @param input the input passed in from the main processor without the mark keyword(single redo)
+	* @return status code
+	*/
+	int redoCommandProcessor(string input);
+	/*
+	* Purpose:
+	* Handle wrong/invalid commands
+	*
+	* @param input the input passed in from the main processor
+	* @return status code(always WARNING_WRONG_INPUT)
+	*/
+	int otherCommandProcessor();
+	/*
+	* Purpose:
+	* Handle save command
+	*
+	* @return status code
+	*/
+	int saveFile();
+	/*
+	* Purpose:
+	* Handle load command
+	*
+	* @return status code
+	*/
+	int loadFile();
+	/*
+	* Purpose:
+	* To return feedback to the user and give the overall status of the operation
+	*
+	* @param returnCode feedback from commandProcessors
+	* @param message message to be passed to the UI
+	* @param list the list of strings that need to be printed out with the message
+	*
+	* @return overall status code
+	*/
 	int feedbackToUI(int returnCode, string& message, vector<string>& list);
 
 	//for add command processing
-	int addFloatingTask(string, string);//need to refactor to only create a task
-	int addDeadlineTask(string, BasicDateTime, string);//need to refactor to only create a task
-	int addNormalTask(string, BasicDateTime, BasicDateTime, string);//need to refactor to only create a task
+
+	/*
+	* Purpose:
+	* add Floating tasks, put any clashes in _tempTaskList
+	*
+	* @param title name of task
+	* @param comment additional description
+	* @return status code
+	*/
+	int addFloatingTask(string title, string comment);//need to refactor to only create a task
+	/*
+	* Purpose:
+	* add Deadline tasks, put any clashes in _tempTaskList
+	*
+	* @param title name of task
+	* @param end deadline of task
+	* @param comment additional description
+	* @return status code
+	*/
+	int addDeadlineTask(string title, BasicDateTime end, string comment);//need to refactor to only create a task
+	/*
+	* Purpose:
+	* add Timed tasks, put any clashes in _tempTaskList
+	*
+	* @param title name of task
+	* @param srat start time of task
+	* @param end end time of task
+	* @param comment additional description
+	* @return status code
+	*/
+	int addTimedTask(string title, BasicDateTime start, BasicDateTime end, string comment);//need to refactor to only create a task
 
 	//additional helper methods
-	string getCommand(string& input);
-	bool isEscape(string command);
-	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
-	int breakIntoStringVectorBySpace(string, vector<string>& outputVector);
-	bool choiceIsValid(vector<int> choice);
-	string combineStringsWithNewLine(string, string);
-	vector<string> taskVecToStringVec(vector<Task> taskList);
 
+	/*
+	* Purpose:
+	* extract the command out of the raw user input and remove it from the input
+	*
+	* @param input raw input from UI
+	* @return string containing command if command is found, else empty string
+	*/
+	string getCommand(string& input);
+	/*
+	* Purpose:
+	* checks to see if the user wanted to escape out of a ambiguous situation that required a choice
+	*
+	* @param command command from the UI
+	* @return true if the user wanted to escape, else return false
+	*/
+	bool isEscape(string command);
+	/*
+	* Purpose:
+	* record command to assist with undo and redo
+	*
+	* @param commandType the command type that was performed
+	* @param oldTask the task that was changed(empty in case of add)
+	* @param newTask the task that the old task was changed to(empty in case of remove)
+	* @return voi
+	*/
+	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
+	/*
+	* Purpose:
+	* break a string into a vector of words by space
+	*
+	* @param longStr the command type that was performed
+	* @param outputVector the task that was changed(empty in case of add)
+	* @return nothing
+	*/
+	void breakIntoStringVectorBySpace(string longStr, vector<string>& outputVector);
+	/*
+	* Purpose:
+	* check if the choices entered by the user are valid for the displayed list
+	*
+	* @param choice the vector of the choices entered
+	* @return true if all the choices are valid, false otherwise
+	*/
+	bool choiceIsValid(vector<int> choice);
+	/*
+	* Purpose:
+	* converts a vector of tasks into a vector of strings
+	*
+	* @param taskList the vector of the Tasks passed in
+	* @return a vector of strings based on the vector of tasks
+	*/
+	vector<string> taskVecToStringVec(vector<Task> taskList);
+	/*
+	* Purpose:
+	* checks if the command entered is one of the acceptable commands
+	*
+	* @param command the command that needs to be checked
+	* @return true if the command is a normal command, false otherwise
+	*/
 	bool commandIsNormal(string command);
 };
 

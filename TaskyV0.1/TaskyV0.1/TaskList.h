@@ -88,6 +88,16 @@ public:
 	* @return status code
 	*/
 	int searchKeywordsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
+	/**
+	* Purpose:
+	* same as searchKeywords but searches for tasks that matches both status and range
+	* @param keywords
+	* @param start
+	* @param end
+	* @param done status of task to search for
+	* @param _temp for Logic to push in tasks that match
+	* @return status code
+	*/
 	int searchKeywordsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
 	/**
 	* Purpose:
@@ -98,12 +108,20 @@ public:
 	int displayAll(vector<Task>& _temp);
 	/**
 	* Purpose:
-	* pushes tasks that are done/pending accordingly into referenced vector; done: true, pending:false;
-	* @param done for Logic to search either done/pending tasks
+	* pushes tasks that are done/pending accordingly into referenced vector
+	* @param done for Logic to search either done/pending tasks; done: true, pending:false;
 	* @param _temp  for Logic to put in matching tasks
 	* @return status code
 	*/
 	int displayStatus(bool done, vector<Task>& _temp);
+	/**
+	* Purpose:
+	* pushes tasks that are pending today into referenced vector
+	* @param done for Logic to search either done/pending tasks
+	* @param _temp  for Logic to put in matching tasks
+	* @return status code
+	*/
+	int displayToday(vector<Task>& _temp);
 	/**
 	* Purpose:
 	* pushes tasks in range into referenced vector
@@ -169,6 +187,7 @@ public:
 	void pushOccupiedDates(vector<BasicDateTime>& usedDates);
 	vector<string> taskVecToStringVec(vector<Task>& allTasks);
 	void stringToBasicDateTime(string, BasicDateTime&);
+	void setToday(BasicDateTime& start, BasicDateTime& end);
 
 	/** Abstraction Level 3 */
 	void exactSearch(string exactString, vector<Task>& _temp);

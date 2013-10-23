@@ -972,7 +972,7 @@ void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
 		return;
 }
 
-void setToday(BasicDateTime& start, BasicDateTime& end){
+void TaskList::setToday(BasicDateTime& start, BasicDateTime& end){
 
 	System::DateTime today;
 

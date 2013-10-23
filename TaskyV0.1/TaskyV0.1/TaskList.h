@@ -48,7 +48,19 @@ public:
 	* @param _temp for Logic to push in tasks that match
 	* @return status code
 	*/
-	int search(string searchLine, vector<Task>& _temp); 
+	int search(string searchLine, vector<Task>& _temp);
+	/**
+	* Purpose:
+	* does different types of searches according to the parameters that are supplied
+	* @param keywords
+	* @param statusPresent indicates whether to include status in search; 0 - none, 1 - done, -1 - pending
+	* @param type indicates whether to include range in search; 0 - false, 2 - true
+	* @param start
+	* @param end
+	* @param _temp to store search results
+	* @return sta
+	*/
+	int searchTasks(vector<string> keywords, int statusPresent, int type, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	/**
 	* Purpose:
 	* searches for tasks corresponding to the keywords and pushes those tasks by relevance into referenced vector.
@@ -66,7 +78,7 @@ public:
 	* @param end
 	* @return status code
 	*/
-	int searchKeywordsInRange(vector<string> keywords, vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
+	int searchKeywordsInRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	/**
 	* Purpose:
 	* same as searchKeywords but only searches for tasks that matches the status.
@@ -76,6 +88,7 @@ public:
 	* @return status code
 	*/
 	int searchKeywordsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
+	int searchKeywordsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
 	/**
 	* Purpose:
 	* pushes all tasks into referenced vector
@@ -139,6 +152,7 @@ public:
 	/** Abstraction Level 2 */
 	void addTask(Task toAdd);
 	bool isExisting(Task task);
+	void setFlags(vector<string> keywords, int statusPresent, int type);
 	bool isExistingDate(BasicDateTime date, vector<BasicDateTime> vector);
 	void pushClashing(Task task, vector<Task>& _temp);
 	bool isSuccessfullyRemoved(Task task);
@@ -146,7 +160,7 @@ public:
 	void searchVectors(vector<string> keywords, vector<Task>& _temp);
 	void searchVectorsWithRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	void searchVectorsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
-	
+	void searchVectorsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
 	void appendVectors(vector<Task>& _temp);
 	void pushStatus(bool done, vector<Task>& _temp);
 	void pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
@@ -168,6 +182,10 @@ public:
 	void exactSearchWithStatus(string exactString, bool done, vector<Task>& _temp);
 	void containingExactStringSearchWithStatus(string exactString, bool done, vector<Task>& _temp);
 	void containingBreakdownStringSearchWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
+
+	void exactSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
+	void containingExactStringSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
+	void containingBreakdownStringSearchWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
 
 	void setDay(int& day, string& dateTimeString);
 	void setMonth(int& month, string& dateTimeString);

@@ -29,6 +29,7 @@ private:
 	static const string DASH_M;
 	static const string PENDING_KEY_WORD;
 	static const string DONE_KEY_WORD;
+	static const string SLOT_KEY_WORD;
 	static const string RENAME_KEY_WORD;
 	static const string ALL_KEY_WORD;
 	static const string TODAY_KEY_WORD;
@@ -103,6 +104,11 @@ private:
 	static const int RADIX_HUNDRED=100;
 	static const int STRING_TO_INT_ERROR=-1;
 
+	static const int DISPLAY_TYPE_ALL = 0;
+	static const int DISPLAY_TYPE_PENDING = 1;
+	static const int DISPLAY_TYPE_DONE = 2;
+	static const int DISPLAY_TYPE_TODAY = 3;
+
 	static const int EITHER_AS_START=1;
 	static const int EITHER_AS_END=2;
 	static const int INTERNAL_ERROR_CODE = -1;
@@ -150,6 +156,7 @@ public:
 	 *@param end (BasicDateTime reference) will have the new value if the input format is right
 	 *@param status (bool refernce) will have true--done false pending if the user has specified
 	 */
+	int interpretDisplay(const string& str, int& displayType);
 	int interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status);
 	/**
 	 *a method for Processor::renameCommandProcessor, as this will take in a strin with command type and try to parse the string

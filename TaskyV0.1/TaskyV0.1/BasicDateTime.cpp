@@ -120,8 +120,6 @@ void BasicDateTime::setSec(int sec){
 }
 
 string BasicDateTime::getDateTimeString(){
-	//DateTime temp = DateTime(_year, _month, _day,  _hour, _minute, _sec);
-	//std::string str=marshal_as<std::string>(temp.ToString()); 
 	string syear=addZeroFromFront(to_string(_year)), smonth=addZeroFromFront(to_string(_month)), sday=addZeroFromFront(to_string(_day));
 	string shour=addZeroFromFront(to_string(_hour)), sminute=addZeroFromFront(to_string(_minute)), ssec=addZeroFromFront(to_string(_sec));
 	return sday+DASH+smonth+DASH+syear+SPACE+shour+COLON+sminute+COLON+ssec;

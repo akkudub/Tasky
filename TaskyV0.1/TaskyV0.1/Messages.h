@@ -64,7 +64,6 @@ private:
 	static const string MESSAGE_ERROR_LOAD_OPENFILE;
 	static const string MESSAGE_ERROR_LOAD_CORRUPTED_DATA;
 	static const string MESSAGE_ERROR_SAVE_SAVEFILE;
-	static const string MESSAGE_ERROR_SAVE_CORRUPTED_DATA;
 	static const string MESSAGE_ERROR_RECORD;
 	static const string MESSAGE_ERROR_INTERPRET_EMPTY_INPUT;
 	static const string MESSAGE_ERROR_INTERPRET_TITLE_FORMAT;

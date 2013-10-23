@@ -9,6 +9,7 @@ const string Interpreter::BY_KEY_WORD = "by ";
 const string Interpreter::DASH_M = "-m";
 const string Interpreter::PENDING_KEY_WORD = "pending";
 const string Interpreter::DONE_KEY_WORD = "done";
+const string Interpreter::SLOT_KEY_WORD = "slot";
 const string Interpreter::RENAME_KEY_WORD = "' to '";
 const string Interpreter::ALL_KEY_WORD = "all";
 const string Interpreter::TODAY_KEY_WORD = "today";
@@ -87,7 +88,7 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type
 
 int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchingStatus, int& type, BasicDateTime& start, BasicDateTime& end){
 	str=removeLeadingSpaces(str);
-	int size=str.size(), pos1, pos2;
+	int size=str.size(), pos1=0, pos2=0;
 	bool fromToFlag=false, byFlag=false, slotFlag=false, keywordFlag=false, statusFlag=false, timeFlag=false;
 	string title;
 	keywords.clear();
@@ -97,6 +98,19 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 	}else{
 		keywordFlag=true;
 		keywords=extractKeywords(title);
+	}
+	if (str.substr(pos2).find(SLOT_KEY_WORD)!=std::string::npos){
+		slotFlag=true;
+		slotEnabled=true;
+	}
+	if (str.substr(pos2).find(PENDING_KEY_WORD)!=std::string::npos){
+		searchingStatus=-1;  //pending, magical number
+		statusFlag=true;
+	}else if(str.substr(pos2).find(PENDING_KEY_WORD)!=std::string::npos){
+		searchingStatus=1;
+		statusFlag=true;
+	}else{
+		searchingStatus=0;
 	}
 
 	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
@@ -108,42 +122,26 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 
+	if (!(fromToFlag || byFlag || slotFlag || keywordFlag || statusFlag || timeFlag)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
+	}
+
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 }
 
-int Interpreter::interpretDisplay(string str, int& type, BasicDateTime& start, BasicDateTime& end, bool& status){
-	str=removeLeadingSpaces(str);
+int Interpreter::interpretDisplay(const string& str, int& displayType){
 	bool statusFlag=false, fromToFlag=false, byFlag=false;
 	int pos=0, size=str.size();
 	if (str.find(ALL_KEY_WORD)!=std::string::npos){
-		type=NO_DATETIME;
-		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
+		displayType=DISPLAY_TYPE_ALL;
+	}else if(str.find(PENDING_KEY_WORD)!=std::string::npos){
+		displayType=DISPLAY_TYPE_PENDING;
+	}else if(str.find(DONE_KEY_WORD)!=std::string::npos){
+		displayType=DISPLAY_TYPE_DONE;
+	}else if(str.find(TODAY_KEY_WORD)!=std::string::npos){
+		displayType=DISPLAY_TYPE_TODAY;
 	}else{
-		if (str.find(PENDING_KEY_WORD)!=std::string::npos){
-			statusFlag=true;
-			status=false;
-			pos=str.find(PENDING_KEY_WORD);
-		}else if(str.find(DONE_KEY_WORD)!=std::string::npos){
-			statusFlag=true;
-			status=true;
-			pos=str.find(DONE_KEY_WORD);
-		}
-		if (pos>=size-1){
-			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
-		}else{
-			if (!firstCheckForFromToOrBy(str, fromToFlag, byFlag)){
-		        type = NO_DATETIME;
-		        return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
-	        }
-	        if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
-		        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
-	        }
-		}
-	}
-	if (statusFlag){
-		type=TWO_DATETIME;
-	}else{
-		type=TWO_DATETIME_WITH_STATUS_FOR_DISPLAY;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
 }

@@ -127,14 +127,12 @@ int Processor::removeCommandProcessor(string input){
 		_statusFlag = 0;
 		return operationStatus;
 	}else if(_statusFlag == 0){
-		vector<string> keywords;
 		int returnCode = _interpreter.interpretRemove(input, _tempTitle);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE){
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
+			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				operationStatus = _taskList.remove(_tempTaskList[0]);
 				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
@@ -205,15 +203,13 @@ int Processor::renameCommandProcessor(string input){
 
 	}else if(_statusFlag == 0){
 		string oldTitle;
-		vector<string> keywords;
 
 		int returnCode = _interpreter.interpretRename(input, oldTitle, _tempTitle);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME){
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(oldTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
+			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				Task newTask = _tempTaskList[0];
 				Task oldTask = newTask;
@@ -267,15 +263,12 @@ int Processor::rescheduleCommandProcessor(string input){
 		return operationStatus;
 
 	}else if(_statusFlag == 0){
-		vector<string> keywords;
-
 		int returnCode = _interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE){
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
+			_taskList.search(_tempTitle, _tempTaskList);
 
 			if (_tempTaskList.size() == 1){
 				Task newTask = _tempTaskList[0];
@@ -331,15 +324,12 @@ int Processor::markCommandProcessor(string input){
 		_statusFlag = 0;
 		return operationStatus;
 	}else if(_statusFlag == 0){
-		vector<string> keywords;
-
 		int returnCode = _interpreter.interpretMark(input, _tempTitle, _tempStatus);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK){
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
-			breakIntoStringVectorBySpace(_tempTitle, keywords);
-			_taskList.searchKeywords(keywords, _tempTaskList);
+			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				operationStatus = _taskList.mark(_tempStatus, _tempTaskList[0]);
 				if (operationStatus != STATUS_CODE_SET_ERROR::ERROR_MARK){
@@ -592,22 +582,6 @@ int Processor::recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTa
 	HistoryCommand tempCommand(commandType, oldTask, newTask);
 	return _history.record(tempCommand);
 }
-
-
-void Processor::breakIntoStringVectorBySpace(string longStr, vector<string>& outputVector){
-	stringstream ss(longStr);
-	string tempStr;
-	bool noSpace = true;
-	while (std::getline(ss, tempStr, SPACE)){
-		outputVector.push_back(tempStr);
-		noSpace = false;
-	}
-
-	if (noSpace){
-		outputVector.push_back(longStr);
-	}
-}
-
 
 vector<string> Processor::taskVecToStringVec(vector<Task> taskList){
 	vector<string> temp;

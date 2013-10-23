@@ -269,14 +269,6 @@ private:
 	* @param outputVector the task that was changed(empty in case of add)
 	* @return nothing
 	*/
-	void breakIntoStringVectorBySpace(string longStr, vector<string>& outputVector);
-	/*
-	* Purpose:
-	* check if the choices entered by the user are valid for the displayed list
-	*
-	* @param choice the vector of the choices entered
-	* @return true if all the choices are valid, false otherwise
-	*/
 	bool choiceIsValid(vector<int> choice);
 	/*
 	* Purpose:

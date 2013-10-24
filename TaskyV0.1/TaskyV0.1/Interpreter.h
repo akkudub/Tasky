@@ -108,6 +108,9 @@ private:
 	static const int DISPLAY_TYPE_PENDING = 1;
 	static const int DISPLAY_TYPE_DONE = 2;
 	static const int DISPLAY_TYPE_TODAY = 3;
+	static const int POWER_SEARCH_PENDING_STATUS = -1;
+	static const int POWER_SEARCH_DONE_STATUS = 1;
+	static const int POWER_SEARCH_NO_STATUS = 0;
 
 	static const int EITHER_AS_START=1;
 	static const int EITHER_AS_END=2;

@@ -104,13 +104,13 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 		slotEnabled=true;
 	}
 	if (containKeywordWithoutCase(str.substr(pos2), PENDING_KEY_WORD)){
-		searchStatus=-1;  //pending, magical number
+		searchStatus=POWER_SEARCH_PENDING_STATUS;
 		statusFlag=true;
 	}else if(containKeywordWithoutCase(str.substr(pos2), DONE_KEY_WORD)){
-		searchStatus=1;
+		searchStatus=POWER_SEARCH_DONE_STATUS;
 		statusFlag=true;
 	}else{
-		searchStatus=0;
+		searchStatus=POWER_SEARCH_NO_STATUS;
 		statusFlag=false;
 	}
 
@@ -198,9 +198,9 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 	if (str.size()==posQuote2+1){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
 	}
-	if (str.find(DONE_KEY_WORD, posQuote2+1)!=std::string::npos){
+	if (containKeywordWithoutCase(str.substr(posQuote2+1), DONE_KEY_WORD)){
 		status=true;
-	}else if(str.find(PENDING_KEY_WORD, posQuote2+1)!=std::string::npos){
+	}else if(containKeywordWithoutCase(str.substr(posQuote2+1), PENDING_KEY_WORD)){
 		status=false;
 	}else{
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
@@ -319,10 +319,10 @@ vector<string> Interpreter::extractKeywords(const string& str){
 }
 
 bool Interpreter::firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){
-	if (str.find(FROM_KEY_WORD)!=std::string::npos){
+	if (containKeywordWithoutCase(str, FROM_KEY_WORD) && containKeywordWithoutCase(str, TO_KEY_WORD)){
 		fromToFlag=fromToCheck(str);
 		return true;
-	}else if(str.find(BY_KEY_WORD)!=std::string::npos){
+	}else if(containKeywordWithoutCase(str, BY_KEY_WORD)){
 		byFlag=byCheck(str);
 		return true;
 	}else{

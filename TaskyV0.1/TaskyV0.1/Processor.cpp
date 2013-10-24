@@ -89,6 +89,7 @@ int Processor::addCommandProcessor(string input){
 
 	int returnCode = _interpreter.interpretAdd(input, title, type, startingDateTime, endingDateTime, comment);
 	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD){
+		_tempTaskList.clear();
 		return returnCode;
 	}else{
 		switch (type){
@@ -129,6 +130,7 @@ int Processor::removeCommandProcessor(string input){
 	}else if(_statusFlag == 0){
 		int returnCode = _interpreter.interpretRemove(input, _tempTitle);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE){
+			_tempTaskList.clear();
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
@@ -159,6 +161,7 @@ int Processor::displayCommandProcessor(string input){
 	//int returnCode = _interpreter.interpretDisplay(input, type, start, end, status);
 	int returnCode = _interpreter.interpretDisplay(input, type);
 	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY){
+		_tempTaskList.clear();
 		return returnCode;
 	}else{
 		if (type == 0){
@@ -206,6 +209,7 @@ int Processor::renameCommandProcessor(string input){
 
 		int returnCode = _interpreter.interpretRename(input, oldTitle, _tempTitle);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME){
+			_tempTaskList.clear();
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
@@ -265,6 +269,7 @@ int Processor::rescheduleCommandProcessor(string input){
 	}else if(_statusFlag == 0){
 		int returnCode = _interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE){
+			_tempTaskList.clear();
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
@@ -326,6 +331,7 @@ int Processor::markCommandProcessor(string input){
 	}else if(_statusFlag == 0){
 		int returnCode = _interpreter.interpretMark(input, _tempTitle, _tempStatus);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK){
+			_tempTaskList.clear();
 			return returnCode;
 		}else{
 			_tempTaskList.clear();
@@ -362,6 +368,7 @@ int Processor::searchCommandProcessor(string input){
 
 	int returnCode = _interpreter.interpretSearch(input, keywords, type, start, end);
 	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH){
+		_tempTaskList.clear();
 		return returnCode;
 	}else{
 		if (type == 0){

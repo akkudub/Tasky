@@ -26,7 +26,7 @@ int History::undo(HistoryCommand& hist) {
 int History::record(HistoryCommand hist) {
 	int currentSize = _undoRecord.size();
 	_undoRecord.push_back(hist);
-	if (_undoRecord.size() > HISTORY_MAX_SIZE) {
+	while (_undoRecord.size() > HISTORY_MAX_SIZE) {
 		_undoRecord.erase(_undoRecord.begin());
 	}
 	if (_undoRecord.size() <= HISTORY_MAX_SIZE){
@@ -39,6 +39,7 @@ int History::redo(HistoryCommand& hist) {
 	int currentSize = _redoRecord.size();
 	if(currentSize > 0) {
 		hist = _redoRecord.back();
+		_undoRecord.push_back(_redoRecord.back());
 		_redoRecord.pop_back();
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_REDO;
 	} else {

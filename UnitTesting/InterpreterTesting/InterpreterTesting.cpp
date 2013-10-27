@@ -240,3 +240,5 @@ TEST(StringToIntVecTest, simpleTest1){
 	vec=inter.stringToIntVec("1-12a");
 	EXPECT_EQ(0, vec.size());
 }
+
+

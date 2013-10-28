@@ -233,8 +233,8 @@ private:
 	bool findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos);
 	vector<string> extractKeywords(const string& str);
 
-	bool firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
-	bool judgeFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
+	bool firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
+	bool secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
 	bool fromToCheck(string str);
 	bool byCheck(string str);
 	bool translateDateTime(string str1, string str2, int either);  //will take in more strings as we progress

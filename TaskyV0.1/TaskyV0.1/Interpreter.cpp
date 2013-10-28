@@ -56,11 +56,11 @@ int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTim
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
-	if (!firstCheckForFromToOrBy(str.substr(posQuote2+1, posDashM-posQuote2-1), fromToFlag, byFlag)){
+	if (!firstVerifyFromToOrBy(str.substr(posQuote2+1, posDashM-posQuote2-1), fromToFlag, byFlag)){
 		type = NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 	}
-	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
@@ -76,11 +76,11 @@ int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 	keywords=extractKeywords(title);
-	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
+	if (!firstVerifyFromToOrBy(str.substr(), fromToFlag, byFlag)){
 		type = NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
 	}
-	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
@@ -114,11 +114,11 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 		statusFlag=false;
 	}
 
-	if (!firstCheckForFromToOrBy(str.substr(), fromToFlag, byFlag)){
+	if (!firstVerifyFromToOrBy(str.substr(), fromToFlag, byFlag)){
 		timeFlag=false;
 		type = NO_DATETIME;
 	}
-	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
 	}
 
@@ -179,11 +179,11 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
 	}
-	if (!firstCheckForFromToOrBy(str.substr(posQuote2+1), fromToFlag, byFlag)){
+	if (!firstVerifyFromToOrBy(str.substr(posQuote2+1), fromToFlag, byFlag)){
 		type=NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
 	}
-	if (!judgeFromToOrBy(fromToFlag, byFlag, type, start, end)){
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
@@ -318,7 +318,7 @@ vector<string> Interpreter::extractKeywords(const string& str){
 	return keywords;
 }
 
-bool Interpreter::firstCheckForFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){
+bool Interpreter::firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){
 	if (containKeywordWithoutCase(str, FROM_KEY_WORD) && containKeywordWithoutCase(str, TO_KEY_WORD)){
 		fromToFlag=fromToCheck(str);
 		return true;
@@ -330,7 +330,7 @@ bool Interpreter::firstCheckForFromToOrBy(const string& str, bool& fromToFlag, b
 	}
 }
 
-bool Interpreter::judgeFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end){
+bool Interpreter::secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end){
 	assert(!(fromToFlag&&byFlag));
 	if (fromToFlag){
         start=_start;

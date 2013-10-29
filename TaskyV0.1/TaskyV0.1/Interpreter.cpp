@@ -490,11 +490,10 @@ bool Interpreter::dateTodayOrTomorrow(string str, int either){
 	time_t time1=time(NULL);
 	struct tm time2;
 	localtime_s(&time2, &time1);
-	str=removeSpacesFromBothEnds(str);
-	if (str==TODAY_KEY_WORD || str==TODAY_KEY_WORD_SHORTCUT){
+	if (containKeywordWithoutCase(str, TODAY_KEY_WORD) || containKeywordWithoutCase(str, TODAY_KEY_WORD_SHORTCUT)){
 		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
 		return true;
-	}else if(str==TOMORROW_KEY_WORD || str==TOMORROW_KEY_WORD_SHORTCUT){
+	}else if(containKeywordWithoutCase(str, TOMORROW_KEY_WORD) || containKeywordWithoutCase(str, TOMORROW_KEY_WORD_SHORTCUT)){
 		time2.tm_mday=time2.tm_mday+1;
 		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
 		return true;

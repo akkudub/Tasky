@@ -27,7 +27,7 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 	int returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
 	assert(_statusFlag >= 0 && _statusFlag < 5);
 	command = _interpreter.toLowerCase(getCommand(input));
-	
+
 	if (_statusFlag != 0){
 		if (commandIsNormal(command)){
 			_statusFlag = 0;
@@ -388,29 +388,34 @@ int Processor::searchCommandProcessor(string input){
 int Processor::undoCommandProcessor(string input){
 	Task oldTask, newTask;
 	COMMAND_TYPES type = COMMAND_TYPES::ADD;//Just for initialization
-	int addResult;
+	int undoCount, returnCode;
 	HistoryCommand command(type, oldTask, newTask);
-	int returnCode = _history.undo(command);
+	undoCount = _interpreter.stringToInt(input);
 	_tempTaskList.clear();
-	if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UNDO){
-		switch (command.getCommandTypeUndo()){
-		case COMMAND_TYPES::ADD:
-			addResult = _taskList.add(command.getOld(), _tempTaskList);
-			if (addResult != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+	if (undoCount!=0){
+		undoCount --;
+	}
+	for (int i = undoCount; i >=0; i--){
+		returnCode = _history.undo(command);	
+		if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UNDO){
+			switch (command.getCommandTypeUndo()){
+			case COMMAND_TYPES::ADD:
+				returnCode = _taskList.add(command.getOld(), _tempTaskList);
+				if (returnCode != STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+					_tempTaskList.push_back(command.getOld());
+				}
+				break;
+			case COMMAND_TYPES::REMOVE:
+				_tempTaskList.push_back(command.getNew());
+				returnCode = _taskList.remove(command.getNew());
+				break;
+			case COMMAND_TYPES::UPDATE:
+				_tempTaskList.push_back(command.getNew());
 				_tempTaskList.push_back(command.getOld());
+				returnCode = _taskList.update(command.getNew(), command.getOld(), _tempTaskList);
+			default:
+				break;
 			}
-			return addResult;
-			break;
-		case COMMAND_TYPES::REMOVE:
-			_tempTaskList.push_back(command.getNew());
-			return _taskList.remove(command.getNew());
-			break;
-		case COMMAND_TYPES::UPDATE:
-			_tempTaskList.push_back(command.getNew());
-			_tempTaskList.push_back(command.getOld());
-			return _taskList.update(command.getNew(), command.getOld(), _tempTaskList);
-		default:
-			break;
 		}
 	}
 	return returnCode;

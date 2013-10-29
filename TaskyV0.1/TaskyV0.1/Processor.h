@@ -15,17 +15,11 @@
 *Author: Akshat, Junchao
 */
 
-#include <sstream>
-#include "Task.h"
-#include "BasicDateTime.h"
+
 #include "History.h"
-#include "FileProcessing.h"
 #include "TaskList.h"
 #include "Interpreter.h"
-#include "Essential.h"
 #include "Messages.h"
-
-using namespace System;
 
 class Processor{
 	/*
@@ -56,7 +50,6 @@ private:
 	TaskList _taskList;
 	History _history;
 	Interpreter _interpreter;
-	FileProcessing _fileProcessing;
 	Messages _messages;
 	int _statusFlag; 
 

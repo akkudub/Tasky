@@ -26,14 +26,17 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 	string command, tempCommand;
 	int returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
 	assert(_statusFlag >= 0 && _statusFlag < 5);
-	if (_statusFlag == 0){
-		command = _interpreter.toLowerCase(getCommand(input));
-	}else{
-		command = input;
+	command = _interpreter.toLowerCase(getCommand(input));
+	
+	if (_statusFlag != 0){
+		if (commandIsNormal(command)){
+			_statusFlag = 0;
+			_tempTaskList.clear();
+		}else{
+			input = command+input;
+		}
 	}
-	if (isEscape(command)){
-		_statusFlag = 0;
-	}
+
 	if (command != "exit"){
 		switch (_statusFlag){
 		case 0:
@@ -563,7 +566,6 @@ string Processor::getCommand(string& input){
 		}else{
 			tempOut += (SPACE + tempStr);
 		}
-
 		count ++;
 		noSpace = false;
 	}

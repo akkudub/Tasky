@@ -399,8 +399,10 @@ bool Interpreter::byCheck(string str){
 		return false;
 	}
 	if (byFlag){
-		DateTime dt=DateTime::Now;
-		_start=BasicDateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+		time_t time1=time(NULL);
+		struct tm time2;
+		localtime_s(&time2, &time1);
+		_start=BasicDateTime(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, time2.tm_hour, time2.tm_min, time2.tm_sec);
 		return (_start.compareTo(_end)<0);
 	}else{
 		return false;
@@ -468,9 +470,12 @@ bool Interpreter::dateStandardInput(string str, int either){
 		}
 		dateFlag=validateDate(year, month, day);
 	}else if(size==2){
+		time_t time1=time(NULL);
+		struct tm time2;
+		localtime_s(&time2, &time1);
+		year=YEAR_LOWER_BOUND+time2.tm_year;
 		month=stringToInt(vec.at(1));
 		day=stringToInt(vec.at(0));
-		year=DateTime::Now.Year;
 		dateFlag=validateDate(year, month, day);
 	}
 	if (dateFlag){
@@ -482,27 +487,31 @@ bool Interpreter::dateStandardInput(string str, int either){
 }
 
 bool Interpreter::dateTodayOrTomorrow(string str, int either){
-	DateTime dt=DateTime::Now;
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
 	str=removeSpacesFromBothEnds(str);
 	if (str==TODAY_KEY_WORD || str==TODAY_KEY_WORD_SHORTCUT){
-		setDateParams(dt.Year, dt.Month, dt.Day, either);
+		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
 		return true;
 	}else if(str==TOMORROW_KEY_WORD || str==TOMORROW_KEY_WORD_SHORTCUT){
-		dt=dt.AddDays(1);
-		setDateParams(dt.Year, dt.Month, dt.Day, either);
+		time2.tm_mday=time2.tm_mday+1;
+		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
 		return true;
 	}
 	return false;
 }
 
 bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
-	DateTime dt=DateTime::Now;
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
 	int incremental=week*7+day;
 	if (incremental < 0){
 		incremental+=7;
 	}
-	dt=dt.AddDays(incremental);
-	setDateParams(dt.Year, dt.Month, dt.Day, either);
+	time2.tm_mday=time2.tm_mday+incremental;
+	setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
 	return true;
 }
 
@@ -546,24 +555,10 @@ bool Interpreter::timeSpecialNumsOnly(string str, int either){
 }
 
 int Interpreter::mapTodayDayOfWeek(){
-	DateTime dt=DateTime::Now;
-	if (dt.DayOfWeek == System::DayOfWeek::Sunday){
-		return INT_SUNDAY;
-	}if (dt.DayOfWeek == System::DayOfWeek::Monday){
-		return INT_MONDAY;
-	}else if(dt.DayOfWeek == System::DayOfWeek::Tuesday){
-		return INT_TUESDAY;
-	}else if(dt.DayOfWeek == System::DayOfWeek::Wednesday){
-		return INT_WEDNESDAY;
-	}else if(dt.DayOfWeek == System::DayOfWeek::Thursday){
-		return INT_THURSDAY;
-	}else if(dt.DayOfWeek == System::DayOfWeek::Friday){
-		return INT_FRIDAY;
-	}else if(dt.DayOfWeek == System::DayOfWeek::Saturday){
-		return INT_SATURDAY;
-	}else{
-		return INTERNAL_ERROR_CODE;
-	}
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+	return time2.tm_wday;
 }
 
 int Interpreter::mapDayOfWeekToInt(const string& str){
@@ -615,7 +610,7 @@ bool Interpreter::validateDate(int year, int month, int day){
 	if (!validateYear(year)){
 		return false;
 	}
-	if (System::DateTime::IsLeapYear(year)){
+	if (isLeapYear(year)){
 		return validateMonthDay(month, day, false);
 	}else{
 		return validateMonthDay(month, day, true);
@@ -753,4 +748,15 @@ bool Interpreter::containChar(string input, char ch){
 }
 
 Interpreter::~Interpreter(){
+}
+
+bool Interpreter::isLeapYear(int year){
+	if (year<=YEAR_LOWER_BOUND || year>=YEAR_UPPER_BOUND){
+		return false;
+	}
+	if (year%LEAP_YEAR_CONSTANT_100==0){
+		return year%LEAP_YEAR_CONSTANT_400==0;
+	}else{
+		return year%LEAP_YEAR_CONSTANT_4==0;
+	}
 }

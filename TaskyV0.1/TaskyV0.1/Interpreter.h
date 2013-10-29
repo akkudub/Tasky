@@ -10,6 +10,7 @@
  */
 
 #include <sstream>
+#include <ctime>
 #include "BasicDateTime.h"
 #include "Essential.h"
 
@@ -103,6 +104,9 @@ private:
 	static const int RADIX_TEN=10;
 	static const int RADIX_HUNDRED=100;
 	static const int STRING_TO_INT_ERROR=-1;
+	static const int LEAP_YEAR_CONSTANT_100=100;
+	static const int LEAP_YEAR_CONSTANT_400=400;
+	static const int LEAP_YEAR_CONSTANT_4=4;
 
 	static const int DISPLAY_TYPE_ALL = 0;
 	static const int DISPLAY_TYPE_PENDING = 1;
@@ -267,6 +271,7 @@ private:
 	vector<int> pushNumsWithComma(const vector<string>& strVec);
 	vector<int> pushNumsWithDash(const vector<string>& strVec);
 	bool containChar(string input, char ch);
+	bool isLeapYear(int year);
 };
 
 #endif

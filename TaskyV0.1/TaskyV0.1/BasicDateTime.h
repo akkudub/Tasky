@@ -3,11 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <msclr\marshal_cppstd.h>
 #include "Essential.h"
-
-using namespace System;
-using namespace msclr::interop;
 
 /**
 * Tasky's version of storing date and time 

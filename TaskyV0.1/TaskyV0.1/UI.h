@@ -2,10 +2,12 @@
 #define UI_H
 
 #include <iostream>
+#include <Windows.h>
 #include <assert.h>
 #include "Processor.h"
 
 using namespace std;
+using namespace System;
 
 static const string MESSAGE_WELCOME = "Welcome!";
 static const string MESSAGE_GOODBYE = "GoodBye!";

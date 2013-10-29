@@ -126,10 +126,21 @@ string BasicDateTime::getDateTimeString(){
 }
 
 int BasicDateTime::compareTo(BasicDateTime another){
-	DateTime temp = DateTime(another.getYear(),	another.getMonth(),	another.getDay(),
-							another.getHour(), another.getMinute(),another.getSec());
-	DateTime thisDateTime = DateTime( _year, _month, _day, _hour, _minute, _sec);
-	return thisDateTime.CompareTo(temp);
+	if (this->getYear() != another.getYear()){
+		return this->getYear() - another.getYear();
+	}else if(this->getMonth() != another.getMonth()){
+		return this->getMonth() - another.getMonth();
+	}else if(this->getDay() != another.getDay()){
+		return this->getDay() - another.getDay();
+	}else if(this->getHour() != another.getHour()){
+		return this->getHour() - another.getHour();
+	}else if(this->getMinute() != another.getMinute()){
+		return this->getMinute() - another.getMinute();
+	}else if(this->getSec() != another.getSec()){
+		return this->getSec() - another.getSec();
+	}else{
+		return ZERO;
+	}
 }
 
 string BasicDateTime::addZeroFromFront(string str){

@@ -11,8 +11,6 @@
 #include "Essential.h"
 #include "BasicDateTime.h"
 
-using namespace System;
-
 class Task{
 private:
 

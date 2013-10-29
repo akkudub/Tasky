@@ -25,8 +25,6 @@
 #include "Essential.h"
 #include "Messages.h"
 
-using namespace System;
-
 class Processor{
 	/*
 	*_tempTaskList: hold the tasks returned by _taskList.search and _taskList.display

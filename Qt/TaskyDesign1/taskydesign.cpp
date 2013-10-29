@@ -22,6 +22,9 @@ TaskyDesign::TaskyDesign(QWidget *parent): QMainWindow(parent){
 	changeUIStyle();
 	ui.TaskDetails->setStyleSheet(STYLE_SHEET_TASK_DETAILS);
 	ui.DisplayPanel->setStyleSheet(STYLE_SHEET_DISPLAY_PANEL);
+	ui.DisplayPanel->setStyleSheet("QListWidget#DisplayPanel{background-color: #F1FFFF;}\n"
+		" QListView#DisplayPanel::item:selected {background-color: #5CE6E6;}");
+	ui.TaskDetails->setStyleSheet("QWidget#TaskDetails{background-color:#c4eafc;}");
 
 	connect(ui.InputBox, SIGNAL(returnPressed()), this, SLOT(processInputString()));
 }
@@ -81,11 +84,12 @@ bool TaskyDesign::equalsToKeywordWithoutCase(const QString& input, const QString
 
 void TaskyDesign::sendStdStringToBackEnd(QString input){
 	ui.TaskDetails->clear();
-	ui.TaskDetails->setStyleSheet("QWidget#TaskDetails{background-color:#c4eafc;}");
 	_logic.UImainProcessor(input.toStdString(), _msg, _vec);
-	ui.DisplayPanel->setStyleSheet("QListWidget#DisplayPanel{background-color: #F1FFFF;}\n"
-			" QListView#DisplayPanel::item:selected {background-color: #5CE6E6;}");
 	ui.TaskDetails->setText(QString::fromStdString(_msg));
+	ui.DisplayPanel->clear();
+	for (unsigned int i=0;i<_vec.size();i++){
+		ui.DisplayPanel->addItem(QString::fromStdString(_vec.at(i)));
+	}
 }
 
 TaskyDesign::~TaskyDesign(){

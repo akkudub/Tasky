@@ -83,6 +83,7 @@ public:
 	void setStartDate(BasicDateTime start);
 	void setEndDate(BasicDateTime end);
 	void setType(int type);
+	bool operator<(Task& a);
 
 private:
 	string statusToString();

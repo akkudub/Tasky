@@ -89,6 +89,16 @@ int TaskList::searchTasks(vector<string> keywords, int statusPresent, int type, 
 	return ERROR_SEARCH;
 }
 
+int TaskList::searchEmptySlots(BasicDateTime start, BasicDateTime end, vector<BasicDateTime>& _temp){
+
+	_temp.clear();
+
+	if(!isEmptySlotsPresent(start, end))
+		return 0; //stub
+	else
+		pushEmptySlots(start, end, _temp);
+}
+
 void TaskList::setFlags(vector<string> keywords, int statusPresent, int type){
 
 	if(keywords.empty())
@@ -988,6 +998,93 @@ void TaskList::setToday(BasicDateTime& start, BasicDateTime& end){
 	end = BasicDateTime(year, month, day, 23, 59, 59);
 }
 
+bool TaskList::isEmptySlotsPresent(BasicDateTime start, BasicDateTime end){
+
+	for(int i = 0; i < _normalTask.size(); i++){
+
+		if(_normalTask[i].getStart().compareTo(start) <= 0 && _normalTask[i].getEnd().compareTo(end) >= 0)
+			return false;
+	}
+
+	return true;
+}
+
+void TaskList::pushEmptySlots(BasicDateTime& start, BasicDateTime& end, vector<BasicDateTime>& _temp){
+
+	_duplicateNormal = _normalTask;
+
+	Task tempTask;
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		tempTask = Task("temp", start, end, 2, false, "comment");
+
+		if(!tempTask.isClashingWith(_duplicateNormal[i])){
+			_duplicateNormal.erase(_duplicateNormal.begin() + i);
+			i--;
+		}
+
+		else if(_duplicateNormal[i].getStart().compareTo(start) <= 0 && isInRange(_duplicateNormal[i].getEnd(), start, end)){
+			start = _duplicateNormal[i].getEnd();
+			_duplicateNormal.erase(_duplicateNormal.begin() + i);
+			i--;
+		}
+
+		else if(_duplicateNormal[i].getEnd().compareTo(end) >= 0 && isInRange(_duplicateNormal[i].getStart(), start, end)){
+			end = _duplicateNormal[i].getStart();
+			_duplicateNormal.erase(_duplicateNormal.begin() + i);
+			i--;
+		}
+	}
+
+	if(_duplicateNormal.empty()){
+		_temp.push_back(start);
+		_temp.push_back(end);
+		return;
+	}
+
+	std::sort(_duplicateNormal.begin(), _duplicateNormal.end());
+
+	if(_duplicateNormal.size() == 1){
+		_temp.push_back(start);
+		_temp.push_back(_duplicateNormal[0].getStart());
+		_temp.push_back(_duplicateNormal[0].getEnd());
+		_temp.push_back(end);
+	}
+	else{
+		_temp.push_back(start);
+
+		for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+			_temp.push_back(_duplicateNormal[i].getStart());
+
+			while(1){
+				if(i != _duplicateNormal.size() - 1){
+					if(isInRange(_duplicateNormal[i].getEnd(), _duplicateNormal[i+1].getStart(), _duplicateNormal[i+1].getEnd()) && i+1 == _duplicateNormal.size() - 1){
+						_temp.push_back(_duplicateNormal[i+1].getEnd());
+						i++;
+						break;
+					}
+					else if(isInRange(_duplicateNormal[i].getEnd(), _duplicateNormal[i+1].getStart(), _duplicateNormal[i+1].getEnd()) && i+1 != _duplicateNormal.size() - 1){
+						i++;
+					}
+					else{
+						_temp.push_back(_duplicateNormal[i].getEnd());
+						break;
+					}
+				}
+				else
+				{
+					_temp.push_back(_duplicateNormal[i].getEnd());
+					break;
+				}
+			}
+		}
+
+		_temp.push_back(end);
+	}
+}
+
 void TaskList::setDay(int& day, string& dateTimeString){
 
 	if(dateTimeString.at(0) == '0')
@@ -1131,6 +1228,7 @@ bool TaskList::isExistingDate(BasicDateTime date, vector<BasicDateTime> vector){
 	}
 	return false;
 }
+
 
 /*
 vector<Task>* TaskList::returnTaskListPointer(){

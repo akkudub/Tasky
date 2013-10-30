@@ -495,6 +495,7 @@ bool Interpreter::dateTodayOrTomorrow(string str, int either){
 		return true;
 	}else if(containKeywordWithoutCase(str, TOMORROW_KEY_WORD) || containKeywordWithoutCase(str, TOMORROW_KEY_WORD_SHORTCUT)){
 		time2.tm_mday=time2.tm_mday+1;
+		mktime(&time2);
 		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
 		return true;
 	}
@@ -510,6 +511,7 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 		incremental+=7;
 	}
 	time2.tm_mday=time2.tm_mday+incremental;
+	mktime(&time2);
 	setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
 	return true;
 }

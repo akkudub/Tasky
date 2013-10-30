@@ -1,8 +1,10 @@
 #include <qmessagebox.h>
 #include "taskydesign.h"
+#include <qdebug.h>
 
 const QString TaskyDesign::STYLE_SHEET_TASK_DETAILS = "QWidget#TaskDetails{background-color:#c4eafc;}";
 const QString TaskyDesign::STYLE_SHEET_DISPLAY_PANEL = "QListWidget#DisplayPanel{background-color: #F1FFFF;}\n"
+	                                                   "QListView#DisplayPanel::item {border: 20px; border-radius: 5px;}\n"
 	                                                   "QListView#DisplayPanel::item:selected {background-color: #5CE6E6;}";
 const QString TaskyDesign::STYLE_SHEET_UI = "QWidget#centralWidget {background-color: #CCFF99;}";
 
@@ -15,18 +17,14 @@ const QString TaskyDesign::ICON_STRING = "tasky_icon.ico";
 
 TaskyDesign::TaskyDesign(QWidget *parent): QMainWindow(parent){
 	ui.setupUi(this);
-
-	timer=new QTimer(this);
-	animation=new QPropertyAnimation(this);
+	_logic=new Processor();
 
 	changeUIStyle();
 	ui.TaskDetails->setStyleSheet(STYLE_SHEET_TASK_DETAILS);
 	ui.DisplayPanel->setStyleSheet(STYLE_SHEET_DISPLAY_PANEL);
-	ui.DisplayPanel->setStyleSheet("QListWidget#DisplayPanel{background-color: #F1FFFF;}\n"
-		" QListView#DisplayPanel::item:selected {background-color: #5CE6E6;}");
-	ui.TaskDetails->setStyleSheet("QWidget#TaskDetails{background-color:#c4eafc;}");
 
 	connect(ui.InputBox, SIGNAL(returnPressed()), this, SLOT(processInputString()));
+	connect(ui.DisplayPanel, SIGNAL(itemSelectionChanged()), this, SLOT(showFullTextOfSelected()));
 }
 
 void TaskyDesign::processInputString(){
@@ -45,17 +43,24 @@ void TaskyDesign::processInputString(){
 	}
 }
 
-void TaskyDesign::changeBGColor(int type){
+void TaskyDesign::showFullTextOfSelected(){
+	int size=_vec.size();
+	//int size=ui.DisplayPanel->count();
+	for (int i=0;i<size;i++){
+		if (i>=ui.DisplayPanel->count()){
+			continue;
+		}else if (ui.DisplayPanel->item(i)->isSelected()){
+			ui.DisplayPanel->item(i)->setText(QString::fromStdString(fullString(i)));
+		}else{
+			ui.DisplayPanel->item(i)->setText(QString::fromStdString(preserveFirstString(i)));
+	    }
+	}
 }
 
 void TaskyDesign::changeUIStyle(){
 	this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setStyleSheet(STYLE_SHEET_UI);
 	this->setWindowIcon(QIcon(ICON_STRING));
-}
-
-void TaskyDesign::blink(int colorType){
-	
 }
 
 void TaskyDesign::help(){
@@ -75,6 +80,7 @@ void TaskyDesign::minimizeWindow(){
 }
 
 void TaskyDesign::exit(){
+	delete _logic;
 	this->close();
 }
 
@@ -83,13 +89,26 @@ bool TaskyDesign::equalsToKeywordWithoutCase(const QString& input, const QString
 }
 
 void TaskyDesign::sendStdStringToBackEnd(QString input){
+	_logic->UImainProcessor(input.toStdString(), _msg, _vec);
 	ui.TaskDetails->clear();
-	_logic.UImainProcessor(input.toStdString(), _msg, _vec);
-	ui.TaskDetails->setText(QString::fromStdString(_msg));
 	ui.DisplayPanel->clear();
-	for (unsigned int i=0;i<_vec.size();i++){
-		ui.DisplayPanel->addItem(QString::fromStdString(_vec.at(i)));
+	ui.TaskDetails->setText(QString::fromStdString(_msg));
+	int size=_vec.size();
+	for (unsigned int i=0;i<size;i++){
+		ui.DisplayPanel->addItem(QString::fromStdString(preserveFirstString(i)));
 	}
+	if (ui.DisplayPanel->count()>=1){
+		ui.DisplayPanel->item(0)->setSelected(true);
+	}
+}
+
+std::string TaskyDesign::preserveFirstString(int num){
+	std::string str= _vec.at(num);
+	return str.substr(0, str.find_first_of('\n'));
+}
+
+std::string TaskyDesign::fullString(int num){
+	return _vec.at(num);
 }
 
 TaskyDesign::~TaskyDesign(){

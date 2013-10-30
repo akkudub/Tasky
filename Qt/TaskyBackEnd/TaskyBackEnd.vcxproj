@@ -49,7 +49,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\TaskyV0.1\LogLibrary;D:\Mercurial\cs2103-f09-2c\TaskyV0.1\LogLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\TaskyV0.1\LogLibrary\LogLibrary;..\..\TaskyV0.1\LogLibrary;D:\Mercurial\cs2103-f09-2c\TaskyV0.1\LogLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,6 +107,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\TaskyV0.1\LogLibrary\LogLibrary\LogLibrary.vcxproj">
       <Project>{fe395494-9f7c-4b5e-871a-42668305b376}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

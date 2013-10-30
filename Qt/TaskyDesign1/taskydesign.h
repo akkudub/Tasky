@@ -2,8 +2,7 @@
 #define TASKYDESIGN1_H
 
 #include <QtWidgets/QMainWindow>
-#include <QTimer>
-#include <QPropertyAnimation>
+#include <QListWidget>
 #include <vector>
 #include "ui_taskydesign.h"
 #include "Processor.h"
@@ -17,7 +16,7 @@ public:
 	~TaskyDesign();
 
 private:
-	Processor _logic;
+	Processor* _logic;
 	std::string _msg;
 	std::vector<std::string> _vec;
 
@@ -35,22 +34,21 @@ private:
 
 private slots:
 	void processInputString();
-	void changeBGColor(int type);
+	void showFullTextOfSelected();
 
 private:
 	void changeUIStyle();
 	void help();
 	void about();
-	void blink(int colorType);
 	void minimizeWindow();
 	void exit();
 	bool equalsToKeywordWithoutCase(const QString& input, const QString& keyword);
 	void sendStdStringToBackEnd(QString input);
+	std::string preserveFirstString(int num);
+	std::string fullString(int num);
 
 private:
 	Ui::TaskyDesign1Class ui;
-	QTimer* timer;
-	QPropertyAnimation* animation;
 };
 
 #endif // TASKYDESIGN1_H

@@ -30,7 +30,7 @@ public:
 	* Purpose:
 	* adds the task to the taskList. Pushes any tasks that clashes into the referenced vector
 	* @param toAdd the task to be added into _taskList
-	* @param _temp for Logic to push in tasks that clash
+	* @param _temp for TaskList to push in tasks that clash
 	* @return status code
 	*/
 	int add(Task toAdd, vector<Task>& _temp);
@@ -45,7 +45,7 @@ public:
 	* Purpose:
 	* pushes tasks that that has the same title as searchLine into temp.
 	* @param searchLine title of task being searched
-	* @param _temp for Logic to push in tasks that match
+	* @param _temp for TaskList to push in tasks that match
 	* @return status code
 	*/
 	int search(string searchLine, vector<Task>& _temp);
@@ -63,9 +63,18 @@ public:
 	int searchTasks(vector<string> keywords, int statusPresent, int type, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
 	/**
 	* Purpose:
+	* searches for empty slots between the start time and end time
+	* @param start
+	* @param end
+	* @param _temp for TaskList to push in the slots that are empty in pairs of BasicDateTime
+	* @return status code
+	*/
+	int searchEmptySlots(BasicDateTime start, BasicDateTime end, vector<BasicDateTime>& _temp);
+	/**
+	* Purpose:
 	* searches for tasks corresponding to the keywords and pushes those tasks by relevance into referenced vector.
 	* @param keywords
-	* @param _temp for Logic to push in tasks that match
+	* @param _temp for TaskList to push in tasks that match
 	* @return status code
 	*/
 	int searchKeywords(vector<string> keywords, vector<Task>& _temp);
@@ -73,7 +82,7 @@ public:
 	* Purpose:
 	* same as searchKeywords but only searches for tasks that are in range.
 	* @param keywords
-	* @param _temp for Logic to push in tasks that match
+	* @param _temp for TaskList to push in tasks that match
 	* @param start
 	* @param end
 	* @return status code
@@ -84,7 +93,7 @@ public:
 	* same as searchKeywords but only searches for tasks that matches the status.
 	* @param keywords
 	* @param done status of task to search for
-	* @param _temp for Logic to push in tasks that match
+	* @param _temp for TaskList to push in tasks that match
 	* @return status code
 	*/
 	int searchKeywordsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp);
@@ -95,30 +104,30 @@ public:
 	* @param start
 	* @param end
 	* @param done status of task to search for
-	* @param _temp for Logic to push in tasks that match
+	* @param _temp for TaskList to push in tasks that match
 	* @return status code
 	*/
 	int searchKeywordsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
 	/**
 	* Purpose:
 	* pushes all tasks into referenced vector
-	* @param _temp for Logic to put in all tasks
+	* @param _temp for TaskList to put in all tasks
 	* @return status code
 	*/
 	int displayAll(vector<Task>& _temp);
 	/**
 	* Purpose:
 	* pushes tasks that are done/pending accordingly into referenced vector
-	* @param done for Logic to search either done/pending tasks; done: true, pending:false;
-	* @param _temp  for Logic to put in matching tasks
+	* @param done for TaskList to search either done/pending tasks; done: true, pending:false;
+	* @param _temp  for TaskList to put in matching tasks
 	* @return status code
 	*/
 	int displayStatus(bool done, vector<Task>& _temp);
 	/**
 	* Purpose:
 	* pushes tasks that are pending today into referenced vector
-	* @param done for Logic to search either done/pending tasks
-	* @param _temp  for Logic to put in matching tasks
+	* @param done for TaskList to search either done/pending tasks
+	* @param _temp  for TaskList to put in matching tasks
 	* @return status code
 	*/
 	int displayToday(vector<Task>& _temp);
@@ -127,7 +136,7 @@ public:
 	* pushes tasks in range into referenced vector
 	* @param start
 	* @param end
-	* @param _temp for Logic to put in tasks within the range
+	* @param _temp for TaskList to put in tasks within the range
 	* @return status code
 	*/
 	int searchInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
@@ -137,7 +146,7 @@ public:
 	* @param done
 	* @param start
 	* @param end
-	* @param _temp for Logic to put in tasks within the range
+	* @param _temp for TaskList to put in tasks within the range
 	* @return status code
 	*/
 	int searchStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
@@ -146,7 +155,7 @@ public:
 	* updates the existing task into the new task. any tasks that clashes will be pushed into referenced vector.
 	* @param exisitngTask old task
 	* @param newTask task with new details
-	* @param _temp for Logic to put in tasks that clash
+	* @param _temp for TaskList to put in tasks that clash
 	* @return status code
 	*/
 	int update(Task existingTask, Task newTask, vector<Task>& _temp);
@@ -167,6 +176,7 @@ public:
 	int saveFile();
 	int loadFile();
 
+private:
 	/** Abstraction Level 2 */
 	void addTask(Task toAdd);
 	bool isExisting(Task task);
@@ -188,6 +198,8 @@ public:
 	vector<string> taskVecToStringVec(vector<Task>& allTasks);
 	void stringToBasicDateTime(string, BasicDateTime&);
 	void setToday(BasicDateTime& start, BasicDateTime& end);
+	bool isEmptySlotsPresent(BasicDateTime start, BasicDateTime end);
+	void pushEmptySlots(BasicDateTime& start, BasicDateTime& end, vector<BasicDateTime>& _temp);
 
 	/** Abstraction Level 3 */
 	void exactSearch(string exactString, vector<Task>& _temp);

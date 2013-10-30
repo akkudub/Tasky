@@ -198,3 +198,8 @@ void Task::setEndDate(BasicDateTime end){
 void Task::setType(int type){
 	_type = type;
 }
+
+bool Task::operator<(Task& a){
+
+	return (_start.compareTo(a.getStart()) < 0);
+}

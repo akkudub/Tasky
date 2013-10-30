@@ -93,10 +93,14 @@ int TaskList::searchEmptySlots(BasicDateTime start, BasicDateTime end, vector<Ba
 
 	_temp.clear();
 
-	if(!isEmptySlotsPresent(start, end))
-		return 0; //stub
-	else
+	if(isEmptySlotsPresent(start, end)){
 		pushEmptySlots(start, end, _temp);
+		return SUCCESS_SEARCH;
+	}
+	else
+		return WARNING_SEARCH_NO_RESULT;
+
+	return ERROR_SEARCH;
 }
 
 void TaskList::setFlags(vector<string> keywords, int statusPresent, int type){

@@ -42,14 +42,15 @@ class Processor{
 	*			  4--mark operation has not ended;
 	*/
 private:
-	vector<Task> _tempTaskList; 
+	vector<Task> _tempTaskList;
+	vector<string> _tempStringList; 
+
 	string _tempTitle;
 	bool _tempStatus;
 	int _tempType;
 	BasicDateTime _tempStart;
 	BasicDateTime _tempEnd;
 
-	vector<string> _stringList; 
 	vector<Task>* _taskListPointer;
 	TaskList _taskList;
 	History _history;
@@ -72,6 +73,22 @@ private:
 
 	static const string EMPTY_STRING;
 	static const string NEW_LINE_STRING;
+	static const string TASK_DESCRIPTION;
+	static const string CLASHES;
+	static const string TASKS_REMOVED;
+	static const string TASKS_REMOVING_ERROR;
+	static const string TASK_RENAMED;
+	static const string TASK_RENAME_ERROR;
+	static const string TASK_RESCHEDULED;
+	static const string TASK_RESCHEDULED_ERROR;
+	static const string TASKS_MARKED;
+	static const string TASKS_MARKING_ERROR;
+	static const string UNDO_TASK_ADDED;
+	static const string UNDO_TASK_ADDING_ERROR;
+	static const string UNDO_TASK_REMOVED;
+	static const string UNDO_TASK_REMOVING_ERROR;
+	static const string UNDO_TASK_UPDATED;
+	static const string UNDO_TASK_UPDATING_ERROR;
 
 public:
 	Processor();
@@ -270,12 +287,13 @@ private:
 	bool choiceIsValid(vector<int> choice);
 	/*
 	* Purpose:
-	* converts a vector of tasks into a vector of strings
+	* converts a vector of tasks into a vector of strings and pushes them in another vector
 	*
 	* @param taskList the vector of the Tasks passed in
+	* @param stringList the vector of string that the strings have to be pushed in
 	* @return a vector of strings based on the vector of tasks
 	*/
-	vector<string> taskVecToStringVec(vector<Task> taskList);
+	void taskVecToStringVec(vector<Task> taskList, vector<string>& stringList);
 	/*
 	* Purpose:
 	* checks if the command entered is one of the acceptable commands

@@ -450,28 +450,29 @@ int Processor::markCommandProcessor(string input){
 int Processor::searchCommandProcessor(string input){
 	vector<string> keywords;
 	BasicDateTime start, end;
-	int type;
+	vector<BasicDateTime> slots;
+	int type, status;
+	bool isPower;
 
 	_tempTaskList.clear();
 	_tempStringList.clear();
 
-	int returnCode = _interpreter.interpretSearch(input, keywords, type, start, end);
+	//int returnCode = _interpreter.interpretSearch(input, keywords, type, start, end);
+	int returnCode = _interpreter.interpretPowerSearch(input, isPower, keywords, status, type, start, end);
 	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH){
 		return returnCode;
 	}else{
-		if (type == 0){
-			returnCode = _taskList.searchKeywords(keywords, _tempTaskList);
-		}else if(type == 2){
-			returnCode = _taskList.searchKeywordsInRange(keywords, start, end, _tempTaskList);
+		if (isPower){
+			_taskList.searchEmptySlots(start, end, slots);
+			dateTimeVecToStringVec(slots, _tempStringList);
 		}else{
-			returnCode = ERROR_SEARCH;
+			_taskList.searchTasks(keywords, status, type, start, end, _tempTaskList);
+			taskVecToStringVec(_tempTaskList, _tempStringList);
 		}
 	}
-	taskVecToStringVec(_tempTaskList, _tempStringList);
 	_tempTaskList.clear();
 	return returnCode;
 }
-
 
 int Processor::undoCommandProcessor(string input){
 	Task oldTask, newTask;
@@ -745,6 +746,18 @@ void Processor::taskVecToStringVec(vector<Task> taskList, vector<string>& string
 		int size=taskList.size();
 		for (int i=0;i<size;i++){
 			stringList.push_back(taskList[i].toString());
+		}
+	}
+}
+
+void Processor::dateTimeVecToStringVec(vector<BasicDateTime> slots, vector<string>& stringList){
+	if (!slots.empty()){
+		int size = slots.size();
+		for (int i = 0; i < size; i++){
+			stringList.push_back(slots[i].getDateTimeString());
+			if (1%2 == 1){
+				stringList.push_back(NEW_LINE_STRING);
+			}
 		}
 	}
 }

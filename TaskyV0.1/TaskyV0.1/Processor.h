@@ -294,6 +294,8 @@ private:
 	* @return a vector of strings based on the vector of tasks
 	*/
 	void taskVecToStringVec(vector<Task> taskList, vector<string>& stringList);
+	
+	void dateTimeVecToStringVec(vector<BasicDateTime>slots, vector<string>& stringList);
 	/*
 	* Purpose:
 	* checks if the command entered is one of the acceptable commands

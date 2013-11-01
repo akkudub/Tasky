@@ -104,8 +104,9 @@ bool Task::isClashingWith(Task another){
 }
 
 string Task::toString(){
-	string outputString = TYPE_KEY_WORD + typeToString() + NEW_LINE;
-	outputString += TITLE_KEY_WORD + _title + NEW_LINE;
+	string outputString;
+	//outputString = TYPE_KEY_WORD + typeToString() + NEW_LINE;
+	outputString = TITLE_KEY_WORD + _title + NEW_LINE;
 	outputString += STATUS_KEY_WORD + statusToString() + NEW_LINE;
 	outputString += START_KEY_WORD + startToString() + NEW_LINE;
 	outputString += END_KEY_WORD + endToString() + NEW_LINE;

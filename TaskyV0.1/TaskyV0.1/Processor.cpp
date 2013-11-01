@@ -541,7 +541,7 @@ int Processor::redoCommandProcessor(string input){
 	COMMAND_TYPES type = COMMAND_TYPES::ADD;//Just for initialization
 	HistoryCommand command(type, oldTask, newTask);
 	int returnCode = _history.redo(command);
-	if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REDO){
+	if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_REDO){
 		switch (command.getCommandTypeRedo()){
 		case COMMAND_TYPES::ADD:
 			returnCode = _taskList.add(command.getNew(), _tempTaskList);

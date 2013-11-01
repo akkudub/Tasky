@@ -284,7 +284,9 @@ private:
 	* @param outputVector the task that was changed(empty in case of add)
 	* @return nothing
 	*/
-	bool choiceIsValid(vector<int> choice);
+	bool choiceIsValidVec(vector<int> choice);
+
+	bool choiceIsValid(unsigned int choice);
 	/*
 	* Purpose:
 	* converts a vector of tasks into a vector of strings and pushes them in another vector

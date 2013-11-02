@@ -114,12 +114,14 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 		statusFlag=false;
 	}
 
-	if (!firstVerifyFromToOrBy(str.substr(), fromToFlag, byFlag)){
+	if (!firstVerifyFromToOrBy(str.substr(pos2), fromToFlag, byFlag)){
 		timeFlag=false;
 		type = NO_DATETIME;
 	}
-	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
+	if (timeFlag){
+        if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		    return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
+		}
 	}
 
 	if (!(fromToFlag || byFlag || slotFlag || keywordFlag || statusFlag)){

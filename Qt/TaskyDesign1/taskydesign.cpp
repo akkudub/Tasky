@@ -2,11 +2,11 @@
 #include "taskydesign.h"
 #include <qdebug.h>
 
-const QString TaskyDesign::STYLE_SHEET_TASK_DETAILS = "QWidget#TaskDetails{background-color:#c4eafc;}";
-const QString TaskyDesign::STYLE_SHEET_DISPLAY_PANEL = "QListWidget#DisplayPanel{background-color: #F1FFFF;}\n"
-	                                                   "QListView#DisplayPanel::item {border: 20px; border-radius: 5px;}\n"
+const QString TaskyDesign::STYLE_SHEET_WINDOW = "background-color: #CCFF99; border-radius: 10px;";
+const QString TaskyDesign::STYLE_SHEET_DISPLAY_PANEL = "QListWidget#DisplayPanel{background-color: #F1FFFF; border-radius: 5px;}\n"
+	                                                   "QListView#DisplayPanel::item {margin-bottom: 5px; border-radius: 5px;}\n"
 	                                                   "QListView#DisplayPanel::item:selected {background-color: #5CE6E6;}";
-const QString TaskyDesign::STYLE_SHEET_UI = "QWidget#centralWidget {background-color: #CCFF99;}";
+const QString TaskyDesign::STYLE_SHEET_INPUT_BOX = "QLineEdit#InputBox{background-color: #FFFFFF;}";
 
 const QString TaskyDesign::KEYWORD_ABOUT = "about";
 const QString TaskyDesign::KEYWORD_EXIT = "exit";
@@ -20,8 +20,6 @@ TaskyDesign::TaskyDesign(QWidget *parent): QMainWindow(parent){
 	_logic=new Processor();
 
 	changeUIStyle();
-	ui.TaskDetails->setStyleSheet(STYLE_SHEET_TASK_DETAILS);
-	ui.DisplayPanel->setStyleSheet(STYLE_SHEET_DISPLAY_PANEL);
 
 	connect(ui.InputBox, SIGNAL(returnPressed()), this, SLOT(processInputString()));
 	connect(ui.DisplayPanel, SIGNAL(itemSelectionChanged()), this, SLOT(showFullTextOfSelected()));
@@ -59,8 +57,10 @@ void TaskyDesign::showFullTextOfSelected(){
 
 void TaskyDesign::changeUIStyle(){
 	this->setWindowFlags(Qt::FramelessWindowHint);
-	this->setStyleSheet(STYLE_SHEET_UI);
+	this->setStyleSheet(STYLE_SHEET_WINDOW);
 	this->setWindowIcon(QIcon(ICON_STRING));
+	ui.DisplayPanel->setStyleSheet(STYLE_SHEET_DISPLAY_PANEL);
+	ui.InputBox->setStyleSheet(STYLE_SHEET_INPUT_BOX);
 }
 
 void TaskyDesign::help(){
@@ -90,9 +90,9 @@ bool TaskyDesign::equalsToKeywordWithoutCase(const QString& input, const QString
 
 void TaskyDesign::sendStdStringToBackEnd(QString input){
 	_logic->UImainProcessor(input.toStdString(), _msg, _vec);
-	ui.TaskDetails->clear();
 	ui.DisplayPanel->clear();
-	ui.TaskDetails->setText(QString::fromStdString(_msg));
+	ui.statusBar->clearMessage();
+	ui.statusBar->showMessage(QString::fromStdString(_msg), 0);
 	int size=_vec.size();
 	for (unsigned int i=0;i<size;i++){
 		ui.DisplayPanel->addItem(QString::fromStdString(preserveFirstString(i)));

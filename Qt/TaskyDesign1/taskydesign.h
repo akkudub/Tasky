@@ -21,9 +21,9 @@ private:
 	std::vector<std::string> _vec;
 
 private:
-	static const QString STYLE_SHEET_TASK_DETAILS;
 	static const QString STYLE_SHEET_DISPLAY_PANEL;
-	static const QString STYLE_SHEET_UI;
+	static const QString STYLE_SHEET_WINDOW;
+	static const QString STYLE_SHEET_INPUT_BOX;
 
 	static const QString KEYWORD_HELP;
 	static const QString KEYWORD_ABOUT;

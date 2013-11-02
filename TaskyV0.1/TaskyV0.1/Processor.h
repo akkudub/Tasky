@@ -73,6 +73,7 @@ private:
 
 	static const string EMPTY_STRING;
 	static const string NEW_LINE_STRING;
+	static const string NONE;
 	static const string TASK_DESCRIPTION;
 	static const string CLASHES;
 	static const string TASKS_REMOVED;

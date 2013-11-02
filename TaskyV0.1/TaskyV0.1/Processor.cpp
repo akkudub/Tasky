@@ -13,6 +13,7 @@ const char Processor::NEW_LINE = '\n';
 
 const string Processor::EMPTY_STRING = "";
 const string Processor::NEW_LINE_STRING = "\n";
+const string Processor::NONE = "None";
 const string Processor::TASK_DESCRIPTION = "Task Description:";
 const string Processor::CLASHES = "Clashes:";
 const string Processor::TASKS_REMOVED = "Tasks removed:";
@@ -149,9 +150,18 @@ int Processor::removeCommandProcessor(string input){
 			}
 		}
 		_tempStringList.push_back(TASKS_REMOVED);
-		taskVecToStringVec(removedTasks, _tempStringList);
+		if (removedTasks.empty()){
+			_tempStringList.push_back(NONE);
+		}else{			
+			taskVecToStringVec(removedTasks, _tempStringList);
+		}
+
 		_tempStringList.push_back(TASKS_REMOVING_ERROR);
-		taskVecToStringVec(errorTasks, _tempStringList);
+		if (errorTasks.empty()){			
+			_tempStringList.push_back(NONE);
+		}else{
+			taskVecToStringVec(errorTasks, _tempStringList);
+		}
 
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -391,23 +401,32 @@ int Processor::markCommandProcessor(string input){
 		if(choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
 				returnCode=_taskList.mark(_tempStatus, _tempTaskList[choice[i]-1]);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_MARK){
-					oldTask = _tempTaskList[choice[i]-1];
-					newTask = oldTask;
+				oldTask = _tempTaskList[choice[i]-1];
+				newTask = oldTask;
+				if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_MARK){
 					if(newTask.getDone() != _tempStatus){
 						newTask.toggleDone();
+						recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+						markedTasks.push_back(newTask);
 					}
-					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-					markedTasks.push_back(newTask);
 				}else{
 					errorTasks.push_back(newTask);
 				}
 			}
 		}
 		_tempStringList.push_back(TASKS_MARKED);
-		taskVecToStringVec(markedTasks, _tempStringList);
+		if (markedTasks.empty()){
+			_tempStringList.push_back(NONE);
+		}else{			
+			taskVecToStringVec(markedTasks, _tempStringList);
+		}
+
 		_tempStringList.push_back(TASKS_MARKING_ERROR);
-		taskVecToStringVec(errorTasks, _tempStringList);
+		if (errorTasks.empty()){			
+			_tempStringList.push_back(NONE);
+		}else{
+			taskVecToStringVec(errorTasks, _tempStringList);
+		}
 
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -422,14 +441,14 @@ int Processor::markCommandProcessor(string input){
 			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				returnCode = _taskList.mark(_tempStatus, _tempTaskList[0]);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_MARK){
-					oldTask = _tempTaskList[0];
-					newTask = oldTask;
+				oldTask = _tempTaskList[0];
+				newTask = oldTask;
+				if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_MARK){
 					if(newTask.getDone() != _tempStatus){
 						newTask.toggleDone();
+						recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+						_tempStringList.push_back(TASKS_MARKED);
 					}
-					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-					_tempStringList.push_back(TASKS_MARKED);
 				}else{
 					_tempStringList.push_back(TASKS_MARKING_ERROR);
 				}

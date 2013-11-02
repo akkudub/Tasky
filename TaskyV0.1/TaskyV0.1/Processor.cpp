@@ -30,6 +30,12 @@ const string Processor::UNDO_TASK_REMOVED = "Undo Tasks removed:";
 const string Processor::UNDO_TASK_REMOVING_ERROR = "Undo Tasks removing error";
 const string Processor::UNDO_TASK_UPDATED = "Undo Tasks updated:";
 const string Processor::UNDO_TASK_UPDATING_ERROR = "Undo Tasks updating error:";
+const string Processor::REDO_TASK_ADDED = "Redo Tasks added:";
+const string Processor::REDO_TASK_ADDING_ERROR = "Redo tasks adding error:";
+const string Processor::REDO_TASK_REMOVED = "Redo Tasks removed:";
+const string Processor::REDO_TASK_REMOVING_ERROR = "Redo Tasks removing error";
+const string Processor::REDO_TASK_UPDATED = "Redo Tasks updated:";
+const string Processor::REDO_TASK_UPDATING_ERROR = "Redo Tasks updating error:";
 
 Processor::Processor(){
 	_statusFlag=0;
@@ -573,9 +579,9 @@ int Processor::redoCommandProcessor(string input){
 			case COMMAND_TYPES::ADD:
 				returnCode = _taskList.add(command.getNew(), _tempTaskList);
 				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
-					_tempStringList.push_back(UNDO_TASK_ADDED);
+					_tempStringList.push_back(REDO_TASK_ADDED);
 				}else{
-					_tempStringList.push_back(UNDO_TASK_ADDING_ERROR);
+					_tempStringList.push_back(REDO_TASK_ADDING_ERROR);
 				}
 				_tempStringList.push_back(command.getNew().toString());
 				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -586,18 +592,18 @@ int Processor::redoCommandProcessor(string input){
 			case COMMAND_TYPES::REMOVE:
 				returnCode = _taskList.remove(command.getOld());
 				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REMOVE){
-					_tempStringList.push_back(UNDO_TASK_REMOVED);
+					_tempStringList.push_back(REDO_TASK_REMOVED);
 				}else{
-					_tempStringList.push_back(UNDO_TASK_REMOVING_ERROR);
+					_tempStringList.push_back(REDO_TASK_REMOVING_ERROR);
 				}
 				_tempStringList.push_back(command.getOld().toString());
 				break;
 			case COMMAND_TYPES::UPDATE:
 				returnCode = _taskList.update(command.getOld(), command.getNew(), _tempTaskList);
 				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-					_tempStringList.push_back(UNDO_TASK_UPDATED);
+					_tempStringList.push_back(REDO_TASK_UPDATED);
 				}else{
-					_tempStringList.push_back(UNDO_TASK_UPDATING_ERROR);
+					_tempStringList.push_back(REDO_TASK_UPDATING_ERROR);
 				}
 				_tempStringList.push_back(command.getOld().toString());
 				_tempStringList.push_back(command.getNew().toString());

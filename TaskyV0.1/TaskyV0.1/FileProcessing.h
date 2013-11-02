@@ -23,6 +23,8 @@ private:
 	*@return True - File Log is empty, False - File Log not empty
 	*/
 	bool emptyFile();
+	void readLines(ifstream& input, vector<string>& data);
+	void writeLines(ofstream& output, vector<string>& data);
 public:
 	/**
 	* Purpose:

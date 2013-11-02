@@ -90,6 +90,12 @@ private:
 	static const string UNDO_TASK_REMOVING_ERROR;
 	static const string UNDO_TASK_UPDATED;
 	static const string UNDO_TASK_UPDATING_ERROR;
+	static const string REDO_TASK_ADDED;
+	static const string REDO_TASK_ADDING_ERROR;
+	static const string REDO_TASK_REMOVED;
+	static const string REDO_TASK_REMOVING_ERROR;
+	static const string REDO_TASK_UPDATED;
+	static const string REDO_TASK_UPDATING_ERROR;
 
 public:
 	Processor();

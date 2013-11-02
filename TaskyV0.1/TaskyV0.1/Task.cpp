@@ -60,7 +60,9 @@ Task::~Task(){
 }
 
 bool Task::isEqualTo(Task another){
-
+	if (another.getDone() != _done){
+		return false;
+	}	
 	switch(another.getType()){
 
 	case FLOATING_TASK:

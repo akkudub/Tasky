@@ -76,7 +76,6 @@ enum STATUS_CODE_SET_ERROR{
 	ERROR_INTERPRET_EMPTY_INPUT,  //after stripped out all the spaces from beginning and ending, the input becomes empty
 	ERROR_INTERPRET_TITLE_FORMAT,  //input format for title is wrong
 	ERROR_INTERPRET_DATETIME_FORMAT,  //input format for date time is wrong, including logic error and date time cannot be interpreted
-	ERROR_INTERPRET_NO_STATUS,  //no status keywords
 	ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,  //missing essential components
 	ERROR_INTERPRET_MIXED_UP_INPUT,  //user trying to use two or more command types at the same time
 	ERROR_INTERPRET_ADD,  //general error for add

@@ -54,19 +54,20 @@ const string Messages::MESSAGE_ERROR_LOAD_OPENFILE =	"Error! Unexpected error wh
 const string Messages::MESSAGE_ERROR_LOAD_CORRUPTED_DATA =	"Error! File corrupted!";
 const string Messages::MESSAGE_ERROR_SAVE_SAVEFILE =	"Error! Unexpected error while saving to file";
 const string Messages::MESSAGE_ERROR_RECORD =			"Error! Unexpected error while recording task";
-const string Messages::MESSAGE_ERROR_INVALID_CHOICE =			"Error! Invalid Choice";
-const string Messages::MESSAGE_ERROR_INTERPRET_EMPTY_INPUT = "Error! Empty input";
-const string Messages::MESSAGE_ERROR_INTERPRET_TITLE_FORMAT = "Error! Invalid title format";
-const string Messages::MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT = "Error! Invalid datetime format";
-const string Messages::MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD = "Error! Missing Keyword";
-const string Messages::MESSAGE_ERROR_INTERPRET_ADD = "Error! Unexpected error while interpreting add";
-const string Messages::MESSAGE_ERROR_INTERPRET_REMOVE = "Error! Unexpected error while interpreting remove";
-const string Messages::MESSAGE_ERROR_INTERPRET_DISPLAY = "Error! Unexpected error while interpreting display";
-const string Messages::MESSAGE_ERROR_INTERPRET_RENAME = "Error! Unexpected error while interpreting rename";
-const string Messages::MESSAGE_ERROR_INTERPRET_RESCHEDULE = "Error! Unexpected error while interpreting reschedule";
-const string Messages::MESSAGE_ERROR_INTERPRET_MARK = "Error! Unexpected error while interpreting mark";
-const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH = "Error! Unexpected error while interpreting search";
-const string Messages::MESSAGE_ERROR_INTERPRET_STRINGTODATETIME = "Error! Unexpected error while interpreting datetime";
+const string Messages::MESSAGE_ERROR_INVALID_CHOICE =			"Invalid Choice";
+const string Messages::MESSAGE_ERROR_INTERPRET_EMPTY_INPUT = "Empty input! You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_TITLE_FORMAT = "Invalid title format! You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT = "Invalid input for date and time! You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND = "Missing essential components in command! You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_MIXED_UP_INPUT = "Command is not consistent! You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_ADD = "The interpretation for adding is not successful.  You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_REMOVE = "The interpretation for removal is not successful.  You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_DISPLAY = "The interpretation for display is not successful.  You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_RENAME = "The interpretation for rename is not successful.  You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_RESCHEDULE = "The interpretation for rescheduling is not successful.  You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_MARK = "The interpretation for marking is not successful.  You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_POWER_SEARCH = "The interpretation for search is not successful.  You can type 'help' for more information.";
+const string Messages::MESSAGE_ERROR_INTERPRET_STRINGTODATETIME = "Error! Unexpected error while interpreting date and time";
 
 const string Messages::MESSAGE_PROMPT_REMOVE_CHOOSE =	"Enter task number to remove:";
 const string Messages::MESSAGE_PROMPT_RENAME_CHOOSE =	"Enter task number to rename:";
@@ -130,14 +131,15 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_ERROR_INTERPRET_EMPTY_INPUT,
 	MESSAGE_ERROR_INTERPRET_TITLE_FORMAT,
 	MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT,
-	MESSAGE_ERROR_INTERPRET_MISSING_KEYWORD,
+	MESSAGE_ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,
+	MESSAGE_ERROR_INTERPRET_MIXED_UP_INPUT,
 	MESSAGE_ERROR_INTERPRET_ADD,
 	MESSAGE_ERROR_INTERPRET_REMOVE,
 	MESSAGE_ERROR_INTERPRET_DISPLAY,
 	MESSAGE_ERROR_INTERPRET_RENAME,	
 	MESSAGE_ERROR_INTERPRET_RESCHEDULE,
 	MESSAGE_ERROR_INTERPRET_MARK,
-	MESSAGE_ERROR_INTERPRET_SEARCH,
+	MESSAGE_ERROR_INTERPRET_POWER_SEARCH,
 	MESSAGE_ERROR_INTERPRET_STRINGTODATETIME,
 
 	MESSAGE_PROMPT_REMOVE_CHOOSE,

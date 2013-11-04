@@ -142,7 +142,9 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 }
 
 int Interpreter::interpretDisplay(const string& str, int& displayType){
-	bool statusFlag=false, fromToFlag=false, byFlag=false;
+	bool statusFlag=false;
+	bool fromToFlag=false;
+	bool byFlag=false;
 	int pos=0, size=str.size();
 	if (containKeywordWithoutCase(str, ALL_KEY_WORD)){
 		displayType=DISPLAY_TYPE_ALL;
@@ -159,8 +161,11 @@ int Interpreter::interpretDisplay(const string& str, int& displayType){
 }
 
 int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
-	int posQuote1=0, posKey=0, posQuote2=0;
-	string str1, str2;
+	int posQuote1=0;
+	int posKey=0;
+	int posQuote2=0;
+	string str1;
+	string str2;
 	posQuote1=str.find_first_of(SINGLE_QUOTE);
 	posQuote2=str.find_last_of(SINGLE_QUOTE);
 	if (!findStartingPosOfKeywordWithoutCase(str, RENAME_KEY_WORD, posKey)){
@@ -181,7 +186,8 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 }
 
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
-	int posQuote1=0, posQuote2=0;
+	int posQuote1=0;
+	int posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
@@ -198,7 +204,8 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 
 int Interpreter::interpretMark(string str, string& title, bool& status){
 	str=removeLeadingSpaces(str);
-	int posQuote1=0, posQuote2=0;
+	int posQuote1=0;
+	int posQuote2=0;
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
 	}
@@ -491,7 +498,9 @@ bool Interpreter::interpretTime(string str1, int either){
 bool Interpreter::dateStandardInput(string str, int either){
 	vector<string> vec=breakStringWithDelim(str, SLASH);
 	bool dateFlag=false;
-	int year=0, month=0, day=0;
+	int year=0;
+	int month=0;
+	int day=0;
 	int size=vec.size();
 	if (size<=1 || size>=4){
 		return false;
@@ -552,7 +561,9 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 
 bool Interpreter::timeStandardInput(string str, char delim, int either){
 	bool timeFlag=false;
-	int hour, minute, second;
+	int hour;
+	int minute;
+	int second;
 	vector<string> vec=breakStringWithDelim(str, delim);
 	int size=vec.size();
 	if (size<=1 || size>=4){
@@ -740,7 +751,8 @@ int Interpreter::findFirstOfWord(const string& source, const string& word){
 }
 
 int Interpreter::findLastOfWord(const string& source, const string& word){
-	int num=source.find(word), prev=num;
+	int num=source.find(word);
+	int prev=num;
 	while(num!=-1){
 		prev=num;
 		num=source.find(word, num+1);

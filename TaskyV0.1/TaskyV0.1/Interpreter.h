@@ -121,7 +121,6 @@ private:
 	static const int INTERNAL_ERROR_CODE = -1;
 
 public:
-	///construtor: quite dummy for now
 	Interpreter();
 	/**
 	 *a method created specially for Processor::addCommandProcessor, as this will take in a string without command type and try to  parse the string
@@ -136,19 +135,6 @@ public:
 	 *@return int status code
 	 */
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
-	/**
-	 *a method created specially for Processor::searchCommandProcessor, as this will take in a string without command type and try to parse the string
-	 *according to 'search' format on the user guide
-	 *e.g.: "'keyword1 keyword2 ...' from 12/12/13 12:00:00 to 13/11/2014 12:00:00"
-	 *@param str input string from processor
-	 *@param keywords (vector<string> reference) will push the orignal quoted content into the vector first and will break the content into  separate words and push in
-	 *@param type (int reference) similar to type for add, just for by case the start will be assigned to the current time and type will be 2.
-	 *       so type will only be 0 or 2
-	 *@param start (BasicDateTime reference) will have the new value if the input format is right
-	 *@param end (BasicDateTime reference) will have the new value if the input format is right
-	 *@return int status code
-	 */
-	int interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 */
 	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
@@ -204,7 +190,7 @@ public:
 	int interpretRemove(string str, string& title);
 	/**
 	 *a more general method as this will take a string and try to convert it to an integer
-	 *notice that this method is very limited--only allow postive integers and will return -1 as the error code
+	 *notice that this method is very limited--only allow positive integers and will return -1 as the error code
 	 *and this method will not allow any char other than digits. plus: notice the number of digits allowed is limited to the range of int
 	 *@param str (string) input string
 	 *@return try to parse the string to int, if failure then return -1
@@ -225,7 +211,6 @@ public:
 	 *@return string of the input string 
 	 */
 	string toLowerCase(string input);
-	///destructor
 	~Interpreter();
 
 private:
@@ -241,7 +226,11 @@ private:
 	bool secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
 	bool fromToCheck(string str);
 	bool byCheck(string str);
-	bool translateDateTime(string str1, string str2, int either);  //will take in more strings as we progress
+	bool checkSizeOfDateTimeStringVec(const vector<string>& vec);
+	void generalTranslationOfDateTime(const vector<string>& vec, bool& fromFlag, int either);
+	bool isStartEarlierThanEnd();
+	void setStartToNow();
+	bool translateDateTime(string str1, string str2, int either);
 	bool translateNaturalDateTime(string str1, string str2, string str3, int either);  //will take 3 strings, deal with special cases
 	bool translateOnlyDate(string str1, int either);  //will take in only one string, will deal with only today/number
 	bool translateNaturalDate(string str1, string str2, int either);  //this is a special of the following one--without time

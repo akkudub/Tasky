@@ -44,93 +44,98 @@ const char Interpreter::ZERO = '0';
 const char Interpreter::NINE = '9';
 
 Interpreter::Interpreter(){
+	setStartToNow();
 }
 
 int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment){
-	int posDashM=str.size(), posQuote1=0, posQuote2=0;
-	bool fromToFlag=false, byFlag=false;
+	int posDashM=str.size();
+	int posQuote1=0;
+	int posQuote2=0;
+	int posBeginningOfDateTimePart=0;
+	int lengthOfDateTimePart=0;
+	bool fromToFlag=false;
+	bool byFlag=false;
 
 	if (!extractComment(str, comment, posDashM)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
 	}
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
 	}
-	if (!firstVerifyFromToOrBy(str.substr(posQuote2+1, posDashM-posQuote2-1), fromToFlag, byFlag)){
+	if (title==EMPTY_STRING){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}
+	posBeginningOfDateTimePart=posQuote2+1;
+	lengthOfDateTimePart=posDashM-posQuote2-1;
+	if (!firstVerifyFromToOrBy(str.substr(posBeginningOfDateTimePart, lengthOfDateTimePart), fromToFlag, byFlag)){
 		type = NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 	}
 	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
 }
 
-int Interpreter::interpretSearch(string str, vector<string>& keywords, int& type, BasicDateTime& start, BasicDateTime& end){
-	str=removeLeadingSpaces(str);
-	int size=str.size(), pos1, pos2;
-	bool fromToFlag=false, byFlag=false;
-	string title;
-	keywords.clear();
-	if (!extractTitle(str, title, pos1, pos2)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
-	}
-	keywords=extractKeywords(title);
-	if (!firstVerifyFromToOrBy(str.substr(), fromToFlag, byFlag)){
-		type = NO_DATETIME;
-		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
-	}
-	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
-	}
-	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
-}
-
 int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end){
-	str=removeLeadingSpaces(str);
-	int size=str.size(), pos1=0, pos2=0;
-	bool fromToFlag=false, byFlag=false, slotFlag=false, keywordFlag=false, statusFlag=false, timeFlag=true;
-	string title;
-	keywords.clear();
+	int size=str.size();
+	int posQuote1=0;
+	int posQuote2=0;
+	bool fromToFlag=false;
+	bool byFlag=false;
+	bool slotFlag=false;
+	bool keywordFlag=false;
+	bool statusFlag=false;
+	bool timeFlag=true;
+	bool traditionalSearchFlag=true;
+	string title=EMPTY_STRING;
 
-	if (!extractTitle(str, title, pos1, pos2)){
+	keywords.clear();
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		keywordFlag=false;
 	}else{
 		keywordFlag=true;
 		keywords=extractKeywords(title);
 	}
-	if (containKeywordWithoutCase(str.substr(pos2), SLOT_KEY_WORD)){
+	if (containKeywordWithoutCase(str.substr(posQuote2+1), SLOT_KEY_WORD)){
 		slotFlag=true;
 		slotEnabled=true;
 	}
-	if (containKeywordWithoutCase(str.substr(pos2), PENDING_KEY_WORD)){
+	if (containKeywordWithoutCase(str.substr(posQuote2+1), PENDING_KEY_WORD)){
 		searchStatus=POWER_SEARCH_PENDING_STATUS;
 		statusFlag=true;
-	}else if(containKeywordWithoutCase(str.substr(pos2), DONE_KEY_WORD)){
+	}else if(containKeywordWithoutCase(str.substr(posQuote2+1), DONE_KEY_WORD)){
 		searchStatus=POWER_SEARCH_DONE_STATUS;
 		statusFlag=true;
 	}else{
 		searchStatus=POWER_SEARCH_NO_STATUS;
 		statusFlag=false;
 	}
-
-	if (!firstVerifyFromToOrBy(str.substr(pos2), fromToFlag, byFlag)){
+	if (!firstVerifyFromToOrBy(str.substr(posQuote2), fromToFlag, byFlag)){
 		timeFlag=false;
 		type = NO_DATETIME;
-	}
-	if (timeFlag){
+	}else{
         if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
-		    return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
+		    return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
 		}
 	}
 
-	if (!(fromToFlag || byFlag || slotFlag || keywordFlag || statusFlag)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH;
-	}
-	if ((fromToFlag || byFlag) && !(keywordFlag || statusFlag)){
-		slotEnabled=true;
+	if (keywordFlag || statusFlag){
+		traditionalSearchFlag=true;
 	}else{
-		slotEnabled=false;
+		traditionalSearchFlag=false;
+	}
+	if (traditionalSearchFlag && slotFlag){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MIXED_UP_INPUT;
+	}
+	if (traditionalSearchFlag){
+		slotEnabled=false;  //having passed the previous test means this should be false
+	}else{
+		if (!timeFlag){
+			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
+		}else{
+			slotEnabled=true;
+		}
 	}
 
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
@@ -159,16 +164,16 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 	posQuote1=str.find_first_of(SINGLE_QUOTE);
 	posQuote2=str.find_last_of(SINGLE_QUOTE);
 	if (!findStartingPosOfKeywordWithoutCase(str, RENAME_KEY_WORD, posKey)){
-        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
 	}
 	if (posQuote1>=posKey || posQuote2<=posKey+5){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
 	}else{
 		str1=str.substr(posQuote1+1, posKey-posQuote1-1);
 		str2=str.substr(posKey+6, posQuote2-posKey-6);
 	}
 	if (str1==EMPTY_STRING || str2==EMPTY_STRING){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
 	}
 	oldTitle=str1;
 	newTitle=str2;
@@ -179,14 +184,14 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 	int posQuote1=0, posQuote2=0;
 	bool fromToFlag=false, byFlag=false;
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
 	}
 	if (!firstVerifyFromToOrBy(str.substr(posQuote2+1), fromToFlag, byFlag)){
 		type=NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
 	}
 	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
 }
@@ -195,17 +200,17 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 	str=removeLeadingSpaces(str);
 	int posQuote1=0, posQuote2=0;
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
 	}
 	if (str.size()==posQuote2+1){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
 	}
 	if (containKeywordWithoutCase(str.substr(posQuote2+1), DONE_KEY_WORD)){
 		status=true;
 	}else if(containKeywordWithoutCase(str.substr(posQuote2+1), PENDING_KEY_WORD)){
 		status=false;
 	}else{
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK;
 }
@@ -214,7 +219,7 @@ int Interpreter::interpretRemove(string str, string& title){
 	str=removeLeadingSpaces(str);
 	int num1, num2;
 	if (!extractTitle(str, title, num1, num2)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_REMOVE;
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE;
 }
@@ -275,7 +280,7 @@ bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int&
 bool Interpreter::extractComment(const string& str, string& comment, int& pos){
 	if (str.find(DASH_M)!=std::string::npos){
 		pos=findLastOfWord(str, DASH_M);
-		comment=str.substr(pos);
+		comment=str.substr(pos+3);
 	}else{
 		comment=EMPTY_STRING;
 	}
@@ -345,41 +350,43 @@ bool Interpreter::secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type
 		type=ONE_DATETIME;
 		return true;
 	}else{
-		return false;
+		return false;  //contains the keyword(s) but does not pass further test
 	}
 }
 
 bool Interpreter::fromToCheck(string str){
-	bool fromFlag=false, toFlag=false;
-	int pos1=0, pos2=0;
+	bool fromFlag=false;
+	bool toFlag=false;
+	int posFrom=0;
+	int posTo=0;
+	int posOfBeginningDateTime=0;
+	int lengthOfDateTime=0;
+	int posOfBeginningDateTime2=0;
 	string tempStr;
 	vector<string> vec;
-	pos1=str.find(FROM_KEY_WORD);
-	pos2=str.find(TO_KEY_WORD);
-	tempStr=str.substr(pos1+4, pos2-pos1-4);
-	vec=breakStringWithDelim(tempStr, SPACE);
-	if (vec.size()==1){
-		fromFlag=translateDateTime(vec.at(0), EMPTY_STRING, 1);
-	}else if (vec.size()==2){
-		fromFlag=translateDateTime(vec.at(0), vec.at(1), 1) || translateNaturalDate(vec.at(0), vec.at(1), 1);
-	}else if (vec.size()==3){
-		fromFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), 1);
-    }else{
+
+	posFrom=str.find(FROM_KEY_WORD);
+	posTo=str.find(TO_KEY_WORD);
+	if (posFrom<0 || (posTo<=posFrom)){
 		return false;
 	}
-	tempStr=str.substr(pos2+3);
+	posOfBeginningDateTime=posFrom+4;
+	lengthOfDateTime=posTo-posFrom-4;
+	posOfBeginningDateTime2=posTo+3;
+	tempStr=str.substr(posOfBeginningDateTime, lengthOfDateTime);
 	vec=breakStringWithDelim(tempStr, SPACE);
-	if (vec.size()==1){
-		toFlag=translateDateTime(vec.at(0), EMPTY_STRING, 2);
-	}else if (vec.size()==2){
-		toFlag=translateDateTime(vec.at(0), vec.at(1), 2) || translateNaturalDate(vec.at(0), vec.at(1), 2);
-	}else if(vec.size()==3){
-		toFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), 2);
-    }else{
+	if (!checkSizeOfDateTimeStringVec(vec)){
 		return false;
 	}
+	generalTranslationOfDateTime(vec, fromFlag, EITHER_AS_START);
+	tempStr=str.substr(posOfBeginningDateTime2);
+	vec=breakStringWithDelim(tempStr, SPACE);
+	if (!checkSizeOfDateTimeStringVec(vec)){
+		return false;
+	}
+	generalTranslationOfDateTime(vec, toFlag, EITHER_AS_END);
 	if (fromFlag&&toFlag){
-		return (_start.compareTo(_end)<0);
+		return isStartEarlierThanEnd();
 	}else{
 		return false;
 	}
@@ -391,25 +398,50 @@ bool Interpreter::byCheck(string str){
 	vector<string> vec;
 	tempStr=str.substr(3);
 	vec=breakStringWithDelim(tempStr, SPACE);
-	if (vec.size()==1){
-		byFlag=translateDateTime(vec.at(0), EMPTY_STRING, 2);
-	}else if (vec.size()==2){
-		byFlag=translateDateTime(vec.at(0), vec.at(1), 2) || translateNaturalDate(vec.at(0), vec.at(1), 2);
-	}else if (vec.size()==3){
-		byFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), 2);
-    }else{
+	if (!checkSizeOfDateTimeStringVec(vec)){
 		return false;
 	}
+	generalTranslationOfDateTime(vec, byFlag, EITHER_AS_END);
 	if (byFlag){
-		time_t time1=time(NULL);
-		struct tm time2;
-		localtime_s(&time2, &time1);
-		_start=BasicDateTime(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, time2.tm_hour, time2.tm_min, time2.tm_sec);
-		return (_start.compareTo(_end)<0);
+		setStartToNow();
+		return isStartEarlierThanEnd(); 
 	}else{
 		return false;
 	}
 }
+
+bool Interpreter::checkSizeOfDateTimeStringVec(const vector<string>& vec){
+	if (vec.size()>3 || vec.size()<1){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+void Interpreter::generalTranslationOfDateTime(const vector<string>& vec, bool &fromFlag, int either){
+	assert(vec.size()>0 && vec.size()<4);
+	if (vec.size()==1){
+		fromFlag=translateDateTime(vec.at(0), EMPTY_STRING, either);
+	}else if (vec.size()==2){
+		fromFlag=translateDateTime(vec.at(0), vec.at(1), either) || translateNaturalDate(vec.at(0), vec.at(1), either);
+	}else if (vec.size()==3){
+		fromFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), either);
+	}
+}
+
+
+void Interpreter::setStartToNow(){
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+	_start=BasicDateTime(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, time2.tm_hour, time2.tm_min, time2.tm_sec);
+}
+
+
+bool Interpreter::isStartEarlierThanEnd(){
+	return (_start.compareTo(_end)<0);
+}
+
 
 bool Interpreter::translateDateTime(string str1, string str2, int either){
 	bool dateFlag=false, timeFlag=false;

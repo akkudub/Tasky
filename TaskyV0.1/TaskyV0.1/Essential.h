@@ -73,22 +73,23 @@ enum STATUS_CODE_SET_ERROR{
 	ERROR_SAVE_SAVEFILE,
 	ERROR_RECORD,
 	ERROR_INVALID_CHOICE,
-	ERROR_INTERPRET_EMPTY_INPUT,
-	ERROR_INTERPRET_TITLE_FORMAT,
-	ERROR_INTERPRET_DATETIME_FORMAT,
-	ERROR_INTERPRET_MISSING_KEYWORD,
-	ERROR_INTERPRET_ADD,
-	ERROR_INTERPRET_REMOVE,
-	ERROR_INTERPRET_DISPLAY,
-	ERROR_INTERPRET_RENAME,	
-	ERROR_INTERPRET_RESCHEDULE,
-	ERROR_INTERPRET_MARK,
-	ERROR_INTERPRET_SEARCH,
-	ERROR_INTERPRET_STRINGTODATETIME
+	ERROR_INTERPRET_EMPTY_INPUT,  //after stripped out all the spaces from beginning and ending, the input becomes empty
+	ERROR_INTERPRET_TITLE_FORMAT,  //input format for title is wrong
+	ERROR_INTERPRET_DATETIME_FORMAT,  //input format for date time is wrong, including logic error and date time cannot be interpreted
+	ERROR_INTERPRET_NO_STATUS,  //no status keywords
+	ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,  //missing essential components
+	ERROR_INTERPRET_MIXED_UP_INPUT,  //user trying to use two or more command types at the same time
+	ERROR_INTERPRET_ADD,  //general error for add
+	ERROR_INTERPRET_REMOVE,  //general error for remove
+	ERROR_INTERPRET_DISPLAY,   //out of allowed command range
+	ERROR_INTERPRET_RENAME,	  //the pattern cannot be recognized, general error
+	ERROR_INTERPRET_RESCHEDULE,  //general error for reschedule
+	ERROR_INTERPRET_MARK,  //general error for mark
+	ERROR_INTERPRET_POWER_SEARCH  //missing essential components, general error
 };
 
 enum STATUS_CODE_SET_PROPMT{
-	PROMPT_REMOVE_CHOOSE = ERROR_INTERPRET_STRINGTODATETIME+1,
+	PROMPT_REMOVE_CHOOSE = ERROR_INTERPRET_POWER_SEARCH+1,
 	PROMPT_RENAME_CHOOSE,
 	PROMPT_RESCHEDULE_CHOOSE,
 	PROMPT_MARK_CHOOSE,

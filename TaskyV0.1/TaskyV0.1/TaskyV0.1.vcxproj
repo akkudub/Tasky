@@ -85,6 +85,7 @@
     <ClInclude Include="BasicDateTime.h" />
     <ClInclude Include="Essential.h" />
     <ClInclude Include="FileProcessing.h" />
+    <ClInclude Include="HelpUser.h" />
     <ClInclude Include="History.h" />
     <ClInclude Include="HistoryCommand.h" />
     <ClInclude Include="Interpreter.h" />
@@ -97,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="BasicDateTime.cpp" />
     <ClCompile Include="FileProcessing.cpp" />
+    <ClCompile Include="HelpUser.cpp" />
     <ClCompile Include="History.cpp" />
     <ClCompile Include="HistoryCommand.cpp" />
     <ClCompile Include="Interpreter.cpp" />

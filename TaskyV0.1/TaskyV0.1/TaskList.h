@@ -200,6 +200,7 @@ private:
 	void setToday(BasicDateTime& start, BasicDateTime& end);
 	bool isEmptySlotsPresent(BasicDateTime start, BasicDateTime end);
 	void pushEmptySlots(BasicDateTime& start, BasicDateTime& end, vector<BasicDateTime>& _temp);
+	void loadTasksFromVector(vector<string>& stringsFromFile);
 
 	/** Abstraction Level 3 */
 	void exactSearch(string exactString, vector<Task>& _temp);
@@ -217,6 +218,9 @@ private:
 	void exactSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
 	void containingExactStringSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
 	void containingBreakdownStringSearchWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp);
+
+	void cutRange(BasicDateTime& start, BasicDateTime& end);
+	void pushEmptySlotsToTemp(BasicDateTime& start, BasicDateTime& end, vector<BasicDateTime>& _temp);
 
 	void setDay(int& day, string& dateTimeString);
 	void setMonth(int& month, string& dateTimeString);

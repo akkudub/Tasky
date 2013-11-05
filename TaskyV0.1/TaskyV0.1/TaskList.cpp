@@ -297,61 +297,15 @@ int TaskList::saveFile(){
 }
 
 int TaskList::loadFile(){
-	vector<string> stringsFromFile;
-	string currStr;
-	int count;
-	int statusCode;
 
-	string title, comment;
-	int type;
-	bool status;
-	BasicDateTime start, end;
+	vector<string> stringsFromFile;
+	int statusCode;
 
 	statusCode = _fileProcessing.load(stringsFromFile);
 
-	for (unsigned int i = 0; i < stringsFromFile.size(); i++){
+	if(statusCode == SUCCESS_LOAD)
+		loadTasksFromVector(stringsFromFile);
 
-		currStr = stringsFromFile[i];
-
-		switch (i % 6){
-		case 0:
-			if (currStr.substr(6) == STRING_FLOATING){
-				type = 0;
-			}else if (currStr.substr(6) == STRING_DEADLINE){
-				type = 1;
-			}else if (currStr.substr(6) == STRING_TIMED){
-				type = 2;			
-			}
-			count++;
-			break;
-		case 1:
-			title = currStr.substr(7);
-			count++;
-			break;
-		case 2:
-			if (currStr.substr(8) == STRING_DONE){
-				status = true;
-			}else{
-				status = false;
-			}
-			count++;
-			break;
-		case 3:
-			stringToBasicDateTime(currStr.substr(7), start);
-			count++;
-			break;
-		case 4:
-			stringToBasicDateTime(currStr.substr(5), end);
-			count++;
-			break;
-		case 5:
-			comment = currStr.substr(9);
-			Task tempTask(title, start, end, type, status, comment);
-			addTask(tempTask);
-			count++;
-			break;
-		}
-	}
 	return statusCode;
 }
 
@@ -1017,6 +971,62 @@ void TaskList::pushEmptySlots(BasicDateTime& start, BasicDateTime& end, vector<B
 
 	_duplicateNormal = _normalTask;
 
+	cutRange(start, end);
+
+	if(!_duplicateNormal.empty())
+		std::sort(_duplicateNormal.begin(), _duplicateNormal.end());
+
+	pushEmptySlotsToTemp(start, end, _temp);
+}
+
+void TaskList::loadTasksFromVector(vector<string>& stringsFromFile){
+
+	string title, comment, currStr;
+	int type;
+	bool status;
+	BasicDateTime start, end;
+
+	for (unsigned int i = 0; i < stringsFromFile.size(); i++){
+
+		currStr = stringsFromFile[i];
+
+		switch (i % 6){
+		case 0:
+			if (currStr.substr(6) == STRING_FLOATING){
+				type = 0;
+			}else if (currStr.substr(6) == STRING_DEADLINE){
+				type = 1;
+			}else if (currStr.substr(6) == STRING_TIMED){
+				type = 2;			
+			}
+			break;
+		case 1:
+			title = currStr.substr(7);
+			break;
+		case 2:
+			if (currStr.substr(8) == STRING_DONE){
+				status = true;
+			}else{
+				status = false;
+			}
+			break;
+		case 3:
+			stringToBasicDateTime(currStr.substr(7), start);
+			break;
+		case 4:
+			stringToBasicDateTime(currStr.substr(5), end);
+			break;
+		case 5:
+			comment = currStr.substr(9);
+			Task tempTask(title, start, end, type, status, comment);
+			addTask(tempTask);
+			break;
+		}
+	}
+}
+
+void TaskList::cutRange(BasicDateTime& start, BasicDateTime& end){
+
 	Task tempTask;
 
 	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
@@ -1040,53 +1050,40 @@ void TaskList::pushEmptySlots(BasicDateTime& start, BasicDateTime& end, vector<B
 			i--;
 		}
 	}
+}
 
-	if(_duplicateNormal.empty()){
-		_temp.push_back(start);
-		_temp.push_back(end);
-		return;
-	}
+void TaskList::pushEmptySlotsToTemp(BasicDateTime& start, BasicDateTime& end, vector<BasicDateTime>& _temp){
 
-	std::sort(_duplicateNormal.begin(), _duplicateNormal.end());
+	_temp.push_back(start);
 
-	if(_duplicateNormal.size() == 1){
-		_temp.push_back(start);
-		_temp.push_back(_duplicateNormal[0].getStart());
-		_temp.push_back(_duplicateNormal[0].getEnd());
-		_temp.push_back(end);
-	}
-	else{
-		_temp.push_back(start);
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
 
-		for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+		_temp.push_back(_duplicateNormal[i].getStart());
 
-			_temp.push_back(_duplicateNormal[i].getStart());
-
-			while(1){
-				if(i != _duplicateNormal.size() - 1){
-					if(isInRange(_duplicateNormal[i].getEnd(), _duplicateNormal[i+1].getStart(), _duplicateNormal[i+1].getEnd()) && i+1 == _duplicateNormal.size() - 1){
-						_temp.push_back(_duplicateNormal[i+1].getEnd());
-						i++;
-						break;
-					}
-					else if(isInRange(_duplicateNormal[i].getEnd(), _duplicateNormal[i+1].getStart(), _duplicateNormal[i+1].getEnd()) && i+1 != _duplicateNormal.size() - 1){
-						i++;
-					}
-					else{
-						_temp.push_back(_duplicateNormal[i].getEnd());
-						break;
-					}
+		while(1){
+			if(i != _duplicateNormal.size() - 1){
+				if(isInRange(_duplicateNormal[i].getEnd(), _duplicateNormal[i+1].getStart(), _duplicateNormal[i+1].getEnd()) && i+1 == _duplicateNormal.size() - 1){
+					_temp.push_back(_duplicateNormal[i+1].getEnd());
+					i++;
+					break;
 				}
-				else
-				{
+				else if(isInRange(_duplicateNormal[i].getEnd(), _duplicateNormal[i+1].getStart(), _duplicateNormal[i+1].getEnd()) && i+1 != _duplicateNormal.size() - 1){
+					i++;
+				}
+				else{
 					_temp.push_back(_duplicateNormal[i].getEnd());
 					break;
 				}
 			}
+			else
+			{
+				_temp.push_back(_duplicateNormal[i].getEnd());
+				break;
+			}
 		}
-
-		_temp.push_back(end);
 	}
+
+	_temp.push_back(end);
 }
 
 void TaskList::setDay(int& day, string& dateTimeString){
@@ -1232,10 +1229,3 @@ bool TaskList::isExistingDate(BasicDateTime date, vector<BasicDateTime> vector){
 	}
 	return false;
 }
-
-
-/*
-vector<Task>* TaskList::returnTaskListPointer(){
-return &(_taskList);
-}
-*/

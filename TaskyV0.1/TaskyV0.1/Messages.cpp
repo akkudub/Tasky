@@ -148,12 +148,10 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_PROMPT_MARK_CHOOSE,
 };
 
-Messages::Messages()
-{
+Messages::Messages(){
 }
 
-Messages::~Messages()
-{
+Messages::~Messages(){
 }
 
 string Messages::getMessage(int index){

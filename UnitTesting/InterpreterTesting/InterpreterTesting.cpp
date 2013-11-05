@@ -1,4 +1,4 @@
-// InterpreterTesting.cpp : Defines the entry point for the console application.
+// TestDriver.cpp : Defines the entry point for the console application.
 //
 
 #include <string>
@@ -47,35 +47,36 @@ TEST(AddTest, simpleTest1){
 	//time with seconds
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' from today 14.00 to tomorrow 15.00.05 -m this is comment", title, type, start, end, comment));  // -- passed
 	EXPECT_EQ(2, type);
-	EXPECT_EQ("-m this is comment", comment);
+	EXPECT_EQ("this is comment", comment);
 	cout<<start.getDateTimeString()<<endl;
 	cout<<end.getDateTimeString()<<endl;
 	//special date input
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' from today 1500 to tomorrow 1600 -m this is comment", title, type, start, end, comment));  // -- passed
 	EXPECT_EQ(2, type);
-	EXPECT_EQ("-m this is comment", comment);
+	EXPECT_EQ("this is comment", comment);
 	cout<<start.getDateTimeString()<<endl;
 	cout<<end.getDateTimeString()<<endl;
 	//special date input
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by tomorrow 1500 -m this is comment", title, type, start, end, comment));  // -- passed
 	EXPECT_EQ(1, type);
-	EXPECT_EQ("-m this is comment", comment);
+	EXPECT_EQ("this is comment", comment);
 	cout<<end.getDateTimeString()<<endl;
 	//special date input
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by next mon 1600 -m this is comment2", title, type, start, end, comment));
 	EXPECT_EQ(1, type);
-	EXPECT_EQ("-m this is comment2", comment);
+	EXPECT_EQ("this is comment2", comment);
 	cout<<end.getDateTimeString()<<endl;
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by this mon 1600 -m this is comment3", title, type, start, end, comment));
 	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this' from today to tomorrow", title, type, start, end, comment));
 	//time out of boundary
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD, inter.interpretAdd("'this's one' from 31/04/12 12.00 to 13/12/13 13.00", title, type, start, end, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretAdd("'this's one' from 31/04/12 12.00 to 13/12/13 13.00", title, type, start, end, comment));
 	//empty input
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD, inter.interpretAdd("", title, type, start, end, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd("", title, type, start, end, comment));
 	//incomplete title
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD, inter.interpretAdd("' this from 30/04/12 to 20/05/13", title, type, start, end, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd("' this from 30/04/12 to 20/05/13", title, type, start, end, comment));
 	//empty title
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD, inter.interpretAdd(" '' -m this", title, type, start, end, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd(" '' -m this", title, type, start, end, comment));
 }
 
 TEST(RenameTest, simpleTest1){
@@ -93,10 +94,10 @@ TEST(RenameTest, simpleTest1){
 	EXPECT_EQ("this 'is' old", title1);
 	EXPECT_EQ("this is' new", title2);
 	//return error code
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME,inter.interpretRename("'this is is is'", title1, title2));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME,inter.interpretRename("'this is is ' to '", title1, title2));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME,inter.interpretRename("'this is is is' to ''", title1, title2));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RENAME,inter.interpretRename("'old title'to 'new title'", title1, title2));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is is'", title1, title2));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is ' to '", title1, title2));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT,inter.interpretRename("'this is is is' to ''", title1, title2));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'old title'to 'new title'", title1, title2));
 }
 
 TEST(RemoveTest, simpleTest1){
@@ -108,8 +109,8 @@ TEST(RemoveTest, simpleTest1){
 	EXPECT_EQ("this is old", title1);
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE, inter.interpretRemove(" 'this is' ' old'", title1)); 
 	EXPECT_EQ("this is' ' old", title1);
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_REMOVE, inter.interpretRemove(" 'this   ", title1));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_REMOVE, inter.interpretRemove(" this  ' ", title1));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretRemove(" 'this   ", title1));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretRemove(" this  ' ", title1));
 }
 
 TEST(MarkTest, simpleTest1){
@@ -123,25 +124,8 @@ TEST(MarkTest, simpleTest1){
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK, inter.interpretMark("'title' pending", title1, status));  // -- passed
 	EXPECT_EQ("title", title1);
 	EXPECT_FALSE(status);
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK, inter.interpretMark("'title'", title1, status));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MARK, inter.interpretMark("'title", title1, status));
-}
-
-TEST(SearchTest, simpleTest1){
-	Interpreter inter;
-	string title1, title2 , comment;
-	vector<string> vec;
-	int type;
-	BasicDateTime start, end;
-
-	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretSearch("'add'", vec, type, start, end));  // -- passed
-	EXPECT_EQ("add", vec.at(0));
-	EXPECT_EQ("add", vec.at(1));
-	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretSearch("'add this' from 12/12/12 12.00 to 12/12/13 13.00", vec, type, start, end));  // -- passed
-	EXPECT_EQ("add this", vec.at(0));
-	EXPECT_EQ("add", vec.at(1));
-	EXPECT_EQ("this", vec.at(2));
-	cout<<start.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretMark("'title'", title1, status));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretMark("'title", title1, status));
 }
 
 TEST(PowerSearchTest, simpleTest1){
@@ -168,10 +152,12 @@ TEST(PowerSearchTest, simpleTest1){
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("by 12/12/2013 12:13:13", slotEnabled, vec, searchStatus, type, start, end));
 	EXPECT_TRUE(slotEnabled);
 	cout<<end.getDateTimeString()<<endl;
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH, inter.interpretPowerSearch("random string", slotEnabled, vec, searchStatus, type, start, end));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH, inter.interpretPowerSearch("'random string", slotEnabled, vec, searchStatus, type, start, end));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH, inter.interpretPowerSearch("from to ", slotEnabled, vec, searchStatus, type, start, end));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH, inter.interpretPowerSearch("by ", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'title keyword'", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_TRUE(!slotEnabled);
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretPowerSearch("random string", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretPowerSearch("'random string", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretPowerSearch("from to ", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretPowerSearch("by ", slotEnabled, vec, searchStatus, type, start, end));
 }
 
 TEST(DisplayTest, simpleTest1){
@@ -202,7 +188,7 @@ TEST(RescheduleTest, simpleTest1){
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE, inter.interpretReschedule("'this is's title' from 12/12/12 12.00 to 12/12/12 13.00", title1, type, start, end));  // -- passed
 	EXPECT_EQ(2, type);
 	EXPECT_EQ("this is's title", title1);
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_RESCHEDULE, inter.interpretReschedule("'this is title' by 12/12/12 12.00", title1, type, start, end));  // -- passed
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretReschedule("'this is title' by 12/12/12 12.00", title1, type, start, end));
 }
 
 TEST(StringToIntTest, simpleTes1){
@@ -240,5 +226,3 @@ TEST(StringToIntVecTest, simpleTest1){
 	vec=inter.stringToIntVec("1-12a");
 	EXPECT_EQ(0, vec.size());
 }
-
-

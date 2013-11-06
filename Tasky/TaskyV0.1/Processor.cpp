@@ -196,9 +196,9 @@ int Processor::removeCommandProcessor(string input){
 				return PROMPT_REMOVE_CHOOSE;
 			}else if(_tempTaskList.empty()){
 				return WARNING_SEARCH_NO_RESULT;
-
 			}
 		}
+		break;
 	default:
 		return ERROR_REMOVE;
 		break;
@@ -270,7 +270,7 @@ int Processor::renameCommandProcessor(string input){
 		_tempTaskList.clear();
 		_statusFlag = 0;
 		return returnCode;
-
+		break;
 	case 0:
 		_tempTaskList.clear();
 
@@ -308,6 +308,7 @@ int Processor::renameCommandProcessor(string input){
 				return WARNING_SEARCH_NO_RESULT;
 			}
 		}
+		break;
 	default:
 		return ERROR_UPDATE;
 		break;
@@ -345,7 +346,7 @@ int Processor::rescheduleCommandProcessor(string input){
 		_tempTaskList.clear();
 		_statusFlag = 0;
 		return returnCode;
-
+		break;
 	case 0:
 		_tempTaskList.clear();
 
@@ -386,6 +387,7 @@ int Processor::rescheduleCommandProcessor(string input){
 				return WARNING_SEARCH_NO_RESULT;
 			}
 		}
+		break;
 	default:
 		return ERROR_UPDATE;
 		break;
@@ -424,6 +426,7 @@ int Processor::markCommandProcessor(string input){
 		_tempTaskList.clear();
 		_statusFlag = 0;
 		return returnCode;
+		break;
 	case 0:
 		_tempTaskList.clear();
 
@@ -456,6 +459,7 @@ int Processor::markCommandProcessor(string input){
 				return WARNING_SEARCH_NO_RESULT;
 			}
 		}
+		break;
 	default:
 		return ERROR_MARK;
 		break;
@@ -469,7 +473,6 @@ int Processor::searchCommandProcessor(string input){
 	vector<BasicDateTime> slots;
 	int type, status;
 	bool isPower;
-	//int returnCode = _interpreter.interpretSearch(input, keywords, type, start, end);
 	int returnCode = _interpreter.interpretPowerSearch(input, isPower, keywords, status, type, start, end);
 
 	_tempTaskList.clear();
@@ -770,6 +773,7 @@ void Processor::taskVecToStringVec(vector<Task> taskList, vector<string>& string
 	if (!taskList.empty()){
 		int size=taskList.size();
 		for (int i=0;i<size;i++){
+			stringList.push_back(to_string(i+1)+DOT+COLON);	
 			stringList.push_back(taskList[i].toString());
 		}
 	}

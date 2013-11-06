@@ -484,10 +484,10 @@ int Processor::searchCommandProcessor(string input){
 		return returnCode;
 	}else{
 		if (isPower){
-			_taskList.searchEmptySlots(start, end, slots);
+			returnCode = _taskList.searchEmptySlots(start, end, slots);
 			dateTimeVecToStringVec(slots, _tempStringList);
 		}else{
-			_taskList.searchTasks(keywords, status, type, start, end, _tempTaskList);
+			returnCode = _taskList.searchTasks(keywords, status, type, start, end, _tempTaskList);
 			taskVecToStringVec(_tempTaskList, _tempStringList);
 		}
 	}

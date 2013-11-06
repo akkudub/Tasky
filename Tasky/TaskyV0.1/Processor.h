@@ -91,6 +91,7 @@ private:
 	static const string CLASHES;
 	static const string TASKS_REMOVED;
 	static const string TASKS_REMOVING_ERROR;
+	static const string UPDATED_TO;
 	static const string TASK_RENAMED;
 	static const string TASK_RENAME_ERROR;
 	static const string TASK_RESCHEDULED;

@@ -89,7 +89,7 @@ private:
 	static const int NOVEMBER                             = 11;
 	static const int DECEMBER                             = 12;
 	static const int YEAR_LOWER_BOUND                     = 1900;
-	static const int YEAR_UPPER_BOUND                     = 3000;
+	static const int YEAR_UPPER_BOUND                     = 2300;
 	static const int DAY_LOWER_BOUND                      = 1;
 	static const int DAY_UPPER_BOUND1                     = 31;
 	static const int DAY_UPPER_BOUND2                     = 30;

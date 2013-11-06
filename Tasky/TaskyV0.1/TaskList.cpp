@@ -407,7 +407,7 @@ void TaskList::containingExactStringSearch(string exactString, vector<Task>& _te
 
 		string tempString = _duplicateFloating[i].getTitle();
 
-		if(tempString.find(exactString) != std::string::npos){
+		if(stringToLower(tempString).find(exactString) != std::string::npos){
 			_temp.push_back(_duplicateFloating[i]);
 			_duplicateFloating.erase(_duplicateFloating.begin()+i);
 			i--;
@@ -418,7 +418,7 @@ void TaskList::containingExactStringSearch(string exactString, vector<Task>& _te
 
 		string tempString = _duplicateDeadline[i].getTitle();
 
-		if(tempString.find(exactString) != std::string::npos){
+		if(stringToLower(tempString).find(exactString) != std::string::npos){
 			_temp.push_back(_duplicateDeadline[i]);
 			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
 			i--;
@@ -429,7 +429,7 @@ void TaskList::containingExactStringSearch(string exactString, vector<Task>& _te
 
 		string tempString = _duplicateNormal[i].getTitle();
 
-		if(tempString.find(exactString) != std::string::npos){
+		if(stringToLower(tempString).find(exactString) != std::string::npos){
 			_temp.push_back(_duplicateNormal[i]);
 			_duplicateNormal.erase(_duplicateNormal.begin()+i);
 			i--;
@@ -563,7 +563,7 @@ void TaskList::containingExactStringSearchWithStatus(string exactString, bool do
 
 		string tempString = _duplicateFloating[i].getTitle();
 
-		if(tempString.find(exactString) != std::string::npos && _duplicateFloating[i].getDone() == done){
+		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateFloating[i].getDone() == done){
 			_temp.push_back(_duplicateFloating[i]);
 			_duplicateFloating.erase(_duplicateFloating.begin()+i);
 			i--;
@@ -574,7 +574,7 @@ void TaskList::containingExactStringSearchWithStatus(string exactString, bool do
 
 		string tempString = _duplicateDeadline[i].getTitle();
 
-		if(tempString.find(exactString) != std::string::npos && _duplicateDeadline[i].getDone() == done){
+		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateDeadline[i].getDone() == done){
 			_temp.push_back(_duplicateDeadline[i]);
 			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
 			i--;
@@ -585,7 +585,7 @@ void TaskList::containingExactStringSearchWithStatus(string exactString, bool do
 
 		string tempString = _duplicateNormal[i].getTitle();
 
-		if(tempString.find(exactString) != std::string::npos && _duplicateNormal[i].getDone() == done){
+		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateNormal[i].getDone() == done){
 			_temp.push_back(_duplicateNormal[i]);
 			_duplicateNormal.erase(_duplicateNormal.begin()+i);
 			i--;

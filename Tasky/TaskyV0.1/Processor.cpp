@@ -203,6 +203,7 @@ int Processor::removeCommandProcessor(string input){
 		return ERROR_REMOVE;
 		break;
 	}
+	return ERROR_REMOVE;
 }
 
 
@@ -313,6 +314,7 @@ int Processor::renameCommandProcessor(string input){
 		return ERROR_UPDATE;
 		break;
 	}
+	return ERROR_UPDATE;
 }
 
 int Processor::rescheduleCommandProcessor(string input){
@@ -392,6 +394,7 @@ int Processor::rescheduleCommandProcessor(string input){
 		return ERROR_UPDATE;
 		break;
 	}
+	return ERROR_UPDATE;
 }
 
 
@@ -464,6 +467,7 @@ int Processor::markCommandProcessor(string input){
 		return ERROR_MARK;
 		break;
 	}
+	return ERROR_MARK;
 }
 
 
@@ -504,7 +508,7 @@ int Processor::undoCommandProcessor(string input){
 	}
 	for (int i = undoCount; i >=0; i--){
 		returnCode = _history.undo(command);	
-		if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UNDO){
+		if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_UNDO){
 			switch (command.getCommandTypeUndo()){
 			case COMMAND_TYPES::ADD:
 				returnCode = _taskList.add(command.getOld(), _tempTaskList);
@@ -773,7 +777,7 @@ void Processor::taskVecToStringVec(vector<Task> taskList, vector<string>& string
 	if (!taskList.empty()){
 		int size=taskList.size();
 		for (int i=0;i<size;i++){
-			stringList.push_back(to_string(i+1)+DOT+COLON);	
+			stringList.push_back(to_string(i+1)+COLON);	
 			stringList.push_back(taskList[i].toString());
 		}
 	}

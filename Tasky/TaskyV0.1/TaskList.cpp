@@ -932,7 +932,7 @@ void TaskList::setToday(BasicDateTime& start, BasicDateTime& end){
 
 bool TaskList::isEmptySlotsPresent(BasicDateTime start, BasicDateTime end){
 
-	for(int i = 0; i < _normalTask.size(); i++){
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
 
 		if(_normalTask[i].getStart().compareTo(start) <= 0 && _normalTask[i].getEnd().compareTo(end) >= 0)
 			return false;

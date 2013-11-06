@@ -1,15 +1,15 @@
 #include "Task.h"
 
-const string Task::TITLE_KEY_WORD = "Title: ";
-const string Task::TYPE_KEY_WORD = "Type: ";
-const string Task::STATUS_KEY_WORD = "Status: ";
-const string Task::START_KEY_WORD = "Start time: ";
-const string Task::END_KEY_WORD = "End time: ";
-const string Task::COMMENT_KEY_WORD = "Comment: ";
-const string Task::DONE_KEY_WORD = "Done";
-const string Task::PENDING_KEY_WORD = "Pending";
-const string Task::NONE_KEY_WORD = "None";
-const string Task::TIMED_TASK_KEY_WORD = "Timed task";
+const string Task::TITLE_KEY_WORD =			"Title:      ";
+const string Task::TYPE_KEY_WORD =			"Type:       ";
+const string Task::STATUS_KEY_WORD =		"Status:     ";
+const string Task::START_KEY_WORD =			"Start time: ";
+const string Task::END_KEY_WORD =			"End time:   ";
+const string Task::COMMENT_KEY_WORD =		"Comment:    ";
+const string Task::DONE_KEY_WORD =			"Done";
+const string Task::PENDING_KEY_WORD =		"Pending";
+const string Task::NONE_KEY_WORD =			"None";
+const string Task::TIMED_TASK_KEY_WORD =	"Timed task";
 const string Task::DEADLINE_TASK_KEY_WORD = "Deadline task";
 const string Task::FLOATING_TASK_KEY_WORD = "Floating task" ;
 const string Task::EMPTY_STRING = "";

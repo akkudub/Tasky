@@ -785,9 +785,10 @@ int Processor::recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTa
 void Processor::taskVecToStringVec(vector<Task> taskList, vector<string>& stringList){
 	if (!taskList.empty()){
 		int size=taskList.size();
+		string tempStr;
 		for (int i=0;i<size;i++){
-			stringList.push_back(to_string(i+1)+COLON);	
-			stringList.push_back(taskList[i].toString());
+			tempStr = "Task no:    " + to_string(i+1) + NEW_LINE + taskList[i].toString();
+			stringList.push_back(tempStr);	
 		}
 	}
 }

@@ -3,21 +3,44 @@
 
 void UI::UI_interface(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
 	string command;
 	bool statusFlag = false;
+	displayWelcomeMessage();
 	while (!statusFlag) {
 		displayCommandMessage(command, hConsole);
 		displayProcessorMessage(command, hConsole, statusFlag);
 	}
-	system("pause");
+	displayExitMessage();
 }
 
 
-void UI::displayWelcomeMessage(HANDLE hConsole){
-	cout << MESSAGE_WELCOME <<endl;
-	bool alwaysFalse = false;
-	displayProcessorMessage(COMMAND_DISPLAY_TASK_PENDING,hConsole,alwaysFalse);
+void UI::displayWelcomeMessage(){
+	cout << MESSAGE_WELCOME;
+	string message;
+	vector<string> feedback;
+	int output = _processor.UImainProcessor(COMMAND_DISPLAY_TASK_TODAY, message, feedback);
+	if (output == STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS) {
+		cout << MESSAGE_TASKS_TODAY << endl;
+		for (string str:feedback){
+			cout << str << endl;
+			cout << endl;
+		}
+	}
+	cout << endl;
+}
+
+void UI::displayExitMessage(){
+	cout << "Exiting in 5" << endl;
+	Sleep(1000);
+	cout << "Exiting in 4" << endl;
+	Sleep(1000);
+	cout << "Exiting in 3" << endl;
+	Sleep(1000);
+	cout << "Exiting in 2" << endl;
+	Sleep(1000);
+	cout << "Exiting in 1" << endl;
+	Sleep(1000);
+
 }
 
 

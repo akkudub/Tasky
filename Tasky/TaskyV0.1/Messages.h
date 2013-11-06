@@ -28,6 +28,7 @@ private:
 	static const string MESSAGE_SUCCESS_SAVE;
 	static const string MESSAGE_SUCCESS_UNDO;
 	static const string MESSAGE_SUCCESS_REDO;
+	static const string MESSAGE_SUCCESS_HELP;
 	static const string MESSAGE_SUCCESS_RECORD;
 	static const string MESSAGE_SUCCESS_INTERPRET_ADD;
 	static const string MESSAGE_SUCCESS_INTERPRET_REMOVE;

@@ -19,6 +19,7 @@ const string Messages::MESSAGE_SUCCESS_LOAD =			"Success! File loaded";
 const string Messages::MESSAGE_SUCCESS_SAVE =			"Success! File saved";
 const string Messages::MESSAGE_SUCCESS_UNDO =			"Success! Undo successful";
 const string Messages::MESSAGE_SUCCESS_REDO =			"Success! Redo successful";
+const string Messages::MESSAGE_SUCCESS_HELP =			"Success! Help displayed";
 const string Messages::MESSAGE_SUCCESS_RECORD =		"Success! Previous action recorded";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_ADD = "Success! Interpreted add";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_REMOVE = "Success! Interpreted remove";
@@ -90,6 +91,7 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_SUCCESS_SAVE,
 	MESSAGE_SUCCESS_UNDO,
 	MESSAGE_SUCCESS_REDO,
+	MESSAGE_SUCCESS_HELP,
 	MESSAGE_SUCCESS_RECORD,
 	MESSAGE_SUCCESS_INTERPRET_ADD,
 	MESSAGE_SUCCESS_INTERPRET_REMOVE,

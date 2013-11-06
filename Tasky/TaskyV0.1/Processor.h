@@ -96,6 +96,10 @@ private:
 	static const string REDO_TASK_REMOVING_ERROR;
 	static const string REDO_TASK_UPDATED;
 	static const string REDO_TASK_UPDATING_ERROR;
+	static const string EMPTY_SLOTS;
+	static const string NO_EMPTY_SLOTS;
+	static const string SLOT_START;
+	static const string SLOT_END;
 
 public:
 	Processor();
@@ -313,6 +317,8 @@ private:
 	* @return true if the command is a normal command, false otherwise
 	*/
 	bool commandIsNormal(string command);
+
+	void pushFeedackToStringVec(vector<Task> taskVector, string message);
 };
 
 #endif

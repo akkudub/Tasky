@@ -36,6 +36,10 @@ const string Processor::REDO_TASK_REMOVED = "Redo Tasks removed:";
 const string Processor::REDO_TASK_REMOVING_ERROR = "Redo Tasks removing error";
 const string Processor::REDO_TASK_UPDATED = "Redo Tasks updated:";
 const string Processor::REDO_TASK_UPDATING_ERROR = "Redo Tasks updating error:";
+const string Processor::EMPTY_SLOTS = "Following empty slots found:";
+const string Processor::NO_EMPTY_SLOTS = "No empty slots found!";
+const string Processor::SLOT_START = "Slot starts:";
+const string Processor::SLOT_END = "Slot ends:";
 
 Processor::Processor(){
 	_statusFlag=0;
@@ -155,19 +159,8 @@ int Processor::removeCommandProcessor(string input){
 				}
 			}
 		}
-		_tempStringList.push_back(TASKS_REMOVED);
-		if (removedTasks.empty()){
-			_tempStringList.push_back(NONE);
-		}else{			
-			taskVecToStringVec(removedTasks, _tempStringList);
-		}
-
-		_tempStringList.push_back(TASKS_REMOVING_ERROR);
-		if (errorTasks.empty()){			
-			_tempStringList.push_back(NONE);
-		}else{
-			taskVecToStringVec(errorTasks, _tempStringList);
-		}
+		pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
+		pushFeedackToStringVec(errorTasks, TASKS_REMOVING_ERROR);
 
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -420,19 +413,8 @@ int Processor::markCommandProcessor(string input){
 				}
 			}
 		}
-		_tempStringList.push_back(TASKS_MARKED);
-		if (markedTasks.empty()){
-			_tempStringList.push_back(NONE);
-		}else{			
-			taskVecToStringVec(markedTasks, _tempStringList);
-		}
-
-		_tempStringList.push_back(TASKS_MARKING_ERROR);
-		if (errorTasks.empty()){			
-			_tempStringList.push_back(NONE);
-		}else{
-			taskVecToStringVec(errorTasks, _tempStringList);
-		}
+		pushFeedackToStringVec(markedTasks, TASKS_MARKED);
+		pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
 
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -790,13 +772,20 @@ void Processor::taskVecToStringVec(vector<Task> taskList, vector<string>& string
 
 void Processor::dateTimeVecToStringVec(vector<BasicDateTime> slots, vector<string>& stringList){
 	if (!slots.empty()){
-		int size = slots.size();
-		for (int i = 0; i < size; i++){
-			stringList.push_back(slots[i].getDateTimeString());
-			if (1%2 == 1){
+		_tempStringList.push_back(EMPTY_SLOTS);
+		for (unsigned int i = 0; i < slots.size(); i++){
+			if (i%2 == 0){				
+				stringList.push_back(SLOT_START);
+				stringList.push_back(slots[i].getDateTimeString());
+			}else{
+				stringList.push_back(SLOT_END);
+				stringList.push_back(slots[i].getDateTimeString());
 				stringList.push_back(NEW_LINE_STRING);
 			}
 		}
+	}else
+	{
+		_tempStringList.push_back(NO_EMPTY_SLOTS);
 	}
 }
 
@@ -810,5 +799,14 @@ bool Processor::commandIsNormal(string command){
 		return true;
 	}else{
 		return false;
+	}
+}
+
+void Processor::pushFeedackToStringVec(vector<Task> taskVector, string message){
+	_tempStringList.push_back(message);
+	if (taskVector.empty()){
+		_tempStringList.push_back(NONE);
+	}else{			
+		taskVecToStringVec(taskVector, _tempStringList);
 	}
 }

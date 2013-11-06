@@ -23,9 +23,10 @@ const string Processor::COMMAND_MARK = "mark";
 const string Processor::COMMAND_SEARCH = "search";
 const string Processor::COMMAND_UNDO = "undo";
 const string Processor::COMMAND_REDO = "redo";
+const string Processor::COMMAND_HELP = "help";
 const string Processor::COMMAND_EXIT = "exit";
 
-const string Processor::TASK_ADDED = "Task Description:";
+const string Processor::TASK_ADDED = "Task Added:";
 const string Processor::CLASHES = "Clashes:";
 const string Processor::TASKS_REMOVED = "Tasks removed:";
 const string Processor::TASKS_REMOVING_ERROR = "Tasks removing error:";
@@ -97,6 +98,8 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 				returnCode = undoCommandProcessor(input);
 			}else if(command == COMMAND_REDO){
 				returnCode = redoCommandProcessor(input);
+			}else if(command == COMMAND_HELP){
+				returnCode = helpCommandProcessor(input);
 			}else{
 				returnCode = otherCommandProcessor();
 			}
@@ -614,6 +617,11 @@ int Processor::redoCommandProcessor(string input){
 	}
 	_tempTaskList.clear();
 	return returnCode;
+}
+
+int Processor::helpCommandProcessor(string input){
+	_tempStringList.push_back(_help.getHelpMsg(input));
+	return SUCCESS_HELP;
 }
 
 int Processor::otherCommandProcessor(){

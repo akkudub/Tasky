@@ -24,6 +24,7 @@
 #include "Interpreter.h"
 #include "Essential.h"
 #include "Messages.h"
+#include "HelpUser.h"
 
 class Processor{
 	/*
@@ -44,6 +45,7 @@ class Processor{
 private:
 	vector<Task> _tempTaskList;
 	vector<string> _tempStringList; 
+	int _statusFlag; 
 
 	string _tempTitle;
 	bool _tempStatus;
@@ -51,13 +53,12 @@ private:
 	BasicDateTime _tempStart;
 	BasicDateTime _tempEnd;
 
-	vector<Task>* _taskListPointer;
 	TaskList _taskList;
 	History _history;
 	Interpreter _interpreter;
 	FileProcessing _fileProcessing;
 	Messages _messages;
-	int _statusFlag; 
+	HelpUser _help;
 
 private:
 
@@ -83,6 +84,7 @@ private:
 	static const string COMMAND_SEARCH;
 	static const string COMMAND_UNDO;
 	static const string COMMAND_REDO;
+	static const string COMMAND_HELP;
 	static const string COMMAND_EXIT;
 
 	static const string TASK_ADDED;
@@ -139,6 +141,7 @@ private:
 	* @return status code
 	*/
 	int addCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle remove commands
@@ -147,6 +150,7 @@ private:
 	* @return status code
 	*/
 	int removeCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle display commands
@@ -155,6 +159,7 @@ private:
 	* @return status code
 	*/
 	int displayCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle rename commands from update
@@ -163,6 +168,7 @@ private:
 	* @return status code
 	*/
 	int renameCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle reschedule commands from update
@@ -171,6 +177,7 @@ private:
 	* @return status code
 	*/
 	int rescheduleCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle mark commands
@@ -179,6 +186,7 @@ private:
 	* @return status code
 	*/
 	int markCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle search commands
@@ -187,6 +195,7 @@ private:
 	* @return status code
 	*/
 	int searchCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle undo commands
@@ -195,14 +204,25 @@ private:
 	* @return status code
 	*/
 	int undoCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle redo commands
 	*
-	* @param input the input passed in from the main processor without the mark keyword(single redo)
+	* @param input the input passed in from the main processor without the redo keyword(single redo)
 	* @return status code
 	*/
 	int redoCommandProcessor(string input);
+	
+	/*
+	* Purpose:
+	* Handle help commands
+	*
+	* @param input the input passed in from the main processor without the help keyword
+	* @return status code
+	*/
+	int helpCommandProcessor(string input);
+
 	/*
 	* Purpose:
 	* Handle wrong/invalid commands
@@ -211,6 +231,7 @@ private:
 	* @return status code(always WARNING_WRONG_INPUT)
 	*/
 	int otherCommandProcessor();
+
 	/*
 	* Purpose:
 	* Handle save command
@@ -218,6 +239,7 @@ private:
 	* @return status code
 	*/
 	int saveFile();
+
 	/*
 	* Purpose:
 	* Handle load command
@@ -225,6 +247,7 @@ private:
 	* @return status code
 	*/
 	int loadFile();
+
 	/*
 	* Purpose:
 	* To return feedback to the user and give the overall status of the operation

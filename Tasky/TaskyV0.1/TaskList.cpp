@@ -916,15 +916,15 @@ void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
 
 void TaskList::setToday(BasicDateTime& start, BasicDateTime& end){
 
-	System::DateTime today;
-
-	today = today.Now;
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
 
 	int day, month, year;
 
-	day = today.Day;
-	month = today.Month;
-	year = today.Year;
+	day = time2.tm_mday;
+	month = time2.tm_mon + 1;
+	year = time2.tm_year + 1900;
 
 	start = BasicDateTime(year, month, day);
 	end = BasicDateTime(year, month, day, 23, 59, 59);

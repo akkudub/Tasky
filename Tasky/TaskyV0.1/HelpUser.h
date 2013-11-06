@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -23,6 +24,8 @@ using namespace std;
  * help -comment     --info about comment
  * help -others      --other relevant info
  * help -about       --about the authors of this program
+ *
+ *@author: Joan, Junchao.
  */
 
 class HelpUser{
@@ -61,9 +64,8 @@ public:
 	string getHelpMsg(string input);
 
 private:
-	int determineHelpType(const string& input);
-	string getMsg(int type);
-	bool equalWithoutCase(const string& input, const string& keyword);
+	string determineHelperString(const string& input);
+	bool equalWithoutCase(string input, const string& keyword);
 };
 
 #endif

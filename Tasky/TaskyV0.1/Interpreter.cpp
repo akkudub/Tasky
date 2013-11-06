@@ -223,7 +223,6 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 }
 
 int Interpreter::interpretRemove(string str, string& title){
-	str=removeLeadingSpaces(str);
 	int num1, num2;
 	if (!extractTitle(str, title, num1, num2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;

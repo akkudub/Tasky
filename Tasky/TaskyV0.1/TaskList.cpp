@@ -46,18 +46,56 @@ int TaskList::remove(Task toRemove){
 		return ERROR_REMOVE;
 }
 
-int TaskList::search(string searchLine, vector<Task>& _temp){
+int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
+
+	if(existingTask.isEqualTo(newTask))
+		return WARNING_UPDATE_SAME;
+
+	assert(remove(existingTask) == SUCCESS_REMOVE);
+
+	add(newTask, _temp);
+
+	if(!_temp.empty())
+		return WARNING_UPDATE_CLASH;
+	else
+		return SUCCESS_UPDATE;
+
+	return ERROR_UPDATE;
+}
+
+int TaskList::mark(bool mark, Task task){
+
+	if(task.getDone() == mark)
+		return WARNING_MARK_NO_CHANGE;
+
+	if(isSuccessfullyMarked(mark, task))
+		return SUCCESS_MARK;
+	else
+		return ERROR_MARK;
+}
+
+int TaskList::displayAll(vector<Task>& _temp){
 
 	_temp.clear();
 
-	searchTitle(searchLine, _temp);
+	appendVectors(_temp);
 
 	if(!_temp.empty())
-		return SUCCESS_SEARCH;
+		return SUCCESS_DISPLAY;
 	else
-		return WARNING_SEARCH_NO_RESULT;
+		return WARNING_DISPLAY_NO_RESULT;
 
-	return ERROR_SEARCH;
+	return ERROR_DISPLAY;
+}
+
+int TaskList::displayToday(vector<Task>& _temp){
+
+	BasicDateTime start;
+	BasicDateTime end;
+
+	setToday(start, end);
+
+	return searchInRange(start, end, _temp);
 }
 
 int TaskList::searchTasks(vector<string> keywords, int statusPresent, int type, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
@@ -101,6 +139,44 @@ int TaskList::searchEmptySlots(BasicDateTime start, BasicDateTime end, vector<Ba
 		return WARNING_SEARCH_NO_RESULT;
 
 	return ERROR_SEARCH;
+}
+
+int TaskList::search(string searchLine, vector<Task>& _temp){
+
+	_temp.clear();
+
+	searchTitle(searchLine, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_SEARCH;
+	else
+		return WARNING_SEARCH_NO_RESULT;
+
+	return ERROR_SEARCH;
+}
+
+int TaskList::saveFile(){
+
+	vector<Task> allTasks;
+
+	appendVectors(allTasks);
+
+	vector<string> allTasksString = taskVecToStringVec(allTasks);
+
+	return _fileProcessing.save(allTasksString);
+}
+
+int TaskList::loadFile(){
+
+	vector<string> stringsFromFile;
+	int statusCode;
+
+	statusCode = _fileProcessing.load(stringsFromFile);
+
+	if(statusCode == SUCCESS_LOAD)
+		loadTasksFromVector(stringsFromFile);
+
+	return statusCode;
 }
 
 void TaskList::setFlags(vector<string> keywords, int statusPresent, int type){
@@ -185,20 +261,6 @@ int TaskList::searchKeywordsWithRangeAndStatus(vector<string> keywords, BasicDat
 	return ERROR_SEARCH;
 }
 
-int TaskList::displayAll(vector<Task>& _temp){
-
-	_temp.clear();
-
-	appendVectors(_temp);
-
-	if(!_temp.empty())
-		return SUCCESS_DISPLAY;
-	else
-		return WARNING_DISPLAY_NO_RESULT;
-
-	return ERROR_DISPLAY;
-}
-
 int TaskList::displayStatus(bool done, vector<Task>& _temp){
 
 	_temp.clear();
@@ -211,16 +273,6 @@ int TaskList::displayStatus(bool done, vector<Task>& _temp){
 		return WARNING_DISPLAY_NO_RESULT;
 
 	return ERROR_DISPLAY;
-}
-
-int TaskList::displayToday(vector<Task>& _temp){
-
-	BasicDateTime start;
-	BasicDateTime end;
-
-	setToday(start, end);
-
-	return searchInRange(start, end, _temp);
 }
 
 int TaskList::searchInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
@@ -249,64 +301,6 @@ int TaskList::searchStatusInRange(bool done, BasicDateTime start, BasicDateTime 
 		return WARNING_DISPLAY_NO_RESULT;
 
 	return ERROR_DISPLAY;
-}
-
-int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
-
-	if(existingTask.isEqualTo(newTask))
-		return WARNING_UPDATE_SAME;
-
-	assert(remove(existingTask) == SUCCESS_REMOVE);
-
-	add(newTask, _temp);
-
-	if(!_temp.empty())
-		return WARNING_UPDATE_CLASH;
-	else
-		return SUCCESS_UPDATE;
-
-	return ERROR_UPDATE;
-}
-
-int TaskList::mark(bool mark, Task task){
-
-	if(task.getDone() == mark)
-		return WARNING_MARK_NO_CHANGE;
-
-	if(isSuccessfullyMarked(mark, task))
-		return SUCCESS_MARK;
-	else
-		return ERROR_MARK;
-}
-
-void TaskList::getOccupiedDates(vector<BasicDateTime>& usedDates){
-
-	usedDates.clear();
-	pushOccupiedDates(usedDates);
-}
-
-int TaskList::saveFile(){
-
-	vector<Task> allTasks;
-
-	appendVectors(allTasks);
-
-	vector<string> allTasksString = taskVecToStringVec(allTasks);
-
-	return _fileProcessing.save(allTasksString);
-}
-
-int TaskList::loadFile(){
-
-	vector<string> stringsFromFile;
-	int statusCode;
-
-	statusCode = _fileProcessing.load(stringsFromFile);
-
-	if(statusCode == SUCCESS_LOAD)
-		loadTasksFromVector(stringsFromFile);
-
-	return statusCode;
 }
 
 void TaskList::addTask(Task toAdd){
@@ -825,14 +819,12 @@ void TaskList::pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTi
 
 		if(tempTask.isClashingWith(_normalTask[i]))
 			_temp.push_back(_normalTask[i]);
-
 	}
 
 	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
 
 		if(isInRange(_deadlineTask[i].getEnd(), start, end))
 			_temp.push_back(_deadlineTask[i]);
-
 	}
 }
 
@@ -869,24 +861,6 @@ bool TaskList::isSuccessfullyMarked(bool mark, Task task){
 		break;
 	}
 	return false;
-}
-
-void TaskList::pushOccupiedDates(vector<BasicDateTime>& usedDates){
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(!isExistingDate(_normalTask[i].getStart(), usedDates))
-			usedDates.push_back(_normalTask[i].getStart());
-
-		if(!isExistingDate(_normalTask[i].getEnd(), usedDates))
-			usedDates.push_back(_normalTask[i].getEnd());
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(!isExistingDate(_deadlineTask[i].getEnd(), usedDates))
-			usedDates.push_back(_deadlineTask[i].getEnd());
-	}
 }
 
 void TaskList::pushStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
@@ -1217,15 +1191,4 @@ string TaskList::stringToLower(string& toLowerString){
 	std::transform(toLowerString.begin(), toLowerString.end(), toLowerString.begin(), ::tolower);
 
 	return toLowerString;
-}
-
-bool TaskList::isExistingDate(BasicDateTime date, vector<BasicDateTime> vector){
-
-	for(unsigned int i = 0; i < vector.size(); i++){
-
-		if(vector[i].compareTo(date) == 0)
-			return true;
-
-	}
-	return false;
 }

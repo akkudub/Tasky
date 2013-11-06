@@ -25,7 +25,7 @@ const string Processor::COMMAND_UNDO = "undo";
 const string Processor::COMMAND_REDO = "redo";
 const string Processor::COMMAND_EXIT = "exit";
 
-const string Processor::TASK_DESCRIPTION = "Task Description:";
+const string Processor::TASK_ADDED = "Task Description:";
 const string Processor::CLASHES = "Clashes:";
 const string Processor::TASKS_REMOVED = "Tasks removed:";
 const string Processor::TASKS_REMOVING_ERROR = "Tasks removing error:";
@@ -49,8 +49,8 @@ const string Processor::REDO_TASK_UPDATED = "Redo Tasks updated:";
 const string Processor::REDO_TASK_UPDATING_ERROR = "Redo Tasks updating error:";
 const string Processor::EMPTY_SLOTS = "Following empty slots found:";
 const string Processor::NO_EMPTY_SLOTS = "No empty slots found!";
-const string Processor::SLOT_START = "Slot starts:";
-const string Processor::SLOT_END = "Slot ends:";
+const string Processor::SLOT_FROM = "From: ";
+const string Processor::SLOT_TO = "To: ";
 
 Processor::Processor(){
 	_statusFlag=0;
@@ -185,7 +185,7 @@ int Processor::removeCommandProcessor(string input){
 				newTask = _tempTaskList[0];
 				returnCode = _taskList.remove(newTask);
 				processRemoveCode(returnCode, removedTasks, errorTasks, newTask, oldTask);
-				
+
 				pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
 				pushFeedackToStringVec(errorTasks, TASKS_REMOVING_ERROR);
 				_tempTaskList.clear();
@@ -424,8 +424,9 @@ int Processor::markCommandProcessor(string input){
 			}
 		}
 		pushFeedackToStringVec(markedTasks, TASKS_MARKED);
-		pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
-
+		if (!errorTasks.empty()){
+			pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
+		}
 		_tempTaskList.clear();
 		_statusFlag = 0;
 		return returnCode;
@@ -687,7 +688,7 @@ int Processor::addFloatingTask(string title, string comment){
 
 	if(statusCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
 		recordCommand(COMMAND_TYPES::ADD, tOld, tNew);
-		_tempStringList.push_back(TASK_DESCRIPTION);
+		_tempStringList.push_back(TASK_ADDED);
 		_tempStringList.push_back(tNew.toString());
 	}
 	if (statusCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -706,7 +707,7 @@ int Processor::addDeadlineTask(string title, BasicDateTime end, string comment){
 	int statusCode = _taskList.add(tNew, _tempTaskList);
 	if(statusCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
 		recordCommand(COMMAND_TYPES::ADD, tOld, tNew);
-		_tempStringList.push_back(TASK_DESCRIPTION);
+		_tempStringList.push_back(TASK_ADDED);
 		_tempStringList.push_back(tNew.toString());
 	}
 	if (statusCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -724,7 +725,7 @@ int Processor::addTimedTask(string title, BasicDateTime start, BasicDateTime end
 	int statusCode = _taskList.add(tNew, _tempTaskList);
 	if(statusCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
 		recordCommand(COMMAND_TYPES::ADD, tOld, tNew);
-		_tempStringList.push_back(TASK_DESCRIPTION);
+		_tempStringList.push_back(TASK_ADDED);
 		_tempStringList.push_back(tNew.toString());
 	}
 	if (statusCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
@@ -785,19 +786,15 @@ void Processor::taskVecToStringVec(vector<Task> taskList, vector<string>& string
 
 void Processor::dateTimeVecToStringVec(vector<BasicDateTime> slots, vector<string>& stringList){
 	if (!slots.empty()){
+		string tempstr;
 		_tempStringList.push_back(EMPTY_SLOTS);
-		for (unsigned int i = 0; i < slots.size(); i++){
-			if (i%2 == 0){				
-				stringList.push_back(SLOT_START);
-				stringList.push_back(slots[i].getDateTimeString());
-			}else{
-				stringList.push_back(SLOT_END);
-				stringList.push_back(slots[i].getDateTimeString());
-				stringList.push_back(NEW_LINE_STRING);
-			}
+		for (unsigned int i = 0; i < slots.size(); i=i+2){			
+			tempstr = to_string((i+2)/2) + COLON;
+			tempstr += SLOT_FROM + slots[i].getDateTimeString() + SPACE;
+			tempstr += SLOT_TO + slots[i+1].getDateTimeString();
+			stringList.push_back(tempstr);
 		}
-	}else
-	{
+	}else{
 		_tempStringList.push_back(NO_EMPTY_SLOTS);
 	}
 }
@@ -816,10 +813,8 @@ bool Processor::commandIsNormal(string command){
 }
 
 void Processor::pushFeedackToStringVec(vector<Task> taskVector, string message){
-	_tempStringList.push_back(message);
-	if (taskVector.empty()){
-		_tempStringList.push_back(NONE);
-	}else{			
+	if (!taskVector.empty()){
+		_tempStringList.push_back(message);
 		taskVecToStringVec(taskVector, _tempStringList);
 	}
 }

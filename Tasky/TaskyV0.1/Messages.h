@@ -29,7 +29,6 @@ private:
 	static const string MESSAGE_SUCCESS_UNDO;
 	static const string MESSAGE_SUCCESS_REDO;
 	static const string MESSAGE_SUCCESS_RECORD;
-	static const string MESSAGE_ERROR_INVALID_CHOICE;
 	static const string MESSAGE_SUCCESS_INTERPRET_ADD;
 	static const string MESSAGE_SUCCESS_INTERPRET_REMOVE;
 	static const string MESSAGE_SUCCESS_INTERPRET_DISPLAY;
@@ -37,8 +36,6 @@ private:
 	static const string MESSAGE_SUCCESS_INTERPRET_RESCHEDULE;	
 	static const string MESSAGE_SUCCESS_INTERPRET_MARK;
 	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH;
-	static const string MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME;
-	static const string MESSAGE_ERROR_INTERPRET_STRINGTODATETIME;
 
 	static const string MESSAGE_WARNING_ADD_CLASH;	
 	static const string MESSAGE_WARNING_ADD_DUPLICATE;
@@ -65,6 +62,7 @@ private:
 	static const string MESSAGE_ERROR_LOAD_CORRUPTED_DATA;
 	static const string MESSAGE_ERROR_SAVE_SAVEFILE;
 	static const string MESSAGE_ERROR_RECORD;
+	static const string MESSAGE_ERROR_INVALID_CHOICE;
 	static const string MESSAGE_ERROR_INTERPRET_EMPTY_INPUT;
 	static const string MESSAGE_ERROR_INTERPRET_TITLE_FORMAT;
 	static const string MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT;

@@ -85,7 +85,7 @@ private:
 	static const string COMMAND_REDO;
 	static const string COMMAND_EXIT;
 
-	static const string TASK_DESCRIPTION;
+	static const string TASK_ADDED;
 	static const string CLASHES;
 	static const string TASKS_REMOVED;
 	static const string TASKS_REMOVING_ERROR;
@@ -109,8 +109,8 @@ private:
 	static const string REDO_TASK_UPDATING_ERROR;
 	static const string EMPTY_SLOTS;
 	static const string NO_EMPTY_SLOTS;
-	static const string SLOT_START;
-	static const string SLOT_END;
+	static const string SLOT_FROM;
+	static const string SLOT_TO;
 
 public:
 	Processor();

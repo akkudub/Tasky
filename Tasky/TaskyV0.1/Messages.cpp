@@ -27,7 +27,6 @@ const string Messages::MESSAGE_SUCCESS_INTERPRET_RENAME = "Success! Interpreted 
 const string Messages::MESSAGE_SUCCESS_INTERPRET_RESCHEDULE = "Success! Interpreted reschedule";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_MARK = "Success! Interpreted mark";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH = "Success! Interpreted search";
-const string Messages::MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME = "Success! Interpreted Date";
 
 const string Messages::MESSAGE_WARNING_ADD_CLASH =		"Warning! Task clashes with existing ones";
 const string Messages::MESSAGE_WARNING_ADD_DUPLICATE = "Warning! Task already exists";
@@ -67,7 +66,6 @@ const string Messages::MESSAGE_ERROR_INTERPRET_RENAME = "The interpretation for 
 const string Messages::MESSAGE_ERROR_INTERPRET_RESCHEDULE = "The interpretation for rescheduling is not successful.  You can type 'help' for more information.";
 const string Messages::MESSAGE_ERROR_INTERPRET_MARK = "The interpretation for marking is not successful.  You can type 'help' for more information.";
 const string Messages::MESSAGE_ERROR_INTERPRET_POWER_SEARCH = "The interpretation for search is not successful.  You can type 'help' for more information.";
-const string Messages::MESSAGE_ERROR_INTERPRET_STRINGTODATETIME = "Error! Unexpected error while interpreting date and time";
 
 const string Messages::MESSAGE_PROMPT_REMOVE_CHOOSE =	"Enter task number to remove:";
 const string Messages::MESSAGE_PROMPT_RENAME_CHOOSE =	"Enter task number to rename:";
@@ -100,7 +98,6 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_SUCCESS_INTERPRET_RESCHEDULE,	
 	MESSAGE_SUCCESS_INTERPRET_MARK,
 	MESSAGE_SUCCESS_INTERPRET_SEARCH,
-	MESSAGE_SUCCESS_INTERPRET_STRINGTODATETIME,
 
 	MESSAGE_WARNING_ADD_CLASH,	
 	MESSAGE_WARNING_ADD_DUPLICATE,
@@ -140,7 +137,6 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_ERROR_INTERPRET_RESCHEDULE,
 	MESSAGE_ERROR_INTERPRET_MARK,
 	MESSAGE_ERROR_INTERPRET_POWER_SEARCH,
-	MESSAGE_ERROR_INTERPRET_STRINGTODATETIME,
 
 	MESSAGE_PROMPT_REMOVE_CHOOSE,
 	MESSAGE_PROMPT_RENAME_CHOOSE,

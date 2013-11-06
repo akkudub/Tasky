@@ -10,10 +10,21 @@ const char Processor::ZERO = '0';
 const char Processor::NINE = '9';
 const char Processor::SPACE = ' ';
 const char Processor::NEW_LINE = '\n';
-
 const string Processor::EMPTY_STRING = "";
 const string Processor::NEW_LINE_STRING = "\n";
 const string Processor::NONE = "None";
+
+const string Processor::COMMAND_ADD = "add";
+const string Processor::COMMAND_REMOVE = "remove";
+const string Processor::COMMAND_DISPLAY = "display";
+const string Processor::COMMAND_RENAME = "rename";
+const string Processor::COMMAND_RESCHEDULE = "reschedule";
+const string Processor::COMMAND_MARK = "mark";
+const string Processor::COMMAND_SEARCH = "search";
+const string Processor::COMMAND_UNDO = "undo";
+const string Processor::COMMAND_REDO = "redo";
+const string Processor::COMMAND_EXIT = "exit";
+
 const string Processor::TASK_DESCRIPTION = "Task Description:";
 const string Processor::CLASHES = "Clashes:";
 const string Processor::TASKS_REMOVED = "Tasks removed:";
@@ -65,26 +76,26 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 		}
 	}
 
-	if (command != "exit"){
+	if (command != COMMAND_EXIT){
 		switch (_statusFlag){
 		case 0:
-			if(command == "add"){
+			if(command == COMMAND_ADD){
 				returnCode = addCommandProcessor(input);
-			}else if(command == "remove"){
+			}else if(command == COMMAND_REMOVE){
 				returnCode = removeCommandProcessor(input);
-			}else if(command == "display"){
+			}else if(command == COMMAND_DISPLAY){
 				returnCode = displayCommandProcessor(input);
-			}else if(command == "rename"){
+			}else if(command == COMMAND_RENAME){
 				returnCode = renameCommandProcessor(input);
-			}else if(command == "reschedule"){
+			}else if(command == COMMAND_RESCHEDULE){
 				returnCode = rescheduleCommandProcessor(input);
-			}else if(command == "mark"){
+			}else if(command == COMMAND_MARK){
 				returnCode = markCommandProcessor(input);
-			}else if(command == "search"){
+			}else if(command == COMMAND_SEARCH){
 				returnCode = searchCommandProcessor(input);
-			}else if(command == "undo"){
+			}else if(command == COMMAND_UNDO){
 				returnCode = undoCommandProcessor(input);
-			}else if(command == "redo"){
+			}else if(command == COMMAND_REDO){
 				returnCode = redoCommandProcessor(input);
 			}else{
 				returnCode = otherCommandProcessor();
@@ -142,7 +153,7 @@ int Processor::addCommandProcessor(string input){
 
 int Processor::removeCommandProcessor(string input){
 	int returnCode;
-	Task oldTask;
+	Task oldTask, newTask;
 	vector<Task> removedTasks, errorTasks;
 	vector<int> choice;
 	switch (_statusFlag){
@@ -150,13 +161,9 @@ int Processor::removeCommandProcessor(string input){
 		choice = _interpreter.stringToIntVec(input);
 		if(choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
-				returnCode=_taskList.remove(_tempTaskList[choice[i]-1]);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
-					recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[choice[i]-1], oldTask);
-					removedTasks.push_back(_tempTaskList[choice[i]-1]);
-				}else{
-					errorTasks.push_back(_tempTaskList[choice[i]-1]);
-				}
+				newTask = _tempTaskList[choice[i]-1];
+				returnCode=_taskList.remove(newTask);
+				processRemoveCode(returnCode, removedTasks, errorTasks, newTask, oldTask);
 			}
 		}
 		pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
@@ -175,14 +182,12 @@ int Processor::removeCommandProcessor(string input){
 		}else{
 			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
-				returnCode = _taskList.remove(_tempTaskList[0]);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
-					recordCommand(COMMAND_TYPES::REMOVE, _tempTaskList[0], oldTask);
-					_tempStringList.push_back(TASKS_REMOVED);
-				}else{
-					_tempStringList.push_back(TASKS_REMOVING_ERROR);
-				}
-				_tempStringList.push_back(_tempTaskList[0].toString());
+				newTask = _tempTaskList[0];
+				returnCode = _taskList.remove(newTask);
+				processRemoveCode(returnCode, removedTasks, errorTasks, newTask, oldTask);
+				
+				pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
+				pushFeedackToStringVec(errorTasks, TASKS_REMOVING_ERROR);
 				_tempTaskList.clear();
 				return returnCode;
 			}else if(!_tempTaskList.empty()){
@@ -808,5 +813,14 @@ void Processor::pushFeedackToStringVec(vector<Task> taskVector, string message){
 		_tempStringList.push_back(NONE);
 	}else{			
 		taskVecToStringVec(taskVector, _tempStringList);
+	}
+}
+
+void Processor::processRemoveCode(int returnCode, vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask){
+	if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
+		recordCommand(COMMAND_TYPES::REMOVE, newTask, oldTask);
+		removed.push_back(newTask);
+	}else{
+		error.push_back(newTask);
 	}
 }

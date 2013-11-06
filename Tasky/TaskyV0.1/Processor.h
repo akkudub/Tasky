@@ -70,10 +70,21 @@ private:
 	static const char ZERO;
 	static const char NINE;
 	static const char SPACE;
-
 	static const string EMPTY_STRING;
 	static const string NEW_LINE_STRING;
 	static const string NONE;
+
+	static const string COMMAND_ADD;
+	static const string COMMAND_REMOVE;
+	static const string COMMAND_DISPLAY;
+	static const string COMMAND_RENAME;
+	static const string COMMAND_RESCHEDULE;
+	static const string COMMAND_MARK;
+	static const string COMMAND_SEARCH;
+	static const string COMMAND_UNDO;
+	static const string COMMAND_REDO;
+	static const string COMMAND_EXIT;
+
 	static const string TASK_DESCRIPTION;
 	static const string CLASHES;
 	static const string TASKS_REMOVED;
@@ -307,7 +318,7 @@ private:
 	* @return a vector of strings based on the vector of tasks
 	*/
 	void taskVecToStringVec(vector<Task> taskList, vector<string>& stringList);
-	
+
 	void dateTimeVecToStringVec(vector<BasicDateTime>slots, vector<string>& stringList);
 	/*
 	* Purpose:
@@ -319,6 +330,7 @@ private:
 	bool commandIsNormal(string command);
 
 	void pushFeedackToStringVec(vector<Task> taskVector, string message);
+	void processRemoveCode(int returnCode, vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask);
 };
 
 #endif

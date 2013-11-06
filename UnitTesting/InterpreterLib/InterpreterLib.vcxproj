@@ -49,7 +49,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../TaskyV0.1/TaskyV0.1/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Tasky/TaskyV0.1/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,13 +78,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\TaskyV0.1\TaskyV0.1\BasicDateTime.cpp" />
-    <ClCompile Include="..\..\TaskyV0.1\TaskyV0.1\Interpreter.cpp" />
+    <ClCompile Include="..\..\Tasky\TaskyV0.1\BasicDateTime.cpp" />
+    <ClCompile Include="..\..\Tasky\TaskyV0.1\Interpreter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\TaskyV0.1\TaskyV0.1\BasicDateTime.h" />
-    <ClInclude Include="..\..\TaskyV0.1\TaskyV0.1\Essential.h" />
-    <ClInclude Include="..\..\TaskyV0.1\TaskyV0.1\Interpreter.h" />
+    <ClInclude Include="..\..\Tasky\TaskyV0.1\BasicDateTime.h" />
+    <ClInclude Include="..\..\Tasky\TaskyV0.1\Essential.h" />
+    <ClInclude Include="..\..\Tasky\TaskyV0.1\Interpreter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -30,6 +30,7 @@ const string Processor::TASK_ADDED = "Task Added:";
 const string Processor::CLASHES = "Clashes:";
 const string Processor::TASKS_REMOVED = "Tasks removed:";
 const string Processor::TASKS_REMOVING_ERROR = "Tasks removing error:";
+const string Processor::UPDATED_TO = "Updated to:";
 const string Processor::TASK_RENAMED = "Task renamed:";
 const string Processor::TASK_RENAME_ERROR = "Tasks renaming error:";
 const string Processor::TASK_RESCHEDULED = "Task rescheduled:";
@@ -265,6 +266,7 @@ int Processor::renameCommandProcessor(string input){
 				_tempStringList.push_back(TASK_RENAME_ERROR);
 			}
 			_tempStringList.push_back(oldTask.toString());
+			_tempStringList.push_back(UPDATED_TO);
 			_tempStringList.push_back(newTask.toString());
 			if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
 				_tempStringList.push_back(CLASHES);
@@ -296,6 +298,7 @@ int Processor::renameCommandProcessor(string input){
 					_tempStringList.push_back(TASK_RENAME_ERROR);
 				}
 				_tempStringList.push_back(oldTask.toString());
+				_tempStringList.push_back(UPDATED_TO);
 				_tempStringList.push_back(newTask.toString());
 				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
 					_tempStringList.push_back(CLASHES);
@@ -342,6 +345,7 @@ int Processor::rescheduleCommandProcessor(string input){
 				_tempStringList.push_back(TASK_RESCHEDULED_ERROR);
 			}
 			_tempStringList.push_back(oldTask.toString());
+			_tempStringList.push_back(UPDATED_TO);
 			_tempStringList.push_back(newTask.toString());
 			if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
 				_tempStringList.push_back(CLASHES);
@@ -376,6 +380,7 @@ int Processor::rescheduleCommandProcessor(string input){
 					_tempStringList.push_back(TASK_RESCHEDULED_ERROR);
 				}
 				_tempStringList.push_back(oldTask.toString());
+				_tempStringList.push_back(UPDATED_TO);
 				_tempStringList.push_back(newTask.toString());
 				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
 					_tempStringList.push_back(CLASHES);

@@ -26,8 +26,7 @@ private:
 	* Displays a welcome message to the user
 	* Displays the tasks of the day/pending tasks
 	*/
-	void displayWelcomeMessage();	
-	void displayExitMessage();
+	void displayWelcomeMessage();
 	/**
 	* Purpose:
 	* Takes in user command & put into string command

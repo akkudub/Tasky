@@ -10,7 +10,6 @@ void UI::UI_interface(){
 		displayCommandMessage(command, hConsole);
 		displayProcessorMessage(command, hConsole, statusFlag);
 	}
-	displayExitMessage();
 }
 
 
@@ -27,20 +26,6 @@ void UI::displayWelcomeMessage(){
 		}
 	}
 	cout << endl;
-}
-
-void UI::displayExitMessage(){
-	cout << "Exiting in 5" << endl;
-	Sleep(1000);
-	cout << "Exiting in 4" << endl;
-	Sleep(1000);
-	cout << "Exiting in 3" << endl;
-	Sleep(1000);
-	cout << "Exiting in 2" << endl;
-	Sleep(1000);
-	cout << "Exiting in 1" << endl;
-	Sleep(1000);
-
 }
 
 

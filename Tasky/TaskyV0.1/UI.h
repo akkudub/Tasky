@@ -9,12 +9,13 @@
 using namespace std;
 using namespace System;
 
-static const string MESSAGE_WELCOME = "Welcome!";
+static const string MESSAGE_WELCOME = "Welcome To Tasky! ";
+static const string MESSAGE_TASKS_TODAY = "Hope your day is well!\nHere are the tasks for today:";
 static const string MESSAGE_GOODBYE = "GoodBye!";
 static const string MESSAGE_COMMAND = "Command: ";
 
 static const string COMMAND_EXIT = "exit";
-static string COMMAND_DISPLAY_TASK_PENDING = "display pending";
+static string COMMAND_DISPLAY_TASK_TODAY = "display today";
 
 class UI
 {
@@ -25,7 +26,8 @@ private:
 	* Displays a welcome message to the user
 	* Displays the tasks of the day/pending tasks
 	*/
-	void displayWelcomeMessage(HANDLE hConsole);	//should display welcome messages + task of the day
+	void displayWelcomeMessage();	
+	void displayExitMessage();
 	/**
 	* Purpose:
 	* Takes in user command & put into string command

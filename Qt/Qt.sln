@@ -5,7 +5,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TaskyDesign", "TaskyDesign1
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TaskyBackEnd", "TaskyBackEnd\TaskyBackEnd.vcxproj", "{4F4261FF-413A-4E5E-A3E1-1381C932E754}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogLibrary", "..\TaskyV0.1\LogLibrary\LogLibrary\LogLibrary.vcxproj", "{FE395494-9F7C-4B5E-871A-42668305B376}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogLibrary", "..\Tasky\LogLibrary\LogLibrary\LogLibrary.vcxproj", "{FE395494-9F7C-4B5E-871A-42668305B376}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

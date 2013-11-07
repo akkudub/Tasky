@@ -32,6 +32,8 @@ const string Interpreter::SAT_KEY_WORD               = "sat";
 const string Interpreter::SAT_FULL_KEY_WORD          = "saturday";
 const string Interpreter::SUN_KEY_WORD               = "sun";
 const string Interpreter::SUN_FULL_KEY_WORD          = "sunday";
+const string Interpreter::AM_KEY_WORD                = "am";
+const string Interpreter::PM_KEY_WORD                = "pm";
 
 const char Interpreter::SLASH                        = '/';
 const char Interpreter::DOT                          = '.';
@@ -588,12 +590,33 @@ bool Interpreter::timeStandardInput(string str, char delim, int either){
 
 bool Interpreter::timeSpecialNumsOnly(string str, int either){
 	int num=stringToInt(str);
-	int hour=num/100, minute=num%100;
+	int hour=num/100;
+	int minute=num%100;
 	bool timeFlag=false;
 	timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
 	if (timeFlag){
 		setTimeParams(hour, minute, SECOND_LOWER_BOUND, either);
 		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::timeDotAMOrPM(string str, int either){
+	if (containKeywordWithoutCase(str, AM_KEY_WORD)){
+        return false;
+	}else if(containKeywordWithoutCase(str, PM_KEY_WORD)){
+		return false;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::timeNumsAMOrPM(string str, int either){
+	if (containKeywordWithoutCase(str, AM_KEY_WORD)){
+		return false;
+	}else if(containKeywordWithoutCase(str, PM_KEY_WORD)){
+		return false;
 	}else{
 		return false;
 	}

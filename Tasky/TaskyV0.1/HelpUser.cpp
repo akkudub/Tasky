@@ -3,7 +3,7 @@
 const string HelpUser::HELP_GENERAL_MSG      = "Welcome to the help panel\n"
 	                                           "Tasky is a text-based task management software. All you need to do is\n"
 											   "type in the command following the right format and all the rest will\n"
-											   "will be taken care of by the software. Have fun using it!\n"
+											   "be taken care of by the software. Have fun using it!\n"
 											   "For additional help on a specific topic, you can try\n"
 											   "help -add           for the help regarding to add operation\n"
 											   "help -remove        for the help regarding to remove operation\n"
@@ -20,22 +20,27 @@ const string HelpUser::HELP_GENERAL_MSG      = "Welcome to the help panel\n"
 											   "help -about         for the help regarding to about\n\n";
 const string HelpUser::HELP_ADD_MSG          = "To add a task, enter one of the followings:\n"
 	                                           "Format1: add '[Title]' from [StartDateTime] to [EndDateTime] -m [Comment]\n"
+											   "   e.g.: add 'task 1' from 12/12/2013 13:00 to 13/12/2013 0:00 -m comment\n"
 											   "Format2: add '[Title]' by [Deadline] -m [Comment]\n"
-											   "Format3: add '[Title]' -m [Comment]\n\n"
-											   "Note1: The title must be enclosed by two single quotes. Use help -title for more help\n"
-											   "Note2: The various formats of date and time are explained in help -date and help -time\n"
+											   "   e.g.: add 'do homework' by next tue 2pm -m comment\n"
+											   "Format3: add '[Title]' -m [Comment]\n"
+											   "   e.g.: add 'study hard' -m must always do\n\n"
+											   "Note1: The title must be enclosed by two single quotes.\n"
+											   "       Use help -title for more help\n"
+											   "Note2: The various formats of date and time are explained in help -date and\n"
+											   "       help -time. You can use any format you prefer.\n"
 											   "Note3: The comment is optional. Leave it blank if not applicable for you.\n"
-											   "    Type help -comment for more help.\n";
+											   "       Type help -comment for more help.\n";
 const string HelpUser::HELP_REMOVE_MSG       = "To remove a task, enter the following:\n"
 	                                           "Format: remove '[Title]'\n"
-											   "If prompted for selection of task to remove, enter the number only."
+											   "  e.g.: remove 'review'\n"
+											   "Note: In the case of multiple tasks with the same name, you will be prompted\n"
+											   "      for selection of a task to remove. Enter the number only."
 											   "Note: The title must be enclosed by two single quotes. Use help -title for more help\n";
-//this part is not yet done
-const string HelpUser::HELP_SEARCH_MSG       = "To search for a task, enter the following:"
-											   "\nsearch '[keyword1] [keyword2]'"
-											   "\nTo search for a task within a time range, enter the following:"
-											   "\nsearch '[keyword1] [keyword2]' from [StartDate] to [EndDate]";
-
+const string HelpUser::HELP_SEARCH_MSG       = "To search for a task, enter the following:\n"
+	                                           "Format1: search '[keyword1] [keyword2]' [Status] from [DateTime] to [DateTime]\n"
+											   "Format2: search slot from [DateTime] to [DateTime]\n"
+											   "";
 const string HelpUser::HELP_MARK_MSG         = "To mark a task as Done/Pending, enter the following:\n"
 											   "Format: mark '[Title]' done/pending\n"
 											   "Note: The title must be enclosed by two single quotes. Use help -title for more help\n";

@@ -19,6 +19,8 @@ private:
 	Processor* _logic;
 	std::string _msg;
 	std::vector<std::string> _vec;
+	int _msgType;
+	QStringList wordlist;
 
 private:
 	static const QString STYLE_SHEET_DISPLAY_PANEL;
@@ -34,18 +36,16 @@ private:
 
 private slots:
 	void processInputString();
-	void showFullTextOfSelected();
+	void updateStatusBar();
 
 private:
 	void changeUIStyle();
-	void help();
-	void about();
 	void minimizeWindow();
 	void exit();
 	bool equalsToKeywordWithoutCase(const QString& input, const QString& keyword);
 	void sendStdStringToBackEnd(QString input);
-	std::string preserveFirstString(int num);
-	std::string fullString(int num);
+	QString formatString(int num);
+	QString combineOutput(int size);
 
 private:
 	Ui::TaskyDesign1Class ui;

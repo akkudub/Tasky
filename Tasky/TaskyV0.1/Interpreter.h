@@ -53,6 +53,8 @@ private:
 	static const string SAT_FULL_KEY_WORD;
 	static const string SUN_KEY_WORD;
 	static const string SUN_FULL_KEY_WORD;
+	static const string AM_KEY_WORD;
+	static const string PM_KEY_WORD;
 
 	static const char SLASH;
 	static const char DOT;
@@ -242,6 +244,8 @@ private:
 	bool dateThisOrNextDateFormat(int day, int week, int either);
 	bool timeStandardInput(string str, char delim, int either);
 	bool timeSpecialNumsOnly(string str, int either);
+	bool timeDotAMOrPM(string str, int either);
+	bool timeNumsAMOrPM(string str, int either);
 	int mapTodayDayOfWeek();
 	int mapDayOfWeekToInt(const string& str);
 	void setDateParams(int yearValue, int monthValue, int dayValue, int either);

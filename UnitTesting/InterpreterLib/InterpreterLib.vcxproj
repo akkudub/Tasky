@@ -78,13 +78,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\BasicDateTime.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\Interpreter.cpp" />
+    <ClInclude Include="..\..\Tasky\Tasky\BasicDateTime.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\Essential.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\Interpreter.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\BasicDateTime.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\Essential.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\Interpreter.h" />
+    <ClCompile Include="..\..\Tasky\Tasky\BasicDateTime.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\Interpreter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

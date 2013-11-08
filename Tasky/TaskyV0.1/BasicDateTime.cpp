@@ -152,3 +152,16 @@ string BasicDateTime::addZeroFromFront(string str){
 		return str;
 	}
 }
+
+string BasicDateTime::dayOfWeek(){
+	struct tm time2;
+	time2.tm_year=_year-1900;
+	time2.tm_mon=_month-1;
+	time2.tm_mday=_day;
+	mktime(&time2);
+	return "";
+}
+
+string BasicDateTime::mapDayOfWeekToString(int dayOfWeek){
+	return "";
+}

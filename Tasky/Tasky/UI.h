@@ -10,7 +10,7 @@ using namespace std;
 using namespace System;
 
 static const string MESSAGE_WELCOME = "Welcome To Tasky! ";
-static const string MESSAGE_TASKS_TODAY = "Hope your day is well!\nHere are the tasks for today:";
+static const string MESSAGE_TASKS_TODAY = "\nThe tasks for today are as follows:";
 static const string MESSAGE_GOODBYE = "GoodBye!";
 static const string MESSAGE_COMMAND = "Command: ";
 

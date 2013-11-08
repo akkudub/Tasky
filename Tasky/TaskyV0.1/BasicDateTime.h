@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <ctime>
 #include "Essential.h"
 
 /**
@@ -29,66 +30,39 @@ private:
 	static const string ZERO_STRING;
 	static const int ZERO=0;
 
-public:	
-	/**
-	* default constructor 
-	*/
+public:
 	BasicDateTime();
-	/**
-	* year, month, day
-	*/
 	BasicDateTime(int year, int month, int day);
-	/**
-	* year, month, day, hour, minute
-	*/
 	BasicDateTime(int year, int month, int day, int hour, int minute);
-	/**
-	* year, month, day, hour, minute, sec
-	*/
-	BasicDateTime(int, int, int, int, int, int);
-	/** 
-	* destructor
-	*/
+	BasicDateTime(int year,int month,int day,int hour,int minute,int sec);
 	~BasicDateTime();
-	/**
-	* setter 1 : year, month , day
-	*/
 	void setDateTime(int year, int month, int day);
-	/**
-	* setter 2 : year, month, day, hour, minute
-	*/
 	void setDateTime(int year, int month, int day, int hour, int minute);
-	/**
-	* setter 3 : year, month, day, hour, minute, sec
-	*/
 	void setDateTime(int year, int month, int day, int hour, int minute, int sec);
-	int getYear();
-	void setYear(int year);
-	int getMonth();
-	void setMonth(int month);
-	int getDay();
-	void setDay(int day);
-	int getHour();
-	void setHour(int hour);
-	int getMinute();
-	void setMinute(int minute);
-	int getSec();
+	void setYear(int year);	
+	void setMonth(int month);	
+	void setDay(int day);	
+	void setHour(int hour);	
+	void setMinute(int minute);	
 	void setSec(int sec);
-	/**
-	* Purpose : translate the datetime into string
-	* @return date and time in a string
-	*/
+	int getYear();
+	int getMonth();
+	int getDay();
+	int getHour();
+	int getMinute();
+	int getSec();
 	string getDateTimeString();
-	/*
-	* Purpose :
-	* compare to another BasicDateTime object based on internal DateTime object comparison
-	* @param another BasicDateTime Object to be compared to
-	* @return value of comparision(compareTo)
-	*/
+	/**
+	 * compare to another BasicDateTime object based on internal DateTime object comparison
+	 * @param another BasicDateTime Object to be compared to
+	 * @return value of comparision(compareTo)
+	 */
 	int compareTo(BasicDateTime another);
 
 private:
 	string addZeroFromFront(string str);
+	string dayOfWeek();
+	string mapDayOfWeekToString(int dayOfWeek);
 };
 
 #endif

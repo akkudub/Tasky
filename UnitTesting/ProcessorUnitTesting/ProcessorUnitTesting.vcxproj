@@ -43,11 +43,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\TaskyV0.1;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\UnitTesting\TaskyLib;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0\include;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\Tasky;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\UnitTesting\TaskyLib;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0\include;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\TaskyV0.1;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\UnitTesting\TaskyLib;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0\include;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\Tasky;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\UnitTesting\TaskyLib;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0\include;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\gtest-1.7.0;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

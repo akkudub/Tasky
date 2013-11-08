@@ -81,36 +81,36 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\BasicDateTime.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\FileProcessing.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\HelpUser.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\History.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\HistoryCommand.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\Interpreter.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\Messages.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\Processor.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\Task.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\TaskList.cpp" />
-    <ClCompile Include="..\..\Tasky\TaskyV0.1\UI.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\BasicDateTime.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\Essential.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\FileProcessing.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\HelpUser.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\History.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\HistoryCommand.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\Interpreter.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\Messages.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\Processor.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\Task.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\TaskList.h" />
-    <ClInclude Include="..\..\Tasky\TaskyV0.1\UI.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Tasky\LogLibrary\LogLibrary\LogLibrary.vcxproj">
       <Project>{fe395494-9f7c-4b5e-871a-42668305b376}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Tasky\Tasky\BasicDateTime.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\Essential.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\FileProcessing.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\HelpUser.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\History.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\HistoryCommand.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\Interpreter.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\Messages.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\Processor.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\Task.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\TaskList.h" />
+    <ClInclude Include="..\..\Tasky\Tasky\UI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Tasky\Tasky\BasicDateTime.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\FileProcessing.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\HelpUser.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\History.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\HistoryCommand.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\Interpreter.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\Messages.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\Processor.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\Task.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\TaskList.cpp" />
+    <ClCompile Include="..\..\Tasky\Tasky\UI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

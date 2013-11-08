@@ -1,81 +1,99 @@
 #include "HelpUser.h"
 
-const string HelpUser::HELP_GENERAL_MSG      = "Welcome to the help panel\n"
-	                                           "Tasky is a text-based task management software. All you need to do is\n"
-											   "type in the command following the right format and all the rest will\n"
-											   "be taken care of by the software. Have fun using it!\n"
-											   "For additional help on a specific topic, you can try\n"
-											   "help -add           for the help regarding to add operation\n"
-											   "help -remove        for the help regarding to remove operation\n"
-											   "help -search        for the help regarding to search operation\n"
-											   "help -mark          for the help regarding to mark operation\n"
-											   "help -reschedule    for the help regarding to reschedule operation\n"
-											   "help -rename        for the help regarding to rename operation\n"
-											   "help -display       for the help regarding to display operation\n"
-											   "help -title         for the help regarding to title\n"
-											   "help -date          for the help regarding to date\n"
-											   "help -time          for the help regarding to time\n"
-											   "help -comment       for the help regarding to comment\n"
-											   "help -others        for the help regarding to others\n"
-											   "help -about         for the help regarding to about\n\n";
-const string HelpUser::HELP_ADD_MSG          = "To add a task, enter one of the followings:\n"
+const string HelpUser::HELP_GENERAL_MSG      = "Welcome to the help panel.\n"
+	                                           "Tasky is a text-based task management software that helps you manage \nyour schedules.\n"
+											   "For your convenience, commands can be entered within a single line.\n\n"
+											   "To view additional help on a specific topic, please enter:\n"
+											   "help -add           regarding an add operation(adding a task)\n"
+											   "help -remove        regarding a remove operation(removing a task)\n"
+											   "help -search        regarding a search\n"
+											   "help -mark          regarding a mark operation(set a task as Done/Pending)\n"
+											   "help -reschedule    regarding a reschedule(modify the details of task)\n"
+											   "help -rename        regarding a rename(modify the details of task)\n"
+											   "help -display       regarding display operation\n"
+											   "help -title         regarding the title input format\n"
+											   "help -date          regarding the date input format\n"
+											   "help -time          regarding the time input format\n"
+											   "help -comment       regarding the comment input format\n"
+											   "help -about         to view more information about Tasky\n";
+const string HelpUser::HELP_ADD_MSG          = "To add a task, enter one of the following:\n\n"
 	                                           "Format1: add '[Title]' from [StartDateTime] to [EndDateTime] -m [Comment]\n"
-											   "   e.g.: add 'task 1' from 12/12/2013 13:00 to 13/12/2013 0:00 -m comment\n"
+											   "   e.g.: add 'task 1' from 12/12/2013 13:00 to 13/12/2013 0:00\n\n"
 											   "Format2: add '[Title]' by [Deadline] -m [Comment]\n"
-											   "   e.g.: add 'do homework' by next tue 2pm -m comment\n"
+											   "   e.g.: add 'do homework' by next tue 2pm\n\n"
 											   "Format3: add '[Title]' -m [Comment]\n"
-											   "   e.g.: add 'study hard' -m must always do\n\n"
-											   "Note1: The title must be enclosed by two single quotes.\n"
-											   "       Use help -title for more help\n"
-											   "Note2: The various formats of date and time are explained in help -date and\n"
-											   "       help -time. You can use any format you prefer.\n"
-											   "Note3: The comment is optional. Leave it blank if not applicable for you.\n"
-											   "       Type help -comment for more help.\n";
+											   "   e.g.: add 'study hard'\n\n"
+											   "The comment field is optional. '-m [Comment]'\n\n"
+											   "For more information use\n"
+											   "           help -title\n"
+											   "           help -date\n"
+											   "           help -time\n"
+											   "           help -comment\n";
 const string HelpUser::HELP_REMOVE_MSG       = "To remove a task, enter the following:\n"
 	                                           "Format: remove '[Title]'\n"
-											   "  e.g.: remove 'review'\n"
-											   "Note: In the case of multiple tasks with the same name, you will be prompted\n"
-											   "      for selection of a task to remove. Enter the number only."
-											   "Note: The title must be enclosed by two single quotes. Use help -title for more help\n";
-const string HelpUser::HELP_SEARCH_MSG       = "To search for a task, enter the following:\n"
-	                                           "Format1: search '[keyword1] [keyword2]' [Status] from [DateTime] to [DateTime]\n"
-											   "Format2: search slot from [DateTime] to [DateTime]\n"
-											   "";
+											   "  e.g.: remove 'review'\n\n"
+											   "Note: In case of ambiguity (multiple tasks with the same name), "
+											   "\nyou will be prompted for selection of task(s) to remove.\n"
+											   "Enter the index of your selection.\n";
+const string HelpUser::HELP_SEARCH_MSG       = "To search for a task, enter one of the following combination:\n"
+												"A search is carried out according to the parameters provided.\n"
+												"Please enter the keywords in order of relevance.\n\n"
+												"Format1: search '[list of keyword(s)]'\n"
+												 "  e.g.: search 'walk the dog'\n\n"
+												 "Format2: search [DateTime] to [DateTime]\n"
+												 "  e.g.: search from 22/12/13 to 25/12/13\n\n"
+												 "Format3: search [Status]\n"
+												 "  e.g.: search done\n\n"
+											   "Format4: search '[list of keyword(s)]'from [DateTime] to [DateTime]\n"
+											    "  e.g.: search 'walk the dog' from 12/2/14 to 15/2/14\n\n"
+												"Format5: search '[list of keyword(s)]' [Status]\n"
+												"  e.g.: search 'walk the dog' done\n\n"
+												"Format6: search [Status] from [DateTime] to [DateTime]\n"
+												"  e.g.: search done from 22/12/13 to 25/12/13\n\n"
+												"Format7: search '[list of keywords(s)]' [Status] from [DateTime] to [DateTime]\n"
+												"  e.g.: search 'walk the dog' done from 12/2/14 to 15/2/14\n\n"
+											   "To search for an empty slot to schedule a task, enter the following:\n"
+											   "Format: search slot from [DateTime] to [DateTime]\n"
+											    "  e.g.: search slot from 22/12/13 to 25/2/13\n\n";
 const string HelpUser::HELP_MARK_MSG         = "To mark a task as Done/Pending, enter the following:\n"
 											   "Format: mark '[Title]' done/pending\n"
-											   "Note: The title must be enclosed by two single quotes. Use help -title for more help\n";
-const string HelpUser::HELP_RESCHEDULE_MSG   = "To reschedule a task, enter one of the followings:\n"
+											    "  e.g.: mark 'Mop the floor' done\n";
+const string HelpUser::HELP_RESCHEDULE_MSG   = "To reschedule a task, enter one of the following:\n"
 											   "Format1: reschedule '[Title]' from [NewStartDateTime] to [NewEndDateTime]\n"
+											    "  e.g.: reschedule 'review' from 2/2/14 to 2/3/14\n\n"
 											   "Format2: reschedule '[Title]' by [Deadline]\n"
-											   "Format3: reschedule '[Title]'\n";
+											    "  e.g.: reschedule 'review' by 14/2/14\n\n"
+											   "Format3: reschedule '[Title]'\n"
+											    "  e.g.: reschedule 'review'\n";
 const string HelpUser::HELP_RENAME_MSG       = "To rename a task, enter the following:\n"
 											   "Format: rename '[Title]' to '[NewTitle]' -m [Comment]\n"
-											   "Note: the comment is optional. The new comment will replace the old comment.\n";
-const string HelpUser::HELP_DISPLAY_MSG      = "To display all tasks: display all\n"
-											   "To display pending tasks: display pending\n"
-											   "To display today's task: display today";
-const string HelpUser::HELP_TITLE_MSG        = "Enclose the title with single quotes. Any single quotes inside title will not\n" 
-	                                           "    affect the function of title\n"
+											    "  e.g.: rename 'review' to 'write commentary'\n\n"
+											   "Note: the comment field is optional. '-m [Comment]'\n\n";
+const string HelpUser::HELP_DISPLAY_MSG      = "To display all tasks, please enter: display all\n"
+											   "To display pending tasks, please enter: display pending\n"
+											   "To display today's tasks, please enter: display today";
+const string HelpUser::HELP_TITLE_MSG        = "Please enclose the title within 2 single quotes.\n"
+												"The title will be read in from the first to the last single quote.\n\n"
 											   "Format: '[title]'\n"
-											   "Example: 'it's a title\n'";
-const string HelpUser::HELP_DATE_MSG         = "The format of date is as followings:\n"
+											   "Example: 'it's a title' is read in by Tasky as <it's a title>";
+const string HelpUser::HELP_DATE_MSG         = "The following formats of entering dates are allowed:\n"
 	                                           "Format1: DD/MM/YYYY\n"
+											    "  e.g.:  12/13/2012\n\n"
 											   "Format2: DD/MM/YY\n"
+											   "  e.g.:  12/13/12\n\n"
 											   "Format3: today/tdy, tomorrow/tmr\n"
+											   "Note: The short form of today is tdy; the short form for tomorrow is tmr.\n\n"
 											   "Format4: this/next monday/tuesday/wednesday/thursday/friday/saturday/sunday\n"
 											   "Format5: this/next mon/tue/wed/thu/fri/sat/sun\n\n"
-											   "Note1: Format1 e.g.: 12/13/2012\n"
-											   "Note2: Format2 e.g.: 12/13/13\n"
-											   "Note3: Format3, input either today or its shortcut spelling tdy for today.\n"
-											   "    Same goes for tomorrow\n"
-											   "Note4: Format4, input one of 7 days in a week\n"
-											   "Note5: Format5, the shortcut spellings for Format4\n"
-											   "Additional notes: currently the range of date is between year 1900 and year 2300\n";
-const string HelpUser::HELP_TIME_MSG         = "Please enter the time in HH.MM format.";
-const string HelpUser::HELP_COMMENT_MSG      = "To add a comment behind a task, use -m when adding or renaming a task\n"
+											   "Note: Format 5 utilizes the short form of expressing day in Format4\n\n"
+											   "Additional notes: Range of dates allowed fall between A.D.1900 to A.D.2300\n";
+const string HelpUser::HELP_TIME_MSG         = "Please enter the time in HH.MM format.\n"
+												"  e.g.:  20.15\n\n"
+												"You may also use AM/PM.\n"
+												"  e.g.:  5.00PM\n";
+const string HelpUser::HELP_COMMENT_MSG      = "To add a comment behind a task, use -m while adding or renaming a task\n"
 											   "Format: -m [Comment]\n"
-											   "For example: add 'Shopping For XMas Gifts' by 25/12/2013 -m bring recepient list\n";
-const string HelpUser::HELP_OTHERS_MSG       = "For more information, please refer to Tasky User Manual.";
+											   "   e.g.: add 'Shopping For X'Mas Gifts' by 25/12/2013 -m bring recepient list\n";
 const string HelpUser::HELP_ABOUT_MSG        = "Developed by AY2013 Semester1 CS2103 F09-2C Team.\n"
 	                                           "Come and visit the project at : http://code.google.com/p/cs2103aug2013-f09-2c/";
 
@@ -91,7 +109,6 @@ const string HelpUser::TITLE_STR             = " -title";
 const string HelpUser::DATE_STR              = " -date";
 const string HelpUser::TIME_STR              = " -time";
 const string HelpUser::COMMENT_STR           = " -comment";
-const string HelpUser::OTHERS_STR            = " -others";
 const string HelpUser::ABOUT_STR             = " -about";
 
 string HelpUser::getHelpMsg(string input){
@@ -123,10 +140,10 @@ string HelpUser::determineHelperString(const string& input){
 		return HELP_TIME_MSG;
 	}else if(equalWithoutCase(input, COMMENT_STR)){
 		return HELP_COMMENT_MSG;
-	}else if (equalWithoutCase(input, OTHERS_STR)){
-		return HELP_OTHERS_MSG;
-	}else{
+	}else if (equalWithoutCase(input, ABOUT_STR)){
 		return HELP_ABOUT_MSG;
+	}else{
+		return HELP_GENERAL_MSG;
 	}
 }
 

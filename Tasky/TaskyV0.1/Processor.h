@@ -41,11 +41,13 @@ class Processor{
 	*             2--rename operation has not ended;
 	*             3--reschedule operation has not ended;
 	*			  4--mark operation has not ended;
+	*			  5--last operation was search
 	*/
 private:
 	vector<Task> _tempTaskList;
 	vector<string> _tempStringList; 
-	int _statusFlag; 
+	int _statusFlag;
+	bool searched;
 
 	string _tempTitle;
 	bool _tempStatus;
@@ -199,6 +201,15 @@ private:
 
 	/*
 	* Purpose:
+	* Handle search actions
+	*
+	* @param input the input passed in from the main processor with the command
+	* @return status code
+	*/
+	int searchActionProcessor(string command, string input);
+
+	/*
+	* Purpose:
 	* Handle undo commands
 	*
 	* @param input the input passed in from the main processor without the undo keyword(single undo)
@@ -272,6 +283,7 @@ private:
 	* @return status code
 	*/
 	int addFloatingTask(string title, string comment);//need to refactor to only create a task
+	
 	/*
 	* Purpose:
 	* add Deadline tasks, put any clashes in _tempTaskList
@@ -282,12 +294,13 @@ private:
 	* @return status code
 	*/
 	int addDeadlineTask(string title, BasicDateTime end, string comment);//need to refactor to only create a task
+	
 	/*
 	* Purpose:
 	* add Timed tasks, put any clashes in _tempTaskList
 	*
 	* @param title name of task
-	* @param srat start time of task
+	* @param start start time of task
 	* @param end end time of task
 	* @param comment additional description
 	* @return status code
@@ -304,6 +317,7 @@ private:
 	* @return string containing command if command is found, else empty string
 	*/
 	string getCommand(string& input);
+	
 	/*
 	* Purpose:
 	* checks to see if the user wanted to escape out of a ambiguous situation that required a choice
@@ -312,6 +326,7 @@ private:
 	* @return true if the user wanted to escape, else return false
 	*/
 	bool isEscape(string command);
+
 	/*
 	* Purpose:
 	* record command to assist with undo and redo
@@ -319,9 +334,10 @@ private:
 	* @param commandType the command type that was performed
 	* @param oldTask the task that was changed(empty in case of add)
 	* @param newTask the task that the old task was changed to(empty in case of remove)
-	* @return voi
+	* @return void
 	*/
 	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
+	
 	/*
 	* Purpose:
 	* break a string into a vector of words by space
@@ -333,6 +349,7 @@ private:
 	bool choiceIsValidVec(vector<int> choice);
 
 	bool choiceIsValid(unsigned int choice);
+	
 	/*
 	* Purpose:
 	* converts a vector of tasks into a vector of strings and pushes them in another vector
@@ -344,6 +361,7 @@ private:
 	void taskVecToStringVec(vector<Task> taskList, vector<string>& stringList);
 
 	void dateTimeVecToStringVec(vector<BasicDateTime>slots, vector<string>& stringList);
+	
 	/*
 	* Purpose:
 	* checks if the command entered is one of the acceptable commands
@@ -354,7 +372,8 @@ private:
 	bool commandIsNormal(string command);
 
 	void pushFeedackToStringVec(vector<Task> taskVector, string message);
-	void processRemoveCode(int returnCode, vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask);
+	
+	void removeTask(int& returnCode, vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask);
 };
 
 #endif

@@ -493,7 +493,8 @@ bool Interpreter::interpretDate(string str1, int either){
 }
 
 bool Interpreter::interpretTime(string str1, int either){
-	return timeStandardInput(str1, DOT, either)||timeSpecialNumsOnly(str1, either)||timeStandardInput(str1, COLON, either);
+	return timeStandardInput(str1, DOT, either)||timeSpecialNumsOnly(str1, either)||timeStandardInput(str1, COLON, either)
+		|| timeDotAMOrPM(str1, either) || timeNumsAMOrPM(str1, either);
 }
 
 bool Interpreter::dateStandardInput(string str, int either){
@@ -603,29 +604,104 @@ bool Interpreter::timeSpecialNumsOnly(string str, int either){
 }
 
 bool Interpreter::timeDotAMOrPM(string str, int either){
-	if (containKeywordWithoutCase(str, AM_KEY_WORD)){
-        return false;
-	}else if(containKeywordWithoutCase(str, PM_KEY_WORD)){
-		return false;
+	int posDot=0;
+	int pos=0;
+	int hour=0;
+	int minute=0;
+	int second=0;
+	vector<string> vec;
+	bool checkPM=false;
+	bool timeFlag=false;
+
+	if (str.find(DOT)!=string::npos){
+		posDot=str.find(DOT);
 	}else{
 		return false;
 	}
+	if (containKeywordWithoutCase(str, AM_KEY_WORD)){
+		findStartingPosOfKeywordWithoutCase(str, AM_KEY_WORD, pos);
+		checkPM=false;
+	}else if(containKeywordWithoutCase(str, PM_KEY_WORD)){
+		findStartingPosOfKeywordWithoutCase(str, PM_KEY_WORD, pos);
+		checkPM=true;
+	}else{
+		return false;
+	}
+	if (posDot<pos){
+	    vec=breakStringWithDelim(str.substr(0, pos), DOT);
+	}else{
+		return false;
+	}
+	if (vec.size()==2){
+		hour=stringToInt(vec.at(0));
+		minute=stringToInt(vec.at(1));
+		second=SECOND_LOWER_BOUND;
+		if (checkPM){
+			hour=hour+12;
+		}
+		timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
+	}else{
+		return false;
+	}
+	if (timeFlag){
+		setTimeParams(hour, minute, second, either);
+	}else{
+		return false;
+	}
+
+	return true;
 }
 
 bool Interpreter::timeNumsAMOrPM(string str, int either){
+	int pos=0;
+	bool checkAM=false;
+	int rawNum=0;
+	int hour=0;
+	int minute=0;
+	int second=0;
+	bool timeFlag=false;
+
 	if (containKeywordWithoutCase(str, AM_KEY_WORD)){
-		return false;
+		findStartingPosOfKeywordWithoutCase(str, AM_KEY_WORD, pos);
+		checkAM=true;
 	}else if(containKeywordWithoutCase(str, PM_KEY_WORD)){
-		return false;
+		findStartingPosOfKeywordWithoutCase(str, PM_KEY_WORD, pos);
+		checkAM=false;
 	}else{
 		return false;
 	}
+    rawNum=stringToInt(str.substr(0, pos));
+	if (HOUR_LOWER_BOUND<=rawNum && rawNum<=HOUR_UPPER_BOUND/2+1){
+		hour=rawNum;
+		minute=MINUTE_LOWER_BOUND;
+		second=SECOND_LOWER_BOUND;
+		if (!checkAM){
+			hour=hour+12;
+		}
+		timeFlag=validateTime(hour, minute, second);
+	}else if(HOUR_LOWER_BOUND*100<=rawNum && rawNum<=(HOUR_UPPER_BOUND/2+1)*100){
+		hour=rawNum/100;
+		minute=rawNum%100;
+		second=SECOND_LOWER_BOUND;
+		if (!checkAM){
+			hour=hour+12;
+		}
+		timeFlag=validateTime(hour, minute, second);
+	}
+	if (timeFlag){
+		setTimeParams(hour, minute, second, either);
+	}else{
+		return false;
+	}
+
+	return true;
 }
 
 int Interpreter::mapTodayDayOfWeek(){
 	time_t time1=time(NULL);
 	struct tm time2;
 	localtime_s(&time2, &time1);
+
 	return time2.tm_wday;
 }
 

@@ -27,6 +27,7 @@ const string Processor::COMMAND_HELP = "help";
 const string Processor::COMMAND_EXIT = "exit";
 
 const string Processor::TASK_ADDED = "Task Added:";
+const string Processor::TASK_ADD_ERROR = "Task not Added";
 const string Processor::CLASHES = "Clashes:";
 const string Processor::TASKS_REMOVED = "Tasks removed:";
 const string Processor::TASKS_REMOVING_ERROR = "Tasks removing error:";
@@ -138,20 +139,9 @@ int Processor::addCommandProcessor(string input){
 	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD){
 		return returnCode;
 	}else{
-		switch (type){
-		case 0:
-			return addFloatingTask(title, comment);
-			break;
-		case 1:
-			return addDeadlineTask(title, endingDateTime, comment);
-			break;
-		case 2:
-			return addTimedTask(title, startingDateTime, endingDateTime, comment);
-			break;
-		default:
-			return ERROR_ADD;
-		}
+		return addTask(title, type, startingDateTime, endingDateTime, comment);
 	}
+	return STATUS_CODE_SET_ERROR::ERROR_ADD;
 }
 
 
@@ -715,59 +705,27 @@ bool Processor::choiceIsValid(unsigned int choice){
 	return ((choice <=_tempTaskList.size()) && choice > 0);
 }
 
-int Processor::addFloatingTask(string title, string comment){
-	BasicDateTime start, end;
-	Task tNew, tOld;
-	tNew = Task(title, start, end, 0, false, comment);
-	int statusCode = _taskList.add(tNew, _tempTaskList);
-
-	if(statusCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
-		recordCommand(COMMAND_TYPES::ADD, tOld, tNew);
-		_tempStringList.push_back(TASK_ADDED);
-		_tempStringList.push_back(tNew.toString());
+int Processor::addTask(string title, int type, BasicDateTime start, BasicDateTime end, string comment){
+	Task newTask, oldTask;
+	newTask = Task(title, start, end, type, false, comment);
+	int statusCode = _taskList.add(newTask, _tempTaskList);
+	if(statusCode == STATUS_CODE_SET_SUCCESS::SUCCESS_ADD){
+		recordAndFeedback(oldTask, newTask);
 	}
 	if (statusCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+		recordCommand(COMMAND_TYPES::ADD, oldTask, newTask);
+		recordAndFeedback(oldTask, newTask);
 		_tempStringList.push_back(CLASHES);
 		taskVecToStringVec(_tempTaskList, _tempStringList);
 	}
 	return statusCode;
 }
 
-
-int Processor::addDeadlineTask(string title, BasicDateTime end, string comment){
-	BasicDateTime start;
-	Task tNew, tOld;
-	tNew = Task(title, start, end, 1, false, comment);
-
-	int statusCode = _taskList.add(tNew, _tempTaskList);
-	if(statusCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
-		recordCommand(COMMAND_TYPES::ADD, tOld, tNew);
-		_tempStringList.push_back(TASK_ADDED);
-		_tempStringList.push_back(tNew.toString());
-	}
-	if (statusCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
-		_tempStringList.push_back(CLASHES);
-		taskVecToStringVec(_tempTaskList, _tempStringList);
-	}
-	return statusCode;
-}
-
-
-int Processor::addTimedTask(string title, BasicDateTime start, BasicDateTime end, string comment){
-	Task tNew, tOld;
-	tNew = Task(title, start, end, 2, false, comment);
-
-	int statusCode = _taskList.add(tNew, _tempTaskList);
-	if(statusCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
-		recordCommand(COMMAND_TYPES::ADD, tOld, tNew);
-		_tempStringList.push_back(TASK_ADDED);
-		_tempStringList.push_back(tNew.toString());
-	}
-	if (statusCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
-		_tempStringList.push_back(CLASHES);
-		taskVecToStringVec(_tempTaskList, _tempStringList);
-	}
-	return statusCode;
+void Processor::recordAndFeedback( Task oldTask, Task newTask )
+{
+	recordCommand(COMMAND_TYPES::ADD, oldTask, newTask);
+	_tempStringList.push_back(TASK_ADDED);
+	_tempStringList.push_back(newTask.toString());
 }
 
 string Processor::getCommand(string& input){

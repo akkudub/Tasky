@@ -226,7 +226,7 @@ private:
 	* @return status code
 	*/
 	int redoCommandProcessor(string input);
-	
+
 	/*
 	* Purpose:
 	* Handle help commands
@@ -287,18 +287,32 @@ private:
 	*/
 	int addTask(string title, int type, BasicDateTime start, BasicDateTime end, string comment);
 
-	void recordAndFeedback( Task oldTask, Task newTask );
+	void recordAndFeedbackAdd( Task oldTask, Task newTask );
 
 	int removeTask(vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask);
 
 	int renameTask( Task &oldTask, Task &newTask );
-	
+
+	int recordAndFeedbackUpdate( Task &oldTask, Task &newTask, string success, string error );
+
 	int rescheduleTask( Task &oldTask, Task &newTask );
 
 	int markTask( Task &newTask, Task oldTask, vector<Task> &markedTasks, vector<Task> &errorTasks );
 
+	int undoAdd( HistoryCommand command );
+
+	int undoRemove( HistoryCommand command );
+
+	int undoUpdate( HistoryCommand command );
+
+	int redoAdd( HistoryCommand command );
+
+	int redoRemove( HistoryCommand command );
+
+	int redoUpdate( HistoryCommand command );
+
 	string getCommand(string& input);
-	
+
 	/*
 	* Purpose:
 	* checks to see if the user wanted to escape out of a ambiguous situation that required a choice
@@ -318,7 +332,7 @@ private:
 	* @return void
 	*/
 	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
-	
+
 	/*
 	* Purpose:
 	* break a string into a vector of words by space
@@ -330,7 +344,7 @@ private:
 	bool choiceIsValidVec(vector<int> choice);
 
 	bool choiceIsValid(unsigned int choice);
-	
+
 	/*
 	* Purpose:
 	* converts a vector of tasks into a vector of strings and pushes them in another vector
@@ -342,7 +356,7 @@ private:
 	void taskVecToStringVec(vector<Task> taskList, vector<string>& stringList);
 
 	void dateTimeVecToStringVec(vector<BasicDateTime>slots, vector<string>& stringList);
-	
+
 	/*
 	* Purpose:
 	* checks if the command entered is one of the acceptable commands
@@ -353,7 +367,7 @@ private:
 	bool commandIsNormal(string command);
 
 	void pushFeedackToStringVec(vector<Task> taskVector, string message);
-	
+
 };
 
 #endif

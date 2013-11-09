@@ -65,7 +65,7 @@ TEST(message_addExisting, add){
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
-	EXPECT_EQ("Warning! Task already exists",message);
+	EXPECT_EQ("Error! Task already exists. Task not added",message);
 }
 
 /*add a normal task which clashes*/

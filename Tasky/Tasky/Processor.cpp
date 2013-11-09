@@ -338,7 +338,7 @@ int Processor::markCommandProcessor(string input){
 		if(choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
 				oldTask = _tempTaskList[choice[i]-1];
-				returnCode = returnCode = markTask(newTask, oldTask, markedTasks, errorTasks);
+				returnCode = markTask(newTask, oldTask, markedTasks, errorTasks);
 			}
 		}
 		pushFeedackToStringVec(markedTasks, TASKS_MARKED);
@@ -445,40 +445,13 @@ int Processor::undoCommandProcessor(string input){
 		if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_UNDO){
 			switch (command.getCommandTypeUndo()){
 			case COMMAND_TYPES::ADD:
-				returnCode = _taskList.add(command.getOld(), _tempTaskList);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
-					_tempStringList.push_back(UNDO_TASK_ADDED);
-				}else{
-					_tempStringList.push_back(UNDO_TASK_ADDING_ERROR);
-				}
-				_tempStringList.push_back(command.getOld().toString());
-				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
-					_tempStringList.push_back(CLASHES);
-					taskVecToStringVec(_tempTaskList, _tempStringList);
-				}
+				returnCode = undoAdd(command);
 				break;
 			case COMMAND_TYPES::REMOVE:
-				returnCode = _taskList.remove(command.getNew());
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REMOVE){
-					_tempStringList.push_back(UNDO_TASK_REMOVED);
-				}else{
-					_tempStringList.push_back(UNDO_TASK_REMOVING_ERROR);
-				}
-				_tempStringList.push_back(command.getNew().toString());
+				returnCode = undoRemove(command);
 				break;
 			case COMMAND_TYPES::UPDATE:
-				returnCode = _taskList.update(command.getNew(), command.getOld(), _tempTaskList);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-					_tempStringList.push_back(UNDO_TASK_UPDATED);
-				}else{
-					_tempStringList.push_back(UNDO_TASK_UPDATING_ERROR);
-				}
-				_tempStringList.push_back(command.getNew().toString());
-				_tempStringList.push_back(command.getOld().toString());
-				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-					_tempStringList.push_back(CLASHES);
-					taskVecToStringVec(_tempTaskList, _tempStringList);
-				}
+				returnCode = undoUpdate(command);
 				break;
 			default:
 				break;
@@ -505,40 +478,13 @@ int Processor::redoCommandProcessor(string input){
 		if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_REDO){
 			switch (command.getCommandTypeRedo()){
 			case COMMAND_TYPES::ADD:
-				returnCode = _taskList.add(command.getNew(), _tempTaskList);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_ADD){
-					_tempStringList.push_back(REDO_TASK_ADDED);
-				}else{
-					_tempStringList.push_back(REDO_TASK_ADDING_ERROR);
-				}
-				_tempStringList.push_back(command.getNew().toString());
-				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
-					_tempStringList.push_back(CLASHES);
-					taskVecToStringVec(_tempTaskList, _tempStringList);
-				}
+				returnCode = redoAdd(command);
 				break;
 			case COMMAND_TYPES::REMOVE:
-				returnCode = _taskList.remove(command.getOld());
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REMOVE){
-					_tempStringList.push_back(REDO_TASK_REMOVED);
-				}else{
-					_tempStringList.push_back(REDO_TASK_REMOVING_ERROR);
-				}
-				_tempStringList.push_back(command.getOld().toString());
+				returnCode = redoRemove(command);
 				break;
 			case COMMAND_TYPES::UPDATE:
-				returnCode = _taskList.update(command.getOld(), command.getNew(), _tempTaskList);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-					_tempStringList.push_back(REDO_TASK_UPDATED);
-				}else{
-					_tempStringList.push_back(REDO_TASK_UPDATING_ERROR);
-				}
-				_tempStringList.push_back(command.getOld().toString());
-				_tempStringList.push_back(command.getNew().toString());
-				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-					_tempStringList.push_back(CLASHES);
-					taskVecToStringVec(_tempTaskList, _tempStringList);
-				}
+				returnCode = redoUpdate(command);
 				break;
 			default:
 				break;
@@ -604,18 +550,17 @@ int Processor::addTask(string title, int type, BasicDateTime start, BasicDateTim
 	newTask = Task(title, start, end, type, false, comment);
 	int statusCode = _taskList.add(newTask, _tempTaskList);
 	if(statusCode == STATUS_CODE_SET_SUCCESS::SUCCESS_ADD){
-		recordAndFeedback(oldTask, newTask);
+		recordAndFeedbackAdd(oldTask, newTask);
 	}
 	if (statusCode == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
-		recordCommand(COMMAND_TYPES::ADD, oldTask, newTask);
-		recordAndFeedback(oldTask, newTask);
+		recordAndFeedbackAdd(oldTask, newTask);
 		_tempStringList.push_back(CLASHES);
 		taskVecToStringVec(_tempTaskList, _tempStringList);
 	}
 	return statusCode;
 }
 
-void Processor::recordAndFeedback( Task oldTask, Task newTask )
+void Processor::recordAndFeedbackAdd( Task oldTask, Task newTask )
 {
 	recordCommand(COMMAND_TYPES::ADD, oldTask, newTask);
 	_tempStringList.push_back(TASK_ADDED);
@@ -640,21 +585,9 @@ int Processor::renameTask( Task &oldTask, Task &newTask )
 	oldTask = newTask;
 
 	newTask.setTitle(_tempTitle);
-	tempReturn = _taskList.update(oldTask, newTask, _tempTaskList);
+	tempReturn = recordAndFeedbackUpdate(oldTask, newTask, TASK_RENAMED, TASK_RENAME_ERROR);
 
-	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-		recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-		_tempStringList.push_back(TASK_RENAMED);
-	}else{
-		_tempStringList.push_back(TASK_RENAME_ERROR);
-	}
-	_tempStringList.push_back(oldTask.toString());
-	_tempStringList.push_back(UPDATED_TO);
-	_tempStringList.push_back(newTask.toString());
-	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-		_tempStringList.push_back(CLASHES);
-		taskVecToStringVec(_tempTaskList,  _tempStringList);
-	}	return tempReturn;
+	return tempReturn;
 }
 
 int Processor::rescheduleTask( Task &oldTask, Task &newTask )
@@ -665,13 +598,19 @@ int Processor::rescheduleTask( Task &oldTask, Task &newTask )
 	newTask.setStartDate(_tempStart);
 	newTask.setEndDate(_tempEnd);
 	newTask.setType(_tempType);
-	tempReturn = _taskList.update(oldTask, newTask, _tempTaskList);
+	tempReturn = recordAndFeedbackUpdate(oldTask, newTask, TASK_RESCHEDULED, TASK_RESCHEDULED_ERROR);
+	return tempReturn;
+}
+
+int Processor::recordAndFeedbackUpdate( Task &oldTask, Task &newTask, string success, string error )
+{
+	int tempReturn = _taskList.update(oldTask, newTask, _tempTaskList);
 
 	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
 		recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-		_tempStringList.push_back(TASK_RESCHEDULED);
+		_tempStringList.push_back(success);
 	}else{
-		_tempStringList.push_back(TASK_RESCHEDULED_ERROR);
+		_tempStringList.push_back(error);
 	}
 	_tempStringList.push_back(oldTask.toString());
 	_tempStringList.push_back(UPDATED_TO);
@@ -679,9 +618,9 @@ int Processor::rescheduleTask( Task &oldTask, Task &newTask )
 	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
 		_tempStringList.push_back(CLASHES);
 		taskVecToStringVec(_tempTaskList,  _tempStringList);
-	}	return tempReturn;
+	}
+	return tempReturn;
 }
-
 
 int Processor::markTask( Task &newTask, Task oldTask, vector<Task> &markedTasks, vector<Task> &errorTasks )
 {
@@ -696,8 +635,55 @@ int Processor::markTask( Task &newTask, Task oldTask, vector<Task> &markedTasks,
 		}
 	}else{
 		errorTasks.push_back(newTask);
-	}	return tempReturn;
+	}
+	return tempReturn;
 }
+
+int Processor::undoAdd( HistoryCommand command )
+{
+	int tempReturn = _taskList.add(command.getOld(), _tempTaskList);
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_ADD){
+		_tempStringList.push_back(UNDO_TASK_ADDED);
+	}else{
+		_tempStringList.push_back(UNDO_TASK_ADDING_ERROR);
+	}
+	_tempStringList.push_back(command.getOld().toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList, _tempStringList);
+	}
+	return tempReturn;
+}
+
+int Processor::undoRemove( HistoryCommand command )
+{
+	int tempReturn = _taskList.remove(command.getNew());
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_REMOVE){
+		_tempStringList.push_back(UNDO_TASK_REMOVED);
+	}else{
+		_tempStringList.push_back(UNDO_TASK_REMOVING_ERROR);
+	}
+	_tempStringList.push_back(command.getNew().toString());
+	return tempReturn;
+}
+
+int Processor::undoUpdate( HistoryCommand command )
+{
+	int tempReturn = _taskList.update(command.getNew(), command.getOld(), _tempTaskList);
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+		_tempStringList.push_back(UNDO_TASK_UPDATED);
+	}else{
+		_tempStringList.push_back(UNDO_TASK_UPDATING_ERROR);
+	}
+	_tempStringList.push_back(command.getNew().toString());
+	_tempStringList.push_back(command.getOld().toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList, _tempStringList);
+	}
+	return tempReturn;
+}
+
 
 
 string Processor::getCommand(string& input){
@@ -805,4 +791,47 @@ void Processor::pushFeedackToStringVec(vector<Task> taskVector, string message){
 	}
 }
 
+int Processor::redoAdd( HistoryCommand command )
+{
+	int tempReturn = _taskList.add(command.getNew(), _tempTaskList);
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_ADD){
+		_tempStringList.push_back(REDO_TASK_ADDED);
+	}else{
+		_tempStringList.push_back(REDO_TASK_ADDING_ERROR);
+	}
+	_tempStringList.push_back(command.getNew().toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList, _tempStringList);
+	}
+	return tempReturn;
+}
 
+int Processor::redoRemove( HistoryCommand command )
+{
+	int tempReturn = _taskList.remove(command.getOld());
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_REMOVE){
+		_tempStringList.push_back(REDO_TASK_REMOVED);
+	}else{
+		_tempStringList.push_back(REDO_TASK_REMOVING_ERROR);
+	}
+	_tempStringList.push_back(command.getOld().toString());
+	return tempReturn;
+}
+
+int Processor::redoUpdate( HistoryCommand command )
+{
+	int tempReturn = _taskList.update(command.getOld(), command.getNew(), _tempTaskList);
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+		_tempStringList.push_back(REDO_TASK_UPDATED);
+	}else{
+		_tempStringList.push_back(REDO_TASK_UPDATING_ERROR);
+	}
+	_tempStringList.push_back(command.getOld().toString());
+	_tempStringList.push_back(command.getNew().toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList, _tempStringList);
+	}
+	return tempReturn;
+}

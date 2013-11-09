@@ -155,10 +155,10 @@
     <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="TaskyDesign1.rc" />
+    <ResourceCompile Include="logo.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico" />
+    <Image Include="logo.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TaskyBackEnd\TaskyBackEnd.vcxproj">

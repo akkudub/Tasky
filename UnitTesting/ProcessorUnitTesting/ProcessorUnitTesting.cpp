@@ -11,12 +11,14 @@ int statusCode;
 
 /*add a normal task with all parameters*/
 TEST(message_addSingle, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
 	EXPECT_EQ("Success! Task added",message);
 }
 
 TEST(outStrings_addSingleNormal, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00 -m Adding comment", message, outStrings);
 	expected = "Task Added:"
@@ -30,6 +32,7 @@ TEST(outStrings_addSingleNormal, add){
 }
 
 TEST(outStrings_addSingleDeadline, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' by 21/11/2013 08.00", message, outStrings);
 	expected = "Task Added:"
@@ -43,6 +46,7 @@ TEST(outStrings_addSingleDeadline, add){
 }
 
 TEST(outStrings_addSingleFloating, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1'", message, outStrings);
 	expected = "Task Added:"
@@ -57,6 +61,7 @@ TEST(outStrings_addSingleFloating, add){
 
 /* add existing task */
 TEST(message_addExisting, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
@@ -65,6 +70,7 @@ TEST(message_addExisting, add){
 
 /*add a normal task which clashes*/
 TEST(message_addClash, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
 
@@ -73,6 +79,7 @@ TEST(message_addClash, add){
 }
 
 TEST(outStrings_addClash1, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2013 08.00 to 22/11/2013 12.00", message, outStrings);
@@ -94,6 +101,7 @@ TEST(outStrings_addClash1, add){
 }
 
 TEST(outStrings_addClash2, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2013 08.00 to 22/11/2013 12.00", message, outStrings);
@@ -124,6 +132,7 @@ TEST(outStrings_addClash2, add){
 /*border case for task clash, SHOULD be identified as clashing*/
 
 TEST(outStrings_addBorderClashPlus, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013 12.00", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 11.59 to 24/11/2013", message, outStrings);
@@ -145,6 +154,7 @@ TEST(outStrings_addBorderClashPlus, add){
 }
 
 TEST(outStrings_addBorderClashMinus, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 16.00 to 22/11/2013", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 20/11/2013 to 21/11/2013 16.01", message, outStrings);
@@ -166,6 +176,7 @@ TEST(outStrings_addBorderClashMinus, add){
 
 /*border case for task clash, SHOULD NOT be identified as clashing*/
 TEST(message_addBorderNoClash, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
@@ -173,6 +184,7 @@ TEST(message_addBorderNoClash, add){
 }
 
 TEST(outStrings_addBorderNoClash, add){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
@@ -185,8 +197,9 @@ TEST(outStrings_addBorderNoClash, add){
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
 }
-
+/* single remove*/
 TEST(message_remove, remove){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
@@ -195,6 +208,7 @@ TEST(message_remove, remove){
 }
 
 TEST(outStrings_remove, remove){
+	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
@@ -210,10 +224,11 @@ TEST(outStrings_remove, remove){
 	EXPECT_EQ(expected, actual);
 }
 
-//this is for debugging purposes only
-
-//int main(int argc, char **argv) {
-//	::testing::InitGoogleTest(&argc, argv);
-//	return RUN_ALL_TESTS();
-//	getchar();
-//}
+TEST(message_removeInvalid, remove){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 3'", message, outStrings);
+	EXPECT_EQ("Warning! No such task",message);
+}

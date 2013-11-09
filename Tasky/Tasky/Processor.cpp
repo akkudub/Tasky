@@ -61,6 +61,7 @@ Processor::Processor(){
 }
 
 Processor::~Processor(){
+	saveFile();
 }
 
 int Processor::UImainProcessor(string input, string& message, vector<string>& list){
@@ -157,7 +158,7 @@ int Processor::removeCommandProcessor(string input){
 		if(choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
 				oldTask = _tempTaskList[choice[i]-1];
-				removeTask(returnCode, removedTasks, errorTasks, oldTask, newTask);
+				returnCode = removeTask(removedTasks, errorTasks, oldTask, newTask);
 			}
 		}
 		pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
@@ -177,7 +178,7 @@ int Processor::removeCommandProcessor(string input){
 			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				oldTask = _tempTaskList[0];
-				removeTask(returnCode, removedTasks, errorTasks, oldTask, newTask);
+				returnCode = removeTask(removedTasks, errorTasks, oldTask, newTask);
 				pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
 				pushFeedackToStringVec(errorTasks, TASKS_REMOVING_ERROR);
 				_tempTaskList.clear();
@@ -242,24 +243,7 @@ int Processor::renameCommandProcessor(string input){
 		choice = _interpreter.stringToInt(input);
 		if(choiceIsValid(choice)){
 			newTask = _tempTaskList[choice-1];
-			oldTask = newTask;
-
-			newTask.setTitle(_tempTitle);
-			returnCode = _taskList.update(oldTask, newTask, _tempTaskList);
-
-			if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-				_tempStringList.push_back(TASK_RENAMED);
-			}else{
-				_tempStringList.push_back(TASK_RENAME_ERROR);
-			}
-			_tempStringList.push_back(oldTask.toString());
-			_tempStringList.push_back(UPDATED_TO);
-			_tempStringList.push_back(newTask.toString());
-			if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-				_tempStringList.push_back(CLASHES);
-				taskVecToStringVec(_tempTaskList,  _tempStringList);
-			}
+			returnCode = renameTask(oldTask, newTask);
 		}
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -275,26 +259,9 @@ int Processor::renameCommandProcessor(string input){
 			_taskList.search(oldTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				newTask = _tempTaskList[0];
-				oldTask = newTask;
-				newTask.setTitle(_tempTitle);
-				returnCode = _taskList.update(oldTask, newTask, _tempTaskList);
-
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-					_tempStringList.push_back(TASK_RENAMED);
-				}else{
-					_tempStringList.push_back(TASK_RENAME_ERROR);
-				}
-				_tempStringList.push_back(oldTask.toString());
-				_tempStringList.push_back(UPDATED_TO);
-				_tempStringList.push_back(newTask.toString());
-				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-					_tempStringList.push_back(CLASHES);
-					taskVecToStringVec(_tempTaskList,  _tempStringList);
-				}
+				returnCode = renameTask(oldTask, newTask);
 				_tempTaskList.clear();
 				return returnCode;
-
 			}else if(!_tempTaskList.empty()){
 				taskVecToStringVec(_tempTaskList, _tempStringList);
 				_statusFlag = 2;
@@ -311,6 +278,8 @@ int Processor::renameCommandProcessor(string input){
 	return ERROR_UPDATE;
 }
 
+
+
 int Processor::rescheduleCommandProcessor(string input){
 	int returnCode, choice;
 	Task newTask, oldTask;
@@ -319,26 +288,7 @@ int Processor::rescheduleCommandProcessor(string input){
 		choice = _interpreter.stringToInt(input);
 		if(choiceIsValid(choice)){
 			newTask = _tempTaskList[choice-1];
-			oldTask = newTask;
-
-			newTask.setStartDate(_tempStart);
-			newTask.setEndDate(_tempEnd);
-			newTask.setType(_tempType);
-			returnCode = _taskList.update(oldTask, newTask, _tempTaskList);
-
-			if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-				recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-				_tempStringList.push_back(TASK_RESCHEDULED);
-			}else{
-				_tempStringList.push_back(TASK_RESCHEDULED_ERROR);
-			}
-			_tempStringList.push_back(oldTask.toString());
-			_tempStringList.push_back(UPDATED_TO);
-			_tempStringList.push_back(newTask.toString());
-			if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-				_tempStringList.push_back(CLASHES);
-				taskVecToStringVec(_tempTaskList,  _tempStringList);
-			}
+			returnCode = rescheduleTask(oldTask, newTask);
 		}
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -355,25 +305,7 @@ int Processor::rescheduleCommandProcessor(string input){
 
 			if (_tempTaskList.size() == 1){
 				newTask = _tempTaskList[0];
-				oldTask = newTask;
-
-				newTask.setStartDate(_tempStart);
-				newTask.setEndDate(_tempEnd);
-				newTask.setType(_tempType);
-				returnCode = _taskList.update(oldTask, newTask, _tempTaskList);
-				if (returnCode != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-					recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-					_tempStringList.push_back(TASK_RESCHEDULED);
-				}else{
-					_tempStringList.push_back(TASK_RESCHEDULED_ERROR);
-				}
-				_tempStringList.push_back(oldTask.toString());
-				_tempStringList.push_back(UPDATED_TO);
-				_tempStringList.push_back(newTask.toString());
-				if (returnCode == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-					_tempStringList.push_back(CLASHES);
-					taskVecToStringVec(_tempTaskList,  _tempStringList);
-				}
+				returnCode = rescheduleTask(oldTask, newTask);
 				_tempTaskList.clear();
 				return returnCode;
 
@@ -405,24 +337,13 @@ int Processor::markCommandProcessor(string input){
 
 		if(choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
-				returnCode=_taskList.mark(_tempStatus, _tempTaskList[choice[i]-1]);
 				oldTask = _tempTaskList[choice[i]-1];
-				newTask = oldTask;
-				if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_MARK){
-					if(newTask.getDone() != _tempStatus){
-						newTask.toggleDone();
-						recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-						markedTasks.push_back(newTask);
-					}
-				}else{
-					errorTasks.push_back(newTask);
-				}
+				returnCode = returnCode = markTask(newTask, oldTask, markedTasks, errorTasks);
 			}
 		}
 		pushFeedackToStringVec(markedTasks, TASKS_MARKED);
-		if (!errorTasks.empty()){
-			pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
-		}
+		pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
+
 		_tempTaskList.clear();
 		_statusFlag = 0;
 		return returnCode;
@@ -436,19 +357,11 @@ int Processor::markCommandProcessor(string input){
 		}else{
 			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
-				returnCode = _taskList.mark(_tempStatus, _tempTaskList[0]);
 				oldTask = _tempTaskList[0];
-				newTask = oldTask;
-				if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_MARK){
-					if(newTask.getDone() != _tempStatus){
-						newTask.toggleDone();
-						recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
-						_tempStringList.push_back(TASKS_MARKED);
-					}
-				}else{
-					_tempStringList.push_back(TASKS_MARKING_ERROR);
-				}
-				_tempStringList.push_back(newTask.toString());
+				returnCode = markTask(newTask, oldTask, markedTasks, errorTasks);
+
+				pushFeedackToStringVec(markedTasks, TASKS_MARKED);
+				pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
 				_tempTaskList.clear();
 				return returnCode;
 			}else if(!_tempTaskList.empty()){
@@ -503,7 +416,7 @@ int Processor::searchActionProcessor(string command, string input){
 		if (choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i<choice.size(); i++){
 				newTask = _tempTaskList[i-1];
-				removeTask(returnCode, success, error, newTask, oldTask);
+				returnCode = removeTask(success, error, newTask, oldTask);
 			}
 		}
 		pushFeedackToStringVec(success, TASKS_REMOVED);
@@ -660,12 +573,12 @@ int Processor::feedbackToUI(int returnCode, string& message, vector<string>& lis
 	assert(returnCode>=STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS &&
 		returnCode<=STATUS_CODE_SET_PROPMT::PROMPT_MARK_CHOOSE);
 
+	saveFile();
 	message = _messages.getMessage(returnCode);
 
 	if (returnCode == STATUS_CODE_SET_OVERALL::OVERALL_EXIT){
 		message += NEW_LINE_STRING + _messages.getMessage(saveFile());
 		list.clear();
-		saveFile();
 		return returnCode;
 	}else if(returnCode == STATUS_CODE_SET_WARNING::WARNING_WRONG_INPUT){
 		return STATUS_CODE_SET_OVERALL::OVERALL_WARNING;
@@ -684,25 +597,6 @@ int Processor::feedbackToUI(int returnCode, string& message, vector<string>& lis
 			return STATUS_CODE_SET_OVERALL::OVERALL_ERROR;
 		}
 	}
-}
-
-bool Processor::choiceIsValidVec(vector<int> choice){
-	if(choice.empty()){
-		return false;
-	}else{
-		for (unsigned int i = 0; i < choice.size(); i++){
-			unsigned int curr_choice = choice[i];
-			if(!choiceIsValid(choice[i])){
-				return false;
-			}
-		}
-		return true;
-	}
-}
-
-
-bool Processor::choiceIsValid(unsigned int choice){
-	return ((choice <=_tempTaskList.size()) && choice > 0);
 }
 
 int Processor::addTask(string title, int type, BasicDateTime start, BasicDateTime end, string comment){
@@ -727,6 +621,84 @@ void Processor::recordAndFeedback( Task oldTask, Task newTask )
 	_tempStringList.push_back(TASK_ADDED);
 	_tempStringList.push_back(newTask.toString());
 }
+
+int Processor::removeTask( vector<Task>& removed, vector<Task>& error, Task oldTask, Task newTask )
+{
+	int tempReturn =  _taskList.remove(oldTask);
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
+		recordCommand(COMMAND_TYPES::REMOVE, oldTask, newTask);
+		removed.push_back(oldTask);
+	}else{
+		error.push_back(oldTask);
+	}
+	return tempReturn;
+}
+
+int Processor::renameTask( Task &oldTask, Task &newTask )
+{
+	int tempReturn;
+	oldTask = newTask;
+
+	newTask.setTitle(_tempTitle);
+	tempReturn = _taskList.update(oldTask, newTask, _tempTaskList);
+
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+		recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+		_tempStringList.push_back(TASK_RENAMED);
+	}else{
+		_tempStringList.push_back(TASK_RENAME_ERROR);
+	}
+	_tempStringList.push_back(oldTask.toString());
+	_tempStringList.push_back(UPDATED_TO);
+	_tempStringList.push_back(newTask.toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList,  _tempStringList);
+	}	return tempReturn;
+}
+
+int Processor::rescheduleTask( Task &oldTask, Task &newTask )
+{
+	int tempReturn;
+	oldTask = newTask;
+
+	newTask.setStartDate(_tempStart);
+	newTask.setEndDate(_tempEnd);
+	newTask.setType(_tempType);
+	tempReturn = _taskList.update(oldTask, newTask, _tempTaskList);
+
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+		recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+		_tempStringList.push_back(TASK_RESCHEDULED);
+	}else{
+		_tempStringList.push_back(TASK_RESCHEDULED_ERROR);
+	}
+	_tempStringList.push_back(oldTask.toString());
+	_tempStringList.push_back(UPDATED_TO);
+	_tempStringList.push_back(newTask.toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList,  _tempStringList);
+	}	return tempReturn;
+}
+
+
+int Processor::markTask( Task &newTask, Task oldTask, vector<Task> &markedTasks, vector<Task> &errorTasks )
+{
+	newTask = oldTask;
+	int tempReturn=_taskList.mark(_tempStatus, oldTask);
+
+	if (tempReturn == STATUS_CODE_SET_SUCCESS::SUCCESS_MARK){
+		if(newTask.getDone() != _tempStatus){
+			newTask.toggleDone();
+			recordCommand(COMMAND_TYPES::UPDATE, oldTask, newTask);
+			markedTasks.push_back(newTask);
+		}
+	}else{
+		errorTasks.push_back(newTask);
+	}	return tempReturn;
+}
+
 
 string Processor::getCommand(string& input){
 	stringstream ss(input);
@@ -766,6 +738,26 @@ int Processor::recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTa
 	HistoryCommand tempCommand(commandType, oldTask, newTask);
 	return _history.record(tempCommand);
 }
+
+bool Processor::choiceIsValidVec(vector<int> choice){
+	if(choice.empty()){
+		return false;
+	}else{
+		for (unsigned int i = 0; i < choice.size(); i++){
+			unsigned int curr_choice = choice[i];
+			if(!choiceIsValid(choice[i])){
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+
+bool Processor::choiceIsValid(unsigned int choice){
+	return ((choice <=_tempTaskList.size()) && choice > 0);
+}
+
 
 void Processor::taskVecToStringVec(vector<Task> taskList, vector<string>& stringList){
 	if (!taskList.empty()){
@@ -813,13 +805,4 @@ void Processor::pushFeedackToStringVec(vector<Task> taskVector, string message){
 	}
 }
 
-void Processor::removeTask( int& returnCode, vector<Task>& removed, vector<Task>& error, Task oldTask, Task newTask )
-{
-	returnCode = _taskList.remove(oldTask);
-	if (returnCode != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
-		recordCommand(COMMAND_TYPES::REMOVE, oldTask, newTask);
-		removed.push_back(oldTask);
-	}else{
-		error.push_back(oldTask);
-	}
-}
+

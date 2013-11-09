@@ -289,6 +289,14 @@ private:
 
 	void recordAndFeedback( Task oldTask, Task newTask );
 
+	int removeTask(vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask);
+
+	int renameTask( Task &oldTask, Task &newTask );
+	
+	int rescheduleTask( Task &oldTask, Task &newTask );
+
+	int markTask( Task &newTask, Task oldTask, vector<Task> &markedTasks, vector<Task> &errorTasks );
+
 	string getCommand(string& input);
 	
 	/*
@@ -346,7 +354,6 @@ private:
 
 	void pushFeedackToStringVec(vector<Task> taskVector, string message);
 	
-	void removeTask(int& returnCode, vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask);
 };
 
 #endif

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/TaskyDesign1">
+        <file>Resources/button_close_light.png</file>
+        <file>Resources/button_close_normal.png</file>
+        <file>Resources/button_minimize_light.png</file>
+        <file>Resources/button_minimize_normal.png</file>
+    </qresource>
+</RCC>

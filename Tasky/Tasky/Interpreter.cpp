@@ -717,7 +717,7 @@ int Interpreter::mapDayOfWeekToInt(const string& str){
 		return INT_WEDNESDAY;
 	}else if(str1==THU_KEY_WORD || str1==THU_FULL_KEY_WORD){
 		return INT_THURSDAY;
-	}else if(str1==FRI_KEY_WORD || str1==FRI_KEY_WORD){
+	}else if(str1==FRI_KEY_WORD || str1==FRI_FULL_KEY_WORD){
 		return INT_FRIDAY;
 	}else if(str1==SAT_KEY_WORD || str1==SAT_FULL_KEY_WORD){
 		return INT_SATURDAY;

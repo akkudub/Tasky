@@ -31,6 +31,10 @@
   <property name="windowTitle">
    <string>Tasky</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="taskydesign1.qrc">
+    <normaloff>:/TaskyDesign1/Resources/logo.png</normaloff>:/TaskyDesign1/Resources/logo.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow#TaskyDesignClass{
 background-color: transparent; 
@@ -87,7 +91,7 @@ border-radius: 2px;
         <string notr="true">QTextEdit#DisplayPanel{
 background-color: #2E534C;
 color: #FFFFFF;
-border: 1px solid #FFFFFF;
+box-shadow: 2px 2px 2px 2px #FFFFFF;
 border-radius: 7px;
 padding: 10px 5px 18px 0px;
 }

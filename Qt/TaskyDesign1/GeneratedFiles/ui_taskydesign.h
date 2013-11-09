@@ -52,6 +52,9 @@ public:
         TaskyDesignClass->setSizePolicy(sizePolicy);
         TaskyDesignClass->setMinimumSize(QSize(580, 430));
         TaskyDesignClass->setMaximumSize(QSize(580, 430));
+        QIcon icon;
+        icon.addFile(QStringLiteral(":/TaskyDesign1/Resources/logo.png"), QSize(), QIcon::Normal, QIcon::Off);
+        TaskyDesignClass->setWindowIcon(icon);
         TaskyDesignClass->setStyleSheet(QLatin1String("QMainWindow#TaskyDesignClass{\n"
 "background-color: transparent; \n"
 "padding: 0px 0px 5px 0px;\n"
@@ -84,7 +87,7 @@ public:
         DisplayPanel->setStyleSheet(QLatin1String("QTextEdit#DisplayPanel{\n"
 "background-color: #2E534C;\n"
 "color: #FFFFFF;\n"
-"border: 1px solid #FFFFFF;\n"
+"box-shadow: 2px 2px 2px 2px #FFFFFF;\n"
 "border-radius: 7px;\n"
 "padding: 10px 5px 18px 0px;\n"
 "}\n"
@@ -159,10 +162,10 @@ public:
 "border-style:flat;\n"
 "}\n"
 ""));
-        QIcon icon;
-        icon.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_close100.png"), QSize(), QIcon::Normal, QIcon::Off);
-        icon.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_close100.png"), QSize(), QIcon::Normal, QIcon::On);
-        CloseButton->setIcon(icon);
+        QIcon icon1;
+        icon1.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_close100.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_close100.png"), QSize(), QIcon::Normal, QIcon::On);
+        CloseButton->setIcon(icon1);
         CloseButton->setIconSize(QSize(25, 25));
         MinimizeButton = new QToolButton(MainPart);
         MinimizeButton->setObjectName(QStringLiteral("MinimizeButton"));
@@ -171,10 +174,10 @@ public:
         MinimizeButton->setStyleSheet(QLatin1String("QToolButton#MinimizeButton{\n"
 "border-style: flat;\n"
 "}"));
-        QIcon icon1;
-        icon1.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_minimize100.png"), QSize(), QIcon::Normal, QIcon::Off);
-        icon1.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_minimize100.png"), QSize(), QIcon::Normal, QIcon::On);
-        MinimizeButton->setIcon(icon1);
+        QIcon icon2;
+        icon2.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_minimize100.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon2.addFile(QStringLiteral(":/TaskyDesign1/Resources/button_minimize100.png"), QSize(), QIcon::Normal, QIcon::On);
+        MinimizeButton->setIcon(icon2);
         MinimizeButton->setIconSize(QSize(25, 25));
         TaskyDesignClass->setCentralWidget(MainPart);
         statusBar = new QStatusBar(TaskyDesignClass);

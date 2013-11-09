@@ -23,7 +23,7 @@ int TaskList::add(Task toAdd, vector<Task>& _temp){
 	_temp.clear();
 
 	if(isExisting(toAdd))
-		return WARNING_ADD_DUPLICATE;
+		return ERROR_ADD_DUPLICATE;
 
 	if(toAdd.getType() == NORMAL_TASK)
 		pushClashing(toAdd, _temp);

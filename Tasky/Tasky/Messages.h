@@ -39,7 +39,6 @@ private:
 	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH;
 
 	static const string MESSAGE_WARNING_ADD_CLASH;	
-	static const string MESSAGE_WARNING_ADD_DUPLICATE;
 	static const string MESSAGE_WARNING_DISPLAY_NO_RESULT;
 	static const string MESSAGE_WARNING_UPDATE_SAME;	
 	static const string MESSAGE_WARNING_UPDATE_CLASH;
@@ -52,6 +51,7 @@ private:
 	static const string MESSAGE_WARNING_WRONG_INPUT;
 
 	static const string MESSAGE_ERROR_ADD;
+	static const string MESSAGE_ERROR_ADD_DUPLICATE;
 	static const string MESSAGE_ERROR_REMOVE;
 	static const string MESSAGE_ERROR_DISPLAY;
 	static const string MESSAGE_ERROR_UPDATE;

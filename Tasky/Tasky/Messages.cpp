@@ -30,7 +30,6 @@ const string Messages::MESSAGE_SUCCESS_INTERPRET_MARK = "Success! Interpreted ma
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH = "Success! Interpreted search";
 
 const string Messages::MESSAGE_WARNING_ADD_CLASH =		"Warning! Task clashes with existing ones";
-const string Messages::MESSAGE_WARNING_ADD_DUPLICATE = "Warning! Task already exists";
 const string Messages::MESSAGE_WARNING_DISPLAY_NO_RESULT = "Warning! No tasks to display";
 const string Messages::MESSAGE_WARNING_UPDATE_SAME =	"Warning! The new data is the same as the old data";
 const string Messages::MESSAGE_WARNING_UPDATE_CLASH =	"Warning! The new data will make the task clash with the following:";
@@ -43,6 +42,7 @@ const string Messages::MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE = "Warning! No tit
 const string Messages::MESSAGE_WARNING_WRONG_INPUT =	"Warning! Wrong input";
 
 const string Messages::MESSAGE_ERROR_ADD =				"Error! Unexpected error while adding task";
+const string Messages::MESSAGE_ERROR_ADD_DUPLICATE = "Warning! Task already exists";
 const string Messages::MESSAGE_ERROR_REMOVE =			"Error! Unexpected error while removing task" ;
 const string Messages::MESSAGE_ERROR_DISPLAY =			"Error! Unexpected error while displaying tasks";
 const string Messages::MESSAGE_ERROR_UPDATE =		"Error! Unexpected error while rescheduling task";
@@ -102,7 +102,6 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_SUCCESS_INTERPRET_SEARCH,
 
 	MESSAGE_WARNING_ADD_CLASH,	
-	MESSAGE_WARNING_ADD_DUPLICATE,
 	MESSAGE_WARNING_DISPLAY_NO_RESULT,
 	MESSAGE_WARNING_UPDATE_SAME,	
 	MESSAGE_WARNING_UPDATE_CLASH,
@@ -115,6 +114,7 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_WARNING_WRONG_INPUT,
 
 	MESSAGE_ERROR_ADD,
+	MESSAGE_ERROR_ADD_DUPLICATE,
 	MESSAGE_ERROR_REMOVE,
 	MESSAGE_ERROR_DISPLAY,
 	MESSAGE_ERROR_UPDATE,

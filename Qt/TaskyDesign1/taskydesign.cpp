@@ -33,7 +33,7 @@ const QString TaskyDesign::OTHER_OPERATION_REMINDER          = "Attention: inval
 const QString TaskyDesign::TRAY_MSG_TITLE                    = "Tasky message";
 const QString TaskyDesign::TRAY_MSG_CONTENT                  = "Tasky is now hiding";
 
-const QString TaskyDesign::ICON_STRING                       = "Resources/logo.ico";
+const QString TaskyDesign::ICON_STRING                       = "logo.ico";
 
 TaskyDesign::TaskyDesign(QWidget *parent): QMainWindow(parent){
 	_logic=new Processor();

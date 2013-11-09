@@ -36,6 +36,9 @@
     <Filter Include="libqxt">
       <UniqueIdentifier>{e94cfbb5-87b4-4e1c-b373-8508393477f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="icon">
+      <UniqueIdentifier>{a4887cda-b101-4f40-9545-fdfe7b3e49d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -98,9 +101,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="TaskyDesign1.rc" />
+    <ResourceCompile Include="logo.rc">
+      <Filter>icon</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico" />
+    <Image Include="logo.ico">
+      <Filter>icon</Filter>
+    </Image>
   </ItemGroup>
 </Project>

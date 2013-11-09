@@ -12,7 +12,7 @@ using namespace std;
 using namespace System;
 
 static const string MESSAGE_WELCOME = "Welcome To Tasky! ";
-static const string MESSAGE_TASKS_TODAY = "\nThe tasks for today are as follows:";
+static const string MESSAGE_TASKS_TODAY = "\nThe tasks for today are as follows:\n";
 static const string MESSAGE_GOODBYE = "GoodBye!";
 static const string MESSAGE_COMMAND = "Command: ";
 
@@ -28,7 +28,7 @@ private:
 	* Displays a welcome message to the user
 	* Displays the tasks of the day/pending tasks
 	*/
-	void displayWelcomeMessage();
+	void displayWelcomeMessage(HANDLE hConsole);
 	/**
 	* Purpose:
 	* Takes in user command & put into string command

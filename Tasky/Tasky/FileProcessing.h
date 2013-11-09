@@ -7,6 +7,7 @@
  *
  *Main author: Joan
 */
+//@author A0099016B
 
 #include <fstream>
 #include "Essential.h"

@@ -90,6 +90,7 @@ private:
 	static const string COMMAND_EXIT;
 
 	static const string TASK_ADDED;
+	static const string TASK_ADD_ERROR;
 	static const string CLASHES;
 	static const string TASKS_REMOVED;
 	static const string TASKS_REMOVING_ERROR;
@@ -273,49 +274,21 @@ private:
 	int feedbackToUI(int returnCode, string& message, vector<string>& list);
 
 	//for add command processing
-
 	/*
 	* Purpose:
-	* add Floating tasks, put any clashes in _tempTaskList
+	* add tasks, put any clashes in _tempTaskList
 	*
 	* @param title name of task
-	* @param comment additional description
-	* @return status code
-	*/
-	int addFloatingTask(string title, string comment);//need to refactor to only create a task
-	
-	/*
-	* Purpose:
-	* add Deadline tasks, put any clashes in _tempTaskList
-	*
-	* @param title name of task
-	* @param end deadline of task
-	* @param comment additional description
-	* @return status code
-	*/
-	int addDeadlineTask(string title, BasicDateTime end, string comment);//need to refactor to only create a task
-	
-	/*
-	* Purpose:
-	* add Timed tasks, put any clashes in _tempTaskList
-	*
-	* @param title name of task
+	* @param type type of task
 	* @param start start time of task
 	* @param end end time of task
 	* @param comment additional description
 	* @return status code
 	*/
-	int addTimedTask(string title, BasicDateTime start, BasicDateTime end, string comment);//need to refactor to only create a task
+	int addTask(string title, int type, BasicDateTime start, BasicDateTime end, string comment);
 
-	//additional helper methods
+	void recordAndFeedback( Task oldTask, Task newTask );
 
-	/*
-	* Purpose:
-	* extract the command out of the raw user input and remove it from the input
-	*
-	* @param input raw input from UI
-	* @return string containing command if command is found, else empty string
-	*/
 	string getCommand(string& input);
 	
 	/*

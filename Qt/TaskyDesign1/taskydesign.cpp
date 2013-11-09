@@ -142,7 +142,7 @@ void TaskyDesign::fillUpWordList(){
 
 void TaskyDesign::setUpGlobalShortCutKey(){
 	QxtGlobalShortcut* scOpenMainWin = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+t"), this);
-	connect(scOpenMainWin, SIGNAL(activated()),this, SLOT(showWindow()));
+	connect(scOpenMainWin, SIGNAL(activated()),this, SLOT(showMainWindow()));
 }
 
 void TaskyDesign::setUpConnections(){

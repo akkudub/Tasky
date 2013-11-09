@@ -90,9 +90,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="libqxt\qxtglobal.h">
       <Filter>libqxt</Filter>
     </ClInclude>

@@ -32,7 +32,7 @@
    <string>Tasky</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="taskydesign1.qrc">
+   <iconset>
     <normaloff>:/TaskyDesign1/Resources/logo.png</normaloff>:/TaskyDesign1/Resources/logo.png</iconset>
   </property>
   <property name="styleSheet">
@@ -91,9 +91,9 @@ border-radius: 2px;
         <string notr="true">QTextEdit#DisplayPanel{
 background-color: #2E534C;
 color: #FFFFFF;
-box-shadow: 2px 2px 2px 2px #FFFFFF;
-border-radius: 7px;
-padding: 10px 5px 18px 0px;
+border: 1px solid  #FFFFFF;
+border-radius: 8px;
+padding: 10px 10px 18px 5px;
 }
 QTextEdit#DisplatPanel:hover{
 background-color: black;
@@ -216,7 +216,12 @@ background-color: #2E534C;
     </property>
     <property name="styleSheet">
      <string notr="true">QToolButton#CloseButton{	
-border-style:flat;
+    border-style:flat;
+	background-image: url(:/TaskyDesign1/Resources/button_close_light.png);
+}
+QToolButton#CloseButton:hover{
+    border-style:flat;
+	background-image: url(:/TaskyDesign1/Resources/button_close_normal.png);
 }
 </string>
     </property>
@@ -225,8 +230,7 @@ border-style:flat;
     </property>
     <property name="icon">
      <iconset resource="taskydesign1.qrc">
-      <normaloff>:/TaskyDesign1/Resources/button_close100.png</normaloff>
-      <normalon>:/TaskyDesign1/Resources/button_close100.png</normalon>:/TaskyDesign1/Resources/button_close100.png</iconset>
+      <normaloff>:/TaskyDesign1/Resources/button_close_normal.png</normaloff>:/TaskyDesign1/Resources/button_close_normal.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -249,7 +253,12 @@ border-style:flat;
     </property>
     <property name="styleSheet">
      <string notr="true">QToolButton#MinimizeButton{
-border-style: flat;
+    border-style: flat;
+	background-image: url(:/TaskyDesign1/Resources/button_minimize_light.png);
+}
+QToolButton#MinimizeButton:hover{
+    border-style: flat;
+	background-image: url(:/TaskyDesign1/Resources/button_minimize_normal.png);
 }</string>
     </property>
     <property name="text">
@@ -257,8 +266,7 @@ border-style: flat;
     </property>
     <property name="icon">
      <iconset resource="taskydesign1.qrc">
-      <normaloff>:/TaskyDesign1/Resources/button_minimize100.png</normaloff>
-      <normalon>:/TaskyDesign1/Resources/button_minimize100.png</normalon>:/TaskyDesign1/Resources/button_minimize100.png</iconset>
+      <normaloff>:/TaskyDesign1/Resources/button_minimize_normal.png</normaloff>:/TaskyDesign1/Resources/button_minimize_normal.png</iconset>
     </property>
     <property name="iconSize">
      <size>

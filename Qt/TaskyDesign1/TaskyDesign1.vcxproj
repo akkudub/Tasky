@@ -152,7 +152,6 @@
     </CustomBuild>
     <ClInclude Include="libqxt\qxtglobalshortcut_p.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="logo.rc" />

@@ -42,7 +42,7 @@ const string Messages::MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE = "Warning! No tit
 const string Messages::MESSAGE_WARNING_WRONG_INPUT =	"Warning! Wrong input";
 
 const string Messages::MESSAGE_ERROR_ADD =				"Error! Unexpected error while adding task";
-const string Messages::MESSAGE_ERROR_ADD_DUPLICATE = "Warning! Task already exists";
+const string Messages::MESSAGE_ERROR_ADD_DUPLICATE = "Error! Task already exists. Task not added";
 const string Messages::MESSAGE_ERROR_REMOVE =			"Error! Unexpected error while removing task" ;
 const string Messages::MESSAGE_ERROR_DISPLAY =			"Error! Unexpected error while displaying tasks";
 const string Messages::MESSAGE_ERROR_UPDATE =		"Error! Unexpected error while rescheduling task";

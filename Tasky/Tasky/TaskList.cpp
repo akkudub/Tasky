@@ -150,7 +150,7 @@ int TaskList::searchEmptySlots(BasicDateTime start, BasicDateTime end, vector<Ba
 		return SUCCESS_SEARCH;
 	}
 	else
-		return WARNING_SEARCH_NO_RESULT;
+		return WARNING_SEARCH_NO_SLOTS;
 
 	return ERROR_SEARCH;
 }

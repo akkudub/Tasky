@@ -190,6 +190,10 @@ void Task::setTitle(string title){
 	_title = title;
 }
 
+void Task::setComment(string comment){
+	_comment = comment;
+}
+
 void Task::setStartDate(BasicDateTime start){
 	_start = start;
 }

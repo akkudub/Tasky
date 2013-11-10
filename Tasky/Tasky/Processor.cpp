@@ -1,3 +1,10 @@
+
+//@author A0103516U
+/*
+* Processor.cpp
+* Implementation for Processor class*
+*/
+
 #include <assert.h>
 #include "Processor.h"
 
@@ -51,7 +58,6 @@ const string Processor::REDO_TASK_REMOVING_ERROR = "Redo Tasks removing error";
 const string Processor::REDO_TASK_UPDATED = "Redo Tasks updated:";
 const string Processor::REDO_TASK_UPDATING_ERROR = "Redo Tasks updating error:";
 const string Processor::EMPTY_SLOTS = "Following empty slots found:";
-const string Processor::NO_EMPTY_SLOTS = "No empty slots found!";
 const string Processor::SLOT_FROM = "From: ";
 const string Processor::SLOT_TO = "To: ";
 
@@ -252,7 +258,7 @@ int Processor::renameCommandProcessor(string input){
 	case 0:
 		_tempTaskList.clear();
 
-		returnCode = _interpreter.interpretRename(input, oldTitle, _tempTitle);
+		returnCode = _interpreter.interpretRename(input, oldTitle, _tempTitle, _tempComment);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME){
 			return returnCode;
 		}else{
@@ -583,8 +589,9 @@ int Processor::renameTask( Task &oldTask, Task &newTask )
 {
 	int tempReturn;
 	oldTask = newTask;
-
+	checkComment(oldTask);
 	newTask.setTitle(_tempTitle);
+	newTask.setComment(_tempComment);
 	tempReturn = recordAndFeedbackUpdate(oldTask, newTask, TASK_RENAMED, TASK_RENAME_ERROR);
 
 	return tempReturn;
@@ -685,6 +692,50 @@ int Processor::undoUpdate( HistoryCommand command )
 }
 
 
+int Processor::redoAdd( HistoryCommand command )
+{
+	int tempReturn = _taskList.add(command.getNew(), _tempTaskList);
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_ADD){
+		_tempStringList.push_back(REDO_TASK_ADDED);
+	}else{
+		_tempStringList.push_back(REDO_TASK_ADDING_ERROR);
+	}
+	_tempStringList.push_back(command.getNew().toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList, _tempStringList);
+	}
+	return tempReturn;
+}
+
+int Processor::redoRemove( HistoryCommand command )
+{
+	int tempReturn = _taskList.remove(command.getOld());
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_REMOVE){
+		_tempStringList.push_back(REDO_TASK_REMOVED);
+	}else{
+		_tempStringList.push_back(REDO_TASK_REMOVING_ERROR);
+	}
+	_tempStringList.push_back(command.getOld().toString());
+	return tempReturn;
+}
+
+int Processor::redoUpdate( HistoryCommand command )
+{
+	int tempReturn = _taskList.update(command.getOld(), command.getNew(), _tempTaskList);
+	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
+		_tempStringList.push_back(REDO_TASK_UPDATED);
+	}else{
+		_tempStringList.push_back(REDO_TASK_UPDATING_ERROR);
+	}
+	_tempStringList.push_back(command.getOld().toString());
+	_tempStringList.push_back(command.getNew().toString());
+	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
+		_tempStringList.push_back(CLASHES);
+		taskVecToStringVec(_tempTaskList, _tempStringList);
+	}
+	return tempReturn;
+}
 
 string Processor::getCommand(string& input){
 	stringstream ss(input);
@@ -766,8 +817,6 @@ void Processor::dateTimeVecToStringVec(vector<BasicDateTime> slots, vector<strin
 			tempstr += SLOT_TO + slots[i+1].getDateTimeString();
 			stringList.push_back(tempstr);
 		}
-	}else{
-		_tempStringList.push_back(NO_EMPTY_SLOTS);
 	}
 }
 
@@ -791,47 +840,9 @@ void Processor::pushFeedackToStringVec(vector<Task> taskVector, string message){
 	}
 }
 
-int Processor::redoAdd( HistoryCommand command )
-{
-	int tempReturn = _taskList.add(command.getNew(), _tempTaskList);
-	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_ADD){
-		_tempStringList.push_back(REDO_TASK_ADDED);
-	}else{
-		_tempStringList.push_back(REDO_TASK_ADDING_ERROR);
-	}
-	_tempStringList.push_back(command.getNew().toString());
-	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_ADD_CLASH){
-		_tempStringList.push_back(CLASHES);
-		taskVecToStringVec(_tempTaskList, _tempStringList);
-	}
-	return tempReturn;
-}
 
-int Processor::redoRemove( HistoryCommand command )
-{
-	int tempReturn = _taskList.remove(command.getOld());
-	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_REMOVE){
-		_tempStringList.push_back(REDO_TASK_REMOVED);
-	}else{
-		_tempStringList.push_back(REDO_TASK_REMOVING_ERROR);
+void Processor::checkComment(Task task){
+	if(_tempComment == EMPTY_STRING){
+		_tempComment = task.getComment();
 	}
-	_tempStringList.push_back(command.getOld().toString());
-	return tempReturn;
-}
-
-int Processor::redoUpdate( HistoryCommand command )
-{
-	int tempReturn = _taskList.update(command.getOld(), command.getNew(), _tempTaskList);
-	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
-		_tempStringList.push_back(REDO_TASK_UPDATED);
-	}else{
-		_tempStringList.push_back(REDO_TASK_UPDATING_ERROR);
-	}
-	_tempStringList.push_back(command.getOld().toString());
-	_tempStringList.push_back(command.getNew().toString());
-	if (tempReturn == STATUS_CODE_SET_WARNING::WARNING_UPDATE_CLASH){
-		_tempStringList.push_back(CLASHES);
-		taskVecToStringVec(_tempTaskList, _tempStringList);
-	}
-	return tempReturn;
 }

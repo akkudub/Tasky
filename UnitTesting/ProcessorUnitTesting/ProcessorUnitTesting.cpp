@@ -905,6 +905,7 @@ TEST(message_searchSlots, search){
 
 	EXPECT_EQ("Success! Search successful", message);
 }
+
 TEST(outstrings_searchSlots, search){
 	remove("Tasky.txt");
 	Processor tempProcessor;
@@ -932,11 +933,38 @@ TEST(message_searchSlotsInvalid, search){
 	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("search slots from 21/11/2020 to 22/11/2020", message, outStrings);
+	
+	EXPECT_EQ("Warning! No slots found", message);
+}
+
+TEST(outstrings_searchSlotsMinus, search){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search slots from 20/11/2020 to 21/11/2020", message, outStrings);
 	expected =
 		"Following empty slots found:"
-		"1:From: 20/11/2020 00:00:00 To: 21/11/2020 00:00:00"
-		"2:From: 22/11/2020 00:00:00 To: 23/11/2020 00:00:00"
-		"3:From: 24/11/2020 12:00:00 To: 24/11/2020 13:00:00";
-	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
+		"1:From: 20/11/2020 00:00:00 To: 21/11/2020 00:00:00";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_searchSlotsPlus, search){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search slots from 25/11/2020 to 26/11/2020", message, outStrings);
+	expected =
+		"Following empty slots found:"
+		"1:From: 25/11/2020 00:00:00 To: 26/11/2020 00:00:00";
+	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
 }

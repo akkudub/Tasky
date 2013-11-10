@@ -1,6 +1,8 @@
 #ifndef _Processor_H_
 #define _Processor_H_
 
+//@author A0103516U
+
 /*
 *This class is the central controlling unit. It will take string from UI and process it, acknowledge UI
 *if input format is not suitable or it will go ahead and extract command out of input string and call methods
@@ -12,7 +14,6 @@
 *displaying. But the author of this class will only read from _itemList. This method is more like data-binding
 *with only programmers' protection.
 *
-*Author: Akshat, Junchao
 */
 
 #include <sstream>
@@ -50,6 +51,7 @@ private:
 	bool searched;
 
 	string _tempTitle;
+	string _tempComment;
 	bool _tempStatus;
 	int _tempType;
 	BasicDateTime _tempStart;
@@ -114,7 +116,6 @@ private:
 	static const string REDO_TASK_UPDATED;
 	static const string REDO_TASK_UPDATING_ERROR;
 	static const string EMPTY_SLOTS;
-	static const string NO_EMPTY_SLOTS;
 	static const string SLOT_FROM;
 	static const string SLOT_TO;
 
@@ -368,6 +369,7 @@ private:
 
 	void pushFeedackToStringVec(vector<Task> taskVector, string message);
 
+	void checkComment(Task task);
 };
 
 #endif

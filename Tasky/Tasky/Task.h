@@ -80,6 +80,7 @@ public:
 	string toString();
 	vector<string> toStringVector();
 	void setTitle(string title);
+	void setComment(string comment);
 	void setStartDate(BasicDateTime start);
 	void setEndDate(BasicDateTime end);
 	void setType(int type);

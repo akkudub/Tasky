@@ -98,6 +98,20 @@ int TaskList::displayToday(vector<Task>& _temp){
 	return searchInRange(start, end, _temp);
 }
 
+int TaskList::displayStatus(bool done, vector<Task>& _temp){
+
+	_temp.clear();
+
+	pushStatus(done, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_DISPLAY;
+	else
+		return WARNING_DISPLAY_NO_RESULT;
+
+	return ERROR_DISPLAY;
+}
+
 int TaskList::searchTasks(vector<string> keywords, int statusPresent, int type, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
 
 	setFlags(keywords, statusPresent, type);
@@ -179,128 +193,14 @@ int TaskList::loadFile(){
 	return statusCode;
 }
 
-void TaskList::setFlags(vector<string> keywords, int statusPresent, int type){
+void TaskList::pushClashing(Task task, vector<Task>& _temp){
 
-	if(keywords.empty())
-		keywordsFlag = false;
-	else
-		keywordsFlag = true;
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
 
-	if(statusPresent == 0)
-		statusFlag = false;
-	else if(statusPresent == -1 || statusPresent == 1)
-		statusFlag = true;
-
-	if(type == 0)
-		typeFlag = false;
-	else if(type == 2)
-		typeFlag = true;
-}
-
-int TaskList::searchKeywords(vector<string> keywords, vector<Task>& _temp){
-
-	assert(!keywords.empty());
-
-	_temp.clear();
-
-	searchVectors(keywords, _temp);
-
-	if(!_temp.empty())
-		return SUCCESS_SEARCH;
-	else
-		return WARNING_SEARCH_NO_RESULT;
-
-	return ERROR_SEARCH;
-}
-
-int TaskList::searchKeywordsInRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
-
-	assert(!keywords.empty());
-
-	_temp.clear();
-
-	searchVectorsWithRange(keywords, start, end, _temp);
-
-	if(!_temp.empty())
-		return SUCCESS_SEARCH;
-	else
-		return WARNING_SEARCH_NO_RESULT;
-
-	return ERROR_SEARCH;
-}
-
-int TaskList::searchKeywordsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp){
-
-	assert(!keywords.empty());
-
-	_temp.clear();
-
-	searchVectorsWithStatus(keywords, done, _temp);
-
-	if(!_temp.empty())
-		return SUCCESS_SEARCH;
-	else
-		return WARNING_SEARCH_NO_RESULT;
-
-	return ERROR_SEARCH;
-}
-
-int TaskList::searchKeywordsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
-
-	assert(!keywords.empty());
-
-	_temp.clear();
-
-	searchVectorsWithRangeAndStatus(keywords, start, end, done, _temp);
-
-	if(!_temp.empty())
-		return SUCCESS_SEARCH;
-	else
-		return WARNING_SEARCH_NO_RESULT;
-
-	return ERROR_SEARCH;
-}
-
-int TaskList::displayStatus(bool done, vector<Task>& _temp){
-
-	_temp.clear();
-
-	pushStatus(done, _temp);
-
-	if(!_temp.empty())
-		return SUCCESS_DISPLAY;
-	else
-		return WARNING_DISPLAY_NO_RESULT;
-
-	return ERROR_DISPLAY;
-}
-
-int TaskList::searchInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
-
-	_temp.clear();
-
-	pushInRange(_temp, start, end);
-
-	if(!_temp.empty())
-		return SUCCESS_DISPLAY;
-	else
-		return WARNING_DISPLAY_NO_RESULT;
-
-	return ERROR_DISPLAY;
-}
-
-int TaskList::searchStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
-
-	_temp.clear();
-
-	pushStatusInRange(done, start, end, _temp);
-
-	if(!_temp.empty())
-		return SUCCESS_DISPLAY;
-	else
-		return WARNING_DISPLAY_NO_RESULT;
-
-	return ERROR_DISPLAY;
+		if(_normalTask[i].isClashingWith(task)){
+			_temp.push_back(_normalTask[i]);
+		}
+	}
 }
 
 void TaskList::addTask(Task toAdd){
@@ -317,370 +217,6 @@ void TaskList::addTask(Task toAdd){
 		_normalTask.push_back(toAdd);
 		break;
 	}
-}
-
-void TaskList::searchVectors(vector<string> keywords, vector<Task>& _temp){
-
-	_duplicateFloating = _floatingTask;
-	_duplicateDeadline = _deadlineTask;
-	_duplicateNormal = _normalTask;
-
-	exactSearch(keywords[0], _temp);
-	containingExactStringSearch(keywords[0], _temp);
-	containingBreakdownStringSearch(keywords, _temp);
-}
-
-void TaskList::searchVectorsWithRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
-
-	_duplicateDeadline = _deadlineTask;
-	_duplicateNormal = _normalTask;
-
-	exactSearchWithRange(keywords[0], start, end, _temp);
-	containingExactStringSearchWithRange(keywords[0], start, end, _temp);
-	containingBreakdownStringSearchWithRange(keywords, start, end, _temp);
-}
-
-void TaskList::searchVectorsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp){
-
-	_duplicateFloating = _floatingTask;
-	_duplicateDeadline = _deadlineTask;
-	_duplicateNormal = _normalTask;
-
-	exactSearchWithStatus(keywords[0], done, _temp);
-	containingExactStringSearchWithStatus(keywords[0], done, _temp);
-	containingBreakdownStringSearchWithStatus(keywords, done, _temp);
-}
-
-void TaskList::searchVectorsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
-
-	_duplicateDeadline = _deadlineTask;
-	_duplicateNormal = _normalTask;
-
-	exactSearchWithRangeAndStatus(keywords[0], start, end, done, _temp);
-	containingExactStringSearchWithRangeAndStatus(keywords[0], start, end, done, _temp);
-	containingBreakdownStringSearchWithRangeAndStatus(keywords, start, end, done, _temp);
-}
-
-void TaskList::exactSearch(string exactString, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
-
-		string tempString = _duplicateFloating[i].getTitle();
-
-		if(stringToLower(tempString) == exactString){
-			_temp.push_back(_duplicateFloating[i]);
-			_duplicateFloating.erase(_duplicateFloating.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString) == exactString){
-			_temp.push_back(_duplicateDeadline[i]);
-			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString) == exactString){
-			_temp.push_back(_duplicateNormal[i]);
-			_duplicateNormal.erase(_duplicateNormal.begin()+i);
-			i--;
-		}
-	}
-}
-
-void TaskList::containingExactStringSearch(string exactString, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
-
-		string tempString = _duplicateFloating[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos){
-			_temp.push_back(_duplicateFloating[i]);
-			_duplicateFloating.erase(_duplicateFloating.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos){
-			_temp.push_back(_duplicateDeadline[i]);
-			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos){
-			_temp.push_back(_duplicateNormal[i]);
-			_duplicateNormal.erase(_duplicateNormal.begin()+i);
-			i--;
-		}
-	}
-}
-
-void TaskList::containingBreakdownStringSearch(vector<string> keywords, vector<Task>& _temp){
-
-	for(unsigned int i = 1; i < keywords.size(); i++){
-
-		containingExactStringSearch(keywords[i], _temp);
-		if(i == 6)
-			break;
-	}
-}
-
-void TaskList::exactSearchWithRange(string exactString, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString) == exactString && isInRange(_duplicateDeadline[i].getEnd(), start, end)){
-			_temp.push_back(_duplicateDeadline[i]);
-			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-			i--;
-		}
-	}
-
-	Task tempTask;
-	tempTask = Task("temp", start, end, 2, false, "comment");
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString) == exactString  && tempTask.isClashingWith(_duplicateNormal[i])){
-			_temp.push_back(_duplicateNormal[i]);
-			_duplicateNormal.erase(_duplicateNormal.begin()+i);
-			i--;
-		}
-	}
-}
-
-void TaskList::containingExactStringSearchWithRange(string exactString, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos && isInRange(_duplicateDeadline[i].getEnd(), start, end)){
-			_temp.push_back(_duplicateDeadline[i]);
-			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-			i--;
-		}
-	}
-
-	Task tempTask;
-	tempTask = Task("temp", start, end, 2, false, "comment");
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos && tempTask.isClashingWith(_duplicateNormal[i])){
-			_temp.push_back(_duplicateNormal[i]);
-			_duplicateNormal.erase(_duplicateNormal.begin()+i);
-			i--;
-		}
-	}
-}
-
-void TaskList::containingBreakdownStringSearchWithRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
-
-	for(unsigned int i = 1; i < keywords.size(); i++){
-
-		containingExactStringSearchWithRange(keywords[i], start, end, _temp);
-		if(i == 6)
-			break;
-	}
-}
-
-void TaskList::exactSearchWithStatus(string exactString, bool done, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
-
-		string tempString = _duplicateFloating[i].getTitle();
-
-		if(stringToLower(tempString) == exactString && _duplicateFloating[i].getDone() == done){
-			_temp.push_back(_duplicateFloating[i]);
-			_duplicateFloating.erase(_duplicateFloating.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString) == exactString && _duplicateDeadline[i].getDone() == done){
-			_temp.push_back(_duplicateDeadline[i]);
-			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString) == exactString && _duplicateNormal[i].getDone() == done){
-			_temp.push_back(_duplicateNormal[i]);
-			_duplicateNormal.erase(_duplicateNormal.begin()+i);
-			i--;
-		}
-	}
-}
-
-void TaskList::containingExactStringSearchWithStatus(string exactString, bool done, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
-
-		string tempString = _duplicateFloating[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateFloating[i].getDone() == done){
-			_temp.push_back(_duplicateFloating[i]);
-			_duplicateFloating.erase(_duplicateFloating.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateDeadline[i].getDone() == done){
-			_temp.push_back(_duplicateDeadline[i]);
-			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-			i--;
-		}
-	}
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateNormal[i].getDone() == done){
-			_temp.push_back(_duplicateNormal[i]);
-			_duplicateNormal.erase(_duplicateNormal.begin()+i);
-			i--;
-		}
-	}
-}
-
-void TaskList::containingBreakdownStringSearchWithStatus(vector<string> keywords, bool done, vector<Task>& _temp){
-
-	for(unsigned int i = 1; i < keywords.size(); i++){
-
-		containingExactStringSearchWithStatus(keywords[i], done, _temp);
-		if(i == 6)
-			break;
-	}
-}
-
-void TaskList::exactSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString) == exactString && isInRange(_duplicateDeadline[i].getEnd(), start, end) 
-			&& _duplicateDeadline[i].getDone() == done){
-				_temp.push_back(_duplicateDeadline[i]);
-				_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-				i--;
-		}
-	}
-
-	Task tempTask;
-	tempTask = Task("temp", start, end, 2, false, "comment");
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString) == exactString  && tempTask.isClashingWith(_duplicateNormal[i])
-			&& _duplicateNormal[i].getDone() == done){
-				_temp.push_back(_duplicateNormal[i]);
-				_duplicateNormal.erase(_duplicateNormal.begin()+i);
-				i--;
-		}
-	}
-}
-
-void TaskList::containingExactStringSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
-
-	stringToLower(exactString);
-
-	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
-
-		string tempString = _duplicateDeadline[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos && isInRange(_duplicateDeadline[i].getEnd(), start, end)
-			&& _duplicateDeadline[i].getDone() == done){
-				_temp.push_back(_duplicateDeadline[i]);
-				_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
-				i--;
-		}
-	}
-
-	Task tempTask;
-	tempTask = Task("temp", start, end, 2, false, "comment");
-
-	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
-
-		string tempString = _duplicateNormal[i].getTitle();
-
-		if(stringToLower(tempString).find(exactString) != std::string::npos && tempTask.isClashingWith(_duplicateNormal[i])
-			&& _duplicateNormal[i].getDone() == done){
-				_temp.push_back(_duplicateNormal[i]);
-				_duplicateNormal.erase(_duplicateNormal.begin()+i);
-				i--;
-		}
-	}
-}
-
-void TaskList::containingBreakdownStringSearchWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
-
-	for(unsigned int i = 1; i < keywords.size(); i++){
-
-		containingExactStringSearchWithRangeAndStatus(keywords[i], start, end, done, _temp);
-		if(i == 6)
-			break;
-	}
-}
-
-
-bool TaskList::isInRange(BasicDateTime time, BasicDateTime start, BasicDateTime end){
-
-	return time.compareTo(start) >= 0 && time.compareTo(end) <= 0;
 }
 
 bool TaskList::isExisting(Task task){
@@ -750,84 +286,6 @@ bool TaskList::isSuccessfullyRemoved(Task task){
 	return false;
 }
 
-void TaskList::pushClashing(Task task, vector<Task>& _temp){
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(_normalTask[i].isClashingWith(task)){
-			_temp.push_back(_normalTask[i]);
-		}
-	}
-}
-
-void TaskList::searchTitle(string searchLine, vector<Task>& _temp){
-
-	for(unsigned int i = 0; i < _floatingTask.size(); i++){
-
-		if(_floatingTask[i].getTitle() == searchLine)
-			_temp.push_back(_floatingTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(_deadlineTask[i].getTitle() == searchLine)
-			_temp.push_back(_deadlineTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(_normalTask[i].getTitle() == searchLine)
-			_temp.push_back(_normalTask[i]);
-	}
-}
-
-void TaskList::appendVectors(vector<Task>& _temp){
-
-	_temp = _floatingTask;
-	_temp.insert(_temp.end(), _deadlineTask.begin(), _deadlineTask.end());
-	_temp.insert(_temp.end(), _normalTask.begin(), _normalTask.end());
-}
-
-void TaskList::pushStatus(bool done, vector<Task>& _temp){
-
-	for(unsigned int i = 0; i < _floatingTask.size(); i++){
-
-		if(_floatingTask[i].getDone() == done)
-			_temp.push_back(_floatingTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(_deadlineTask[i].getDone() == done)
-			_temp.push_back(_deadlineTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(_normalTask[i].getDone() == done)
-			_temp.push_back(_normalTask[i]);
-	}
-}
-
-void TaskList::pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
-
-	Task tempTask;
-
-	tempTask = Task("temp", start, end, 2, false, "comment");
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(tempTask.isClashingWith(_normalTask[i]))
-			_temp.push_back(_normalTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(isInRange(_deadlineTask[i].getEnd(), start, end))
-			_temp.push_back(_deadlineTask[i]);
-	}
-}
-
 bool TaskList::isSuccessfullyMarked(bool mark, Task task){
 
 	switch(task.getType()){
@@ -863,55 +321,14 @@ bool TaskList::isSuccessfullyMarked(bool mark, Task task){
 	return false;
 }
 
-void TaskList::pushStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+void TaskList::appendVectors(vector<Task>& _temp){
 
-	Task tempTask;
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
 
-	tempTask = Task("temp", start, end, 2, false, "comment");
-
-	for(unsigned int i = 0; i < _normalTask.size(); i++){
-
-		if(tempTask.isClashingWith(_normalTask[i]) && _normalTask[i].getDone() == done)
-			_temp.push_back(_normalTask[i]);
-	}
-
-	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
-
-		if(isInRange(_deadlineTask[i].getEnd(), start, end) && _normalTask[i].getDone() == done)
-			_temp.push_back(_deadlineTask[i]);
-	}
-}
-
-vector<string> TaskList::taskVecToStringVec(vector<Task>& allTasks){
-
-	vector<string> taskLines;
-	vector<string> temp;
-
-	for (unsigned int i = 0; i < allTasks.size(); i++){
-		temp = allTasks[i].toStringVector();
-		taskLines.insert(taskLines.end(), temp.begin(), temp.end());
-	}
-	return taskLines;
-}
-
-void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
-
-	if(dateTimeString == STRING_NON)
-		return;
-
-	int day, month, year, hour, min, sec;
-
-	setDay(day, dateTimeString);
-	setMonth(month, dateTimeString);
-	setYear(year, dateTimeString);
-	setHour(hour, dateTimeString);
-	setMin(min, dateTimeString);
-	setSec(sec, dateTimeString);
-
-	if(isValidDateTime(day, month, year, hour, min, sec))
-		bdt = BasicDateTime(year, month, day, hour, min, sec);
-	else
-		return;
+	_temp = _normalTask;
+	_temp.insert(_temp.end(), _deadlineTask.begin(), _deadlineTask.end());
+	_temp.insert(_temp.end(), _floatingTask.begin(), _floatingTask.end());
 }
 
 void TaskList::setToday(BasicDateTime& start, BasicDateTime& end){
@@ -928,6 +345,116 @@ void TaskList::setToday(BasicDateTime& start, BasicDateTime& end){
 
 	start = BasicDateTime(year, month, day);
 	end = BasicDateTime(year, month, day, 23, 59, 59);
+}
+
+void TaskList::setFlags(vector<string> keywords, int statusPresent, int type){
+
+	if(keywords.empty())
+		keywordsFlag = false;
+	else
+		keywordsFlag = true;
+
+	if(statusPresent == 0)
+		statusFlag = false;
+	else if(statusPresent == -1 || statusPresent == 1)
+		statusFlag = true;
+
+	if(type == 0)
+		typeFlag = false;
+	else if(type == 2)
+		typeFlag = true;
+}
+
+int TaskList::searchInRange(BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	_temp.clear();
+
+	pushInRange(_temp, start, end);
+
+	if(!_temp.empty())
+		return SUCCESS_DISPLAY;
+	else
+		return WARNING_DISPLAY_NO_RESULT;
+
+	return ERROR_DISPLAY;
+}
+
+int TaskList::searchStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	_temp.clear();
+
+	pushStatusInRange(done, start, end, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_DISPLAY;
+	else
+		return WARNING_DISPLAY_NO_RESULT;
+
+	return ERROR_DISPLAY;
+}
+
+int TaskList::searchKeywords(vector<string> keywords, vector<Task>& _temp){
+
+	assert(!keywords.empty());
+
+	_temp.clear();
+
+	searchVectors(keywords, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_SEARCH;
+	else
+		return WARNING_SEARCH_NO_RESULT;
+
+	return ERROR_SEARCH;
+}
+
+int TaskList::searchKeywordsInRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	assert(!keywords.empty());
+
+	_temp.clear();
+
+	searchVectorsWithRange(keywords, start, end, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_SEARCH;
+	else
+		return WARNING_SEARCH_NO_RESULT;
+
+	return ERROR_SEARCH;
+}
+
+int TaskList::searchKeywordsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp){
+
+	assert(!keywords.empty());
+
+	_temp.clear();
+
+	searchVectorsWithStatus(keywords, done, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_SEARCH;
+	else
+		return WARNING_SEARCH_NO_RESULT;
+
+	return ERROR_SEARCH;
+}
+
+int TaskList::searchKeywordsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
+
+	assert(!keywords.empty());
+
+	_temp.clear();
+
+	searchVectorsWithRangeAndStatus(keywords, start, end, done, _temp);
+
+	if(!_temp.empty())
+		return SUCCESS_SEARCH;
+	else
+		return WARNING_SEARCH_NO_RESULT;
+
+	return ERROR_SEARCH;
 }
 
 bool TaskList::isEmptySlotsPresent(BasicDateTime start, BasicDateTime end){
@@ -951,6 +478,39 @@ void TaskList::pushEmptySlots(BasicDateTime& start, BasicDateTime& end, vector<B
 		std::sort(_duplicateNormal.begin(), _duplicateNormal.end());
 
 	pushEmptySlotsToTemp(start, end, _temp);
+}
+
+void TaskList::searchTitle(string searchLine, vector<Task>& _temp){
+
+	for(unsigned int i = 0; i < _floatingTask.size(); i++){
+
+		if(_floatingTask[i].getTitle() == searchLine)
+			_temp.push_back(_floatingTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(_deadlineTask[i].getTitle() == searchLine)
+			_temp.push_back(_deadlineTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(_normalTask[i].getTitle() == searchLine)
+			_temp.push_back(_normalTask[i]);
+	}
+}
+
+vector<string> TaskList::taskVecToStringVec(vector<Task>& allTasks){
+
+	vector<string> taskLines;
+	vector<string> temp;
+
+	for (unsigned int i = 0; i < allTasks.size(); i++){
+		temp = allTasks[i].toStringVector();
+		taskLines.insert(taskLines.end(), temp.begin(), temp.end());
+	}
+	return taskLines;
 }
 
 void TaskList::loadTasksFromVector(vector<string>& stringsFromFile){
@@ -997,6 +557,126 @@ void TaskList::loadTasksFromVector(vector<string>& stringsFromFile){
 			break;
 		}
 	}
+}
+
+void TaskList::pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTime end){
+
+	Task tempTask;
+
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(tempTask.isClashingWith(_normalTask[i]))
+			_temp.push_back(_normalTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(isInRange(_deadlineTask[i].getEnd(), start, end))
+			_temp.push_back(_deadlineTask[i]);
+	}
+}
+
+void TaskList::pushStatus(bool done, vector<Task>& _temp){
+
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(_normalTask[i].getDone() == done)
+			_temp.push_back(_normalTask[i]);
+	}
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(_deadlineTask[i].getDone() == done)
+			_temp.push_back(_deadlineTask[i]);
+	}
+	for(unsigned int i = 0; i < _floatingTask.size(); i++){
+
+		if(_floatingTask[i].getDone() == done)
+			_temp.push_back(_floatingTask[i]);
+	}
+}
+
+void TaskList::pushStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	Task tempTask;
+
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
+
+	for(unsigned int i = 0; i < _normalTask.size(); i++){
+
+		if(tempTask.isClashingWith(_normalTask[i]) && _normalTask[i].getDone() == done)
+			_temp.push_back(_normalTask[i]);
+	}
+
+	for(unsigned int i = 0; i < _deadlineTask.size(); i++){
+
+		if(isInRange(_deadlineTask[i].getEnd(), start, end) && _normalTask[i].getDone() == done)
+			_temp.push_back(_deadlineTask[i]);
+	}
+}
+
+void TaskList::searchVectors(vector<string> keywords, vector<Task>& _temp){
+
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
+
+	_duplicateFloating = _floatingTask;
+	_duplicateDeadline = _deadlineTask;
+	_duplicateNormal = _normalTask;
+
+	exactSearch(keywords[0], _temp);
+	containingExactStringSearch(keywords[0], _temp);
+	containingBreakdownStringSearch(keywords, _temp);
+}
+
+void TaskList::searchVectorsWithRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
+
+	_duplicateDeadline = _deadlineTask;
+	_duplicateNormal = _normalTask;
+
+	exactSearchWithRange(keywords[0], start, end, _temp);
+	containingExactStringSearchWithRange(keywords[0], start, end, _temp);
+	containingBreakdownStringSearchWithRange(keywords, start, end, _temp);
+}
+
+void TaskList::searchVectorsWithStatus(vector<string> keywords, bool done, vector<Task>& _temp){
+
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
+
+	_duplicateFloating = _floatingTask;
+	_duplicateDeadline = _deadlineTask;
+	_duplicateNormal = _normalTask;
+
+	exactSearchWithStatus(keywords[0], done, _temp);
+	containingExactStringSearchWithStatus(keywords[0], done, _temp);
+	containingBreakdownStringSearchWithStatus(keywords, done, _temp);
+}
+
+void TaskList::searchVectorsWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
+
+	std::sort(_normalTask.begin(), _normalTask.end());
+	std::sort(_deadlineTask.begin(), _deadlineTask.end());
+
+	_duplicateDeadline = _deadlineTask;
+	_duplicateNormal = _normalTask;
+
+	exactSearchWithRangeAndStatus(keywords[0], start, end, done, _temp);
+	containingExactStringSearchWithRangeAndStatus(keywords[0], start, end, done, _temp);
+	containingBreakdownStringSearchWithRangeAndStatus(keywords, start, end, done, _temp);
 }
 
 void TaskList::cutRange(BasicDateTime& start, BasicDateTime& end){
@@ -1058,6 +738,342 @@ void TaskList::pushEmptySlotsToTemp(BasicDateTime& start, BasicDateTime& end, ve
 	}
 
 	_temp.push_back(end);
+}
+
+void TaskList::stringToBasicDateTime(string dateTimeString, BasicDateTime& bdt){
+
+	if(dateTimeString == STRING_NON)
+		return;
+
+	int day, month, year, hour, min, sec;
+
+	setDay(day, dateTimeString);
+	setMonth(month, dateTimeString);
+	setYear(year, dateTimeString);
+	setHour(hour, dateTimeString);
+	setMin(min, dateTimeString);
+	setSec(sec, dateTimeString);
+
+	if(isValidDateTime(day, month, year, hour, min, sec))
+		bdt = BasicDateTime(year, month, day, hour, min, sec);
+	else
+		return;
+}
+
+void TaskList::exactSearch(string exactString, vector<Task>& _temp){
+
+	stringToLower(exactString);
+	
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString) == exactString){
+			_temp.push_back(_duplicateNormal[i]);
+			_duplicateNormal.erase(_duplicateNormal.begin()+i);
+			i--;
+		}
+	}	
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString) == exactString){
+			_temp.push_back(_duplicateDeadline[i]);
+			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
+
+		string tempString = _duplicateFloating[i].getTitle();
+
+		if(stringToLower(tempString) == exactString){
+			_temp.push_back(_duplicateFloating[i]);
+			_duplicateFloating.erase(_duplicateFloating.begin()+i);
+			i--;
+		}
+	}
+}
+
+void TaskList::containingExactStringSearch(string exactString, vector<Task>& _temp){
+
+	stringToLower(exactString);
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos){
+			_temp.push_back(_duplicateNormal[i]);
+			_duplicateNormal.erase(_duplicateNormal.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos){
+			_temp.push_back(_duplicateDeadline[i]);
+			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
+
+		string tempString = _duplicateFloating[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos){
+			_temp.push_back(_duplicateFloating[i]);
+			_duplicateFloating.erase(_duplicateFloating.begin()+i);
+			i--;
+		}
+	}
+}
+
+void TaskList::containingBreakdownStringSearch(vector<string> keywords, vector<Task>& _temp){
+
+	for(unsigned int i = 1; i < keywords.size(); i++){
+
+		containingExactStringSearch(keywords[i], _temp);
+		if(i == 6)
+			break;
+	}
+}
+
+void TaskList::exactSearchWithRange(string exactString, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	stringToLower(exactString);
+
+	Task tempTask;
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString) == exactString  && tempTask.isClashingWith(_duplicateNormal[i])){
+			_temp.push_back(_duplicateNormal[i]);
+			_duplicateNormal.erase(_duplicateNormal.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString) == exactString && isInRange(_duplicateDeadline[i].getEnd(), start, end)){
+			_temp.push_back(_duplicateDeadline[i]);
+			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+			i--;
+		}
+	}
+}
+
+void TaskList::containingExactStringSearchWithRange(string exactString, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	stringToLower(exactString);
+
+	Task tempTask;
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos && tempTask.isClashingWith(_duplicateNormal[i])){
+			_temp.push_back(_duplicateNormal[i]);
+			_duplicateNormal.erase(_duplicateNormal.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos && isInRange(_duplicateDeadline[i].getEnd(), start, end)){
+			_temp.push_back(_duplicateDeadline[i]);
+			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+			i--;
+		}
+	}
+}
+
+void TaskList::containingBreakdownStringSearchWithRange(vector<string> keywords, BasicDateTime start, BasicDateTime end, vector<Task>& _temp){
+
+	for(unsigned int i = 1; i < keywords.size(); i++){
+
+		containingExactStringSearchWithRange(keywords[i], start, end, _temp);
+		if(i == 6)
+			break;
+	}
+}
+
+void TaskList::exactSearchWithStatus(string exactString, bool done, vector<Task>& _temp){
+
+	stringToLower(exactString);
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString) == exactString && _duplicateNormal[i].getDone() == done){
+			_temp.push_back(_duplicateNormal[i]);
+			_duplicateNormal.erase(_duplicateNormal.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString) == exactString && _duplicateDeadline[i].getDone() == done){
+			_temp.push_back(_duplicateDeadline[i]);
+			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
+
+		string tempString = _duplicateFloating[i].getTitle();
+
+		if(stringToLower(tempString) == exactString && _duplicateFloating[i].getDone() == done){
+			_temp.push_back(_duplicateFloating[i]);
+			_duplicateFloating.erase(_duplicateFloating.begin()+i);
+			i--;
+		}
+	}
+}
+
+void TaskList::containingExactStringSearchWithStatus(string exactString, bool done, vector<Task>& _temp){
+
+	stringToLower(exactString);
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateNormal[i].getDone() == done){
+			_temp.push_back(_duplicateNormal[i]);
+			_duplicateNormal.erase(_duplicateNormal.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateDeadline[i].getDone() == done){
+			_temp.push_back(_duplicateDeadline[i]);
+			_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+			i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateFloating.size(); i++){
+
+		string tempString = _duplicateFloating[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos && _duplicateFloating[i].getDone() == done){
+			_temp.push_back(_duplicateFloating[i]);
+			_duplicateFloating.erase(_duplicateFloating.begin()+i);
+			i--;
+		}
+	}
+}
+
+void TaskList::containingBreakdownStringSearchWithStatus(vector<string> keywords, bool done, vector<Task>& _temp){
+
+	for(unsigned int i = 1; i < keywords.size(); i++){
+
+		containingExactStringSearchWithStatus(keywords[i], done, _temp);
+		if(i == 6)
+			break;
+	}
+}
+
+void TaskList::exactSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
+
+	stringToLower(exactString);
+
+	Task tempTask;
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString) == exactString  && tempTask.isClashingWith(_duplicateNormal[i])
+			&& _duplicateNormal[i].getDone() == done){
+				_temp.push_back(_duplicateNormal[i]);
+				_duplicateNormal.erase(_duplicateNormal.begin()+i);
+				i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString) == exactString && isInRange(_duplicateDeadline[i].getEnd(), start, end) 
+			&& _duplicateDeadline[i].getDone() == done){
+				_temp.push_back(_duplicateDeadline[i]);
+				_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+				i--;
+		}
+	}
+}
+
+void TaskList::containingExactStringSearchWithRangeAndStatus(string exactString, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
+
+	stringToLower(exactString);
+
+	Task tempTask;
+	tempTask = Task("temp", start, end, 2, false, "comment");
+
+	for(unsigned int i = 0; i < _duplicateNormal.size(); i++){
+
+		string tempString = _duplicateNormal[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos && tempTask.isClashingWith(_duplicateNormal[i])
+			&& _duplicateNormal[i].getDone() == done){
+				_temp.push_back(_duplicateNormal[i]);
+				_duplicateNormal.erase(_duplicateNormal.begin()+i);
+				i--;
+		}
+	}
+
+	for(unsigned int i = 0; i < _duplicateDeadline.size(); i++){
+
+		string tempString = _duplicateDeadline[i].getTitle();
+
+		if(stringToLower(tempString).find(exactString) != std::string::npos && isInRange(_duplicateDeadline[i].getEnd(), start, end)
+			&& _duplicateDeadline[i].getDone() == done){
+				_temp.push_back(_duplicateDeadline[i]);
+				_duplicateDeadline.erase(_duplicateDeadline.begin()+i);
+				i--;
+		}
+	}
+}
+
+void TaskList::containingBreakdownStringSearchWithRangeAndStatus(vector<string> keywords, BasicDateTime start, BasicDateTime end, bool done, vector<Task>& _temp){
+
+	for(unsigned int i = 1; i < keywords.size(); i++){
+
+		containingExactStringSearchWithRangeAndStatus(keywords[i], start, end, done, _temp);
+		if(i == 6)
+			break;
+	}
 }
 
 void TaskList::setDay(int& day, string& dateTimeString){
@@ -1184,6 +1200,11 @@ bool TaskList::isValidDateTime(int day, int month, int year, int hour, int minut
 		return false;
 
 	return true;
+}
+
+bool TaskList::isInRange(BasicDateTime time, BasicDateTime start, BasicDateTime end){
+
+	return time.compareTo(start) >= 0 && time.compareTo(end) <= 0;
 }
 
 string TaskList::stringToLower(string& toLowerString){

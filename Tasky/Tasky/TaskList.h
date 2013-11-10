@@ -115,7 +115,7 @@ public:
 	int loadFile();
 
 private:
-	//Abs lv 2
+	//** Abstraction Level 2 */
 	void pushClashing(Task task, vector<Task>& _temp);
 	void addTask(Task toAdd);
 	bool isExisting(Task task);
@@ -187,7 +187,7 @@ private:
 	vector<string> taskVecToStringVec(vector<Task>& allTasks);
 	void loadTasksFromVector(vector<string>& stringsFromFile);
 
-	//abs 3
+	/** Abstraction Level 3 */
 	void pushInRange(vector<Task>& _temp, BasicDateTime start, BasicDateTime end);
 	void pushStatus(bool done, vector<Task>& _temp);
 	void pushStatusInRange(bool done, BasicDateTime start, BasicDateTime end, vector<Task>& _temp);
@@ -226,7 +226,7 @@ private:
 
 	bool isInRange(BasicDateTime time, BasicDateTime start, BasicDateTime end);
 
-	/** Abstraction Level 4 */
+	/** Abstraction Level 5 */
 	string stringToLower(string& toLowerString);
 };
 

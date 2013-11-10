@@ -11,7 +11,7 @@
 
 #include <fstream>
 #include "Essential.h"
-#include "LogLibrary\Log.h"
+#include "LogLibrary/Log.h"
 
 static const string _LOGNAME = "Tasky.txt";
 static const int TASKLINES = 6;

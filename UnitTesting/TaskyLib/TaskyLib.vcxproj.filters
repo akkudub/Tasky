@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\Tasky\Tasky\FileProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Tasky\Tasky\History.cpp">
@@ -89,5 +92,10 @@
     <ClCompile Include="..\..\Tasky\Tasky\HelpUser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TaskyLib.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

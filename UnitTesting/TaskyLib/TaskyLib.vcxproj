@@ -42,7 +42,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;..\..\Tasky\LogLibrary;..\..\Tasky\LogLibrary\LogLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;$(IncludePath)</IncludePath>
@@ -54,11 +54,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../Tasky/LogLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib />
+    <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -81,11 +84,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Tasky\LogLibrary\LogLibrary\LogLibrary.vcxproj">
-      <Project>{fe395494-9f7c-4b5e-871a-42668305b376}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\Tasky\Tasky\BasicDateTime.h" />
     <ClInclude Include="..\..\Tasky\Tasky\Essential.h" />
     <ClInclude Include="..\..\Tasky\Tasky\FileProcessing.h" />
@@ -98,6 +96,7 @@
     <ClInclude Include="..\..\Tasky\Tasky\Task.h" />
     <ClInclude Include="..\..\Tasky\Tasky\TaskList.h" />
     <ClInclude Include="..\..\Tasky\Tasky\UI.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Tasky\Tasky\BasicDateTime.cpp" />
@@ -111,6 +110,14 @@
     <ClCompile Include="..\..\Tasky\Tasky\Task.cpp" />
     <ClCompile Include="..\..\Tasky\Tasky\TaskList.cpp" />
     <ClCompile Include="..\..\Tasky\Tasky\UI.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TaskyLib.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tasky\LogLibrary\LogLibrary\LogLibrary.vcxproj">
+      <Project>{fe395494-9f7c-4b5e-871a-42668305b376}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

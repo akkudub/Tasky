@@ -203,6 +203,11 @@ void Task::setType(int type){
 }
 
 bool Task::operator<(Task& a){
-
-	return (_start.compareTo(a.getStart()) < 0);
+	
+	if(a.getType() == TIMED_TASK)
+		return (_start.compareTo(a.getStart()) < 0);
+	else if(a.getType() == DEADLINE_TASK)
+		return (_end.compareTo(a.getEnd()) < 0);
+	else
+		return false;
 }

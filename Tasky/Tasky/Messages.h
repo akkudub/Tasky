@@ -30,6 +30,9 @@ private:
 	static const string MESSAGE_SUCCESS_REDO;
 	static const string MESSAGE_SUCCESS_HELP;
 	static const string MESSAGE_SUCCESS_RECORD;
+	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH_RENAME;
+	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH_RESCHEDULE;
+	static const string MESSAGE_SUCCESS_INTERPRET_SEARCH_MARK;
 	static const string MESSAGE_SUCCESS_INTERPRET_ADD;
 	static const string MESSAGE_SUCCESS_INTERPRET_REMOVE;
 	static const string MESSAGE_SUCCESS_INTERPRET_DISPLAY;
@@ -47,7 +50,7 @@ private:
 	static const string MESSAGE_WARNING_UNDO_NO_TASKS;
 	static const string MESSAGE_WARNING_REDO_NO_TASKS;
 	static const string MESSAGE_WARNING_LOAD_EMPTY_FILE;	
-	static const string MESSAGE_WARNING_INTERPRET_ADD_NO_TITLE;
+	static const string MESSAGE_WARNING_INTERPRET_ADDITIONAL_USELESS_STUFF;
 	static const string MESSAGE_WARNING_WRONG_INPUT;
 
 	static const string MESSAGE_ERROR_ADD;
@@ -64,6 +67,9 @@ private:
 	static const string MESSAGE_ERROR_SAVE_SAVEFILE;
 	static const string MESSAGE_ERROR_RECORD;
 	static const string MESSAGE_ERROR_INVALID_CHOICE;
+	static const string MESSAGE_ERROR_INTERPRET_SEARCH_RENAME;
+	static const string MESSAGE_ERROR_INTERPRET_SEARCH_RESCHEDULE;
+	static const string MESSAGE_ERROR_INTERPRET_SEARCH_MARK;
 	static const string MESSAGE_ERROR_INTERPRET_EMPTY_INPUT;
 	static const string MESSAGE_ERROR_INTERPRET_TITLE_FORMAT;
 	static const string MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT;

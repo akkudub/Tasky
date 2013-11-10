@@ -68,12 +68,26 @@ private:
 	static const QString HELP_OPERATION_REMINDER;
 	static const QString HIDE_OPERATION_REMIDER;
 	static const QString EXIT_OPERATION_REMINDER;
+	static const QString NUMBER_INPUT_REMINDER;
 	static const QString OTHER_OPERATION_REMINDER;
-
 	static const QString TRAY_MSG_TITLE;
 	static const QString TRAY_MSG_CONTENT;
-
+	static const QString EMPTY_STRING;
+	static const QString UNDO;
+	static const QString REDO;
+	static const QString DOUBLE_SINGLEQUOTES;
+	static const QString CODE_BLOCK_START;
+	static const QString CODE_BLOCK_END;
+	static const QString SPACE;
+	static const QString SPACE_HTML;
+	static const QString NEW_LINE;
+	static const QString NEW_LINE_HTML;
 	static const QString ICON_STRING;
+
+	static const std::string SUCCESS_STR;
+	static const std::string ERROR_STR;
+	static const std::string WARNING_STR;
+	static const char CHAR_NEW_LINE;
 
 private slots:
 	//////////////////////////////////////////////////////////////////////////

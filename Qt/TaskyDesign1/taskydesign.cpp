@@ -28,12 +28,26 @@ const QString TaskyDesign::REDO_OPERATION_REMINDER           = "Redo: redo one o
 const QString TaskyDesign::HELP_OPERATION_REMINDER           = "Help: learn how to better use this software";
 const QString TaskyDesign::HIDE_OPERATION_REMIDER            = "Hide: Tasky will be hidden and runs in background";
 const QString TaskyDesign::EXIT_OPERATION_REMINDER           = "Exit: have a nice day";
+const QString TaskyDesign::NUMBER_INPUT_REMINDER             = "Type in numbers if you are asked to";
 const QString TaskyDesign::OTHER_OPERATION_REMINDER          = "Attention: invalid command type";
-
 const QString TaskyDesign::TRAY_MSG_TITLE                    = "Tasky message";
 const QString TaskyDesign::TRAY_MSG_CONTENT                  = "Tasky is now hiding";
-
+const QString TaskyDesign::EMPTY_STRING                      = "";
+const QString TaskyDesign::UNDO                              = "undo";
+const QString TaskyDesign::REDO                              = "redo";
+const QString TaskyDesign::DOUBLE_SINGLEQUOTES               = "''";
+const QString TaskyDesign::CODE_BLOCK_START                  = "<pre>";
+const QString TaskyDesign::CODE_BLOCK_END                    = "</pre>";
+const QString TaskyDesign::SPACE                             = " ";
+const QString TaskyDesign::SPACE_HTML                        = "&nbsp;";
+const QString TaskyDesign::NEW_LINE                          = "\n";
+const QString TaskyDesign::NEW_LINE_HTML                     = "<br/>";
 const QString TaskyDesign::ICON_STRING                       = "logo.ico";
+
+const std::string TaskyDesign::SUCCESS_STR                   = "Success!";
+const std::string TaskyDesign::ERROR_STR                     = "Error!";
+const std::string TaskyDesign::WARNING_STR                   = "Warning!";
+const char TaskyDesign::CHAR_NEW_LINE                        = '\n';
 
 TaskyDesign::TaskyDesign(QWidget *parent): QMainWindow(parent){
 	_logic=new Processor();
@@ -97,7 +111,7 @@ void TaskyDesign::updateStatusBar(QString text){
     }else if(startWithCaseInsensitive(text, EXIT_COMPLETE_WORD)){
 		showStatusBarMsg(EXIT_OPERATION_REMINDER);
 	}else if(isValidForNumberInput(text)){
-		showStatusBarMsg("Input numbers if you are asked to");
+		showStatusBarMsg(NUMBER_INPUT_REMINDER);
     }else{
 		showStatusBarMsg(OTHER_OPERATION_REMINDER);
 	}
@@ -175,7 +189,8 @@ bool TaskyDesign::eventFilter(QObject* watched, QEvent* event){
 		int pos=ui.InputBox->cursorPosition();
 		switch (keyEvent->key()){
 		case '\'':
-			ui.InputBox->setText(qstr+"''");
+			//to catch up this kind of single quote, Qt::Key does not work
+			ui.InputBox->setText(qstr+DOUBLE_SINGLEQUOTES);
 			ui.InputBox->setCursorPosition(pos+1);
 			return true;
 			break;
@@ -189,13 +204,13 @@ bool TaskyDesign::eventFilter(QObject* watched, QEvent* event){
 			break;
 		case Qt::Key_Z:
 			if (keyEvent->modifiers()==Qt::ControlModifier){
-				sendStdStringToBackEnd("undo");
+				sendStdStringToBackEnd(UNDO);
 				return true;
 			}
 			break;
 		case Qt::Key_Y:
 			if (keyEvent->modifiers()==Qt::ControlModifier){
-				sendStdStringToBackEnd("redo");
+				sendStdStringToBackEnd(REDO);
 				return true;
 			}
 			break;
@@ -252,11 +267,12 @@ void TaskyDesign::sendStdStringToBackEnd(QString input){
 
 void TaskyDesign::setStatusBarMsgAndColor(){
 	QPalette mypalette;
-	if (_msg.find("Success!")!=std::string::npos){
+
+	if (_msg.find(SUCCESS_STR)!=std::string::npos){
 		mypalette.setColor(QPalette::WindowText, Qt::green);
-	}else if(_msg.find("Error!")!=std::string::npos){
+	}else if(_msg.find(ERROR_STR)!=std::string::npos){
 		mypalette.setColor(QPalette::WindowText, Qt::red);
-	}else if(_msg.find("Warning!")!=std::string::npos){
+	}else if(_msg.find(WARNING_STR)!=std::string::npos){
 		mypalette.setColor(QPalette::WindowText, Qt::yellow);
 	}else{
 		mypalette.setColor(QPalette::WindowText, Qt::white);
@@ -290,7 +306,7 @@ QString TaskyDesign::combineOutput( int size ){
 QString TaskyDesign::formatString(int num){
 	std::string str=_vec.at(num);
 	
-	if (str.find('\n')==std::string::npos){
+	if (str.find(CHAR_NEW_LINE)==std::string::npos){
 		return singleLineInDisplayPanel(str);
 	}else{
 		return multipleLinesInDisplayPanel(str);		
@@ -298,18 +314,17 @@ QString TaskyDesign::formatString(int num){
 }
 
 QString TaskyDesign::singleLineInDisplayPanel(std::string str){
-	return QString::fromStdString(str)+"<br/>";
+	return QString::fromStdString(str);
 }
 
 QString TaskyDesign::multipleLinesInDisplayPanel(std::string str){
-	QString initStr="";
+	QString initStr=EMPTY_STRING;
 
-	initStr.append("<pre>");
+	initStr.append(CODE_BLOCK_START);
 	initStr.append(QString::fromStdString(str));
-	initStr.replace(" ", "&nbsp;");
-	initStr.replace(QString("\n"), QString("<br/>"));
-	initStr.append("<br/>");
-	initStr.append("</pre>");
+	initStr.replace(SPACE, SPACE_HTML);
+	initStr.replace(NEW_LINE, NEW_LINE_HTML);
+	initStr.append(CODE_BLOCK_END);
 	return initStr;
 }
 

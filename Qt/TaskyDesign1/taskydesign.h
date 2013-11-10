@@ -114,6 +114,7 @@ private:
 	void setStatusBarMsgAndColor();
 	bool startWithCaseInsensitive(QString text, const QString& keyword);
 	bool equalsToKeywordWithoutCase(const QString& input, const QString& keyword);
+	bool isValidForNumberInput(QString text);
 	QString combineOutput(int size);
 	QString formatString(int num);
 	QString singleLineInDisplayPanel(std::string str);

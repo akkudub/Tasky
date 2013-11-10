@@ -18,7 +18,6 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QVBoxLayout>
@@ -38,23 +37,23 @@ public:
     QLineEdit *InputBox;
     QToolButton *CloseButton;
     QToolButton *MinimizeButton;
-    QToolButton *TaskyButton;
-    QStatusBar *statusBar;
+    QLabel *StatusBar;
+    QLabel *Tasky;
 
     void setupUi(QMainWindow *TaskyDesignClass)
     {
         if (TaskyDesignClass->objectName().isEmpty())
             TaskyDesignClass->setObjectName(QStringLiteral("TaskyDesignClass"));
-        TaskyDesignClass->resize(620, 430);
+        TaskyDesignClass->resize(646, 494);
         QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(TaskyDesignClass->sizePolicy().hasHeightForWidth());
         TaskyDesignClass->setSizePolicy(sizePolicy);
         TaskyDesignClass->setMinimumSize(QSize(580, 430));
-        TaskyDesignClass->setMaximumSize(QSize(620, 430));
+        TaskyDesignClass->setMaximumSize(QSize(900, 700));
         QIcon icon;
-        icon.addFile(QStringLiteral(":/TaskyDesign1/Resources/logo.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QStringLiteral(":/new/prefix1/logo.ico"), QSize(), QIcon::Normal, QIcon::Off);
         TaskyDesignClass->setWindowIcon(icon);
         TaskyDesignClass->setStyleSheet(QLatin1String("QMainWindow#TaskyDesignClass{\n"
 "background-color: transparent; \n"
@@ -65,14 +64,14 @@ public:
         sizePolicy.setHeightForWidth(MainPart->sizePolicy().hasHeightForWidth());
         MainPart->setSizePolicy(sizePolicy);
         MainPart->setMinimumSize(QSize(580, 375));
-        MainPart->setMaximumSize(QSize(620, 430));
+        MainPart->setMaximumSize(QSize(650, 495));
         MainPart->setStyleSheet(QLatin1String("QWidget#MainPart{\n"
-"background-color: #2E534C; \n"
-"border-radius: 2px;\n"
+"	background-image: url(:/new/prefix1/Resources/background_main.png);\n"
+"    backgrund-position: bottom left;\n"
 "}"));
         layoutWidget = new QWidget(MainPart);
         layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
-        layoutWidget->setGeometry(QRect(20, 30, 581, 351));
+        layoutWidget->setGeometry(QRect(20, 40, 611, 401));
         VerticalLayout = new QVBoxLayout(layoutWidget);
         VerticalLayout->setSpacing(6);
         VerticalLayout->setContentsMargins(11, 11, 11, 11);
@@ -86,28 +85,35 @@ public:
         DisplayPanel->setFont(font);
         DisplayPanel->setAutoFillBackground(false);
         DisplayPanel->setStyleSheet(QLatin1String("QTextEdit#DisplayPanel{\n"
-"background-color: #294B44;\n"
-"color: #FFFFFF;\n"
-"border: 1px solid  #FFFFFF;\n"
-"border-radius: 8px;\n"
-"padding: 10px 10px 18px 5px;\n"
+"	background-color: #294B44;\n"
+"    border-radius: 8px;\n"
+"    border: 1px solid white;\n"
+"    color: #FFFFFF;\n"
+"    padding: 10px 10px 0px 5px;\n"
 "}\n"
 "QTextEdit#DisplatPanel:hover{\n"
-"background-color: black;\n"
+"    background-color: black;\n"
 "}\n"
 "QTextEdit#DisplayPanel QScrollBar:vertical{\n"
-"background-color: #233333;\n"
-"width: 5px;\n"
+"    background-color: #233333;\n"
+"    width: 5px;\n"
 "}\n"
 "QTextEdit#DisplayPanel QScrollBar::handle:vertical{\n"
-"height:200px;\n"
-"background-color: #2E334C;\n"
+"   height:200px;\n"
+"   background-color: #2E334C;\n"
+"}\n"
+"QTextEdit#DisplayPanel QScrollBar:horizontal{\n"
+"    background-color: #233333;\n"
+"    width: 5px;\n"
+"}\n"
+"QTextEdit#DisplayPanel QScrollBar::handle:horizontal{\n"
+"   background-color: #2E334C;\n"
 "}\n"
 ""));
         DisplayPanel->setFrameShape(QFrame::Box);
         DisplayPanel->setFrameShadow(QFrame::Sunken);
         DisplayPanel->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        DisplayPanel->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        DisplayPanel->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         DisplayPanel->setReadOnly(true);
 
         VerticalLayout->addWidget(DisplayPanel);
@@ -157,73 +163,60 @@ public:
 
         CloseButton = new QToolButton(MainPart);
         CloseButton->setObjectName(QStringLiteral("CloseButton"));
-        CloseButton->setGeometry(QRect(580, 0, 31, 31));
+        CloseButton->setGeometry(QRect(600, 10, 31, 31));
         CloseButton->setFocusPolicy(Qt::NoFocus);
         CloseButton->setStyleSheet(QLatin1String("QToolButton#CloseButton{	\n"
 "    border-style:flat;\n"
-"	background-image: url(:/new/prefix1/Resources/button_close_light.png);\n"
+"	background-image: url(:/new/prefix1/Resources/button_close.png);\n"
 "}\n"
 "QToolButton#CloseButton:hover{\n"
 "    border-style:flat;\n"
-"	background-image: url(:/new/prefix1/Resources/button_close_normal.png);\n"
+"	background-image: url(:/new/prefix1/Resources/button_close.png);\n"
 "}\n"
 ""));
         QIcon icon1;
-        icon1.addFile(QStringLiteral(":/new/prefix1/Resources/button_close_normal.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QStringLiteral(":/new/prefix1/Resources/button_close50.png"), QSize(), QIcon::Normal, QIcon::Off);
         CloseButton->setIcon(icon1);
         CloseButton->setIconSize(QSize(25, 25));
+        CloseButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
         MinimizeButton = new QToolButton(MainPart);
         MinimizeButton->setObjectName(QStringLiteral("MinimizeButton"));
-        MinimizeButton->setGeometry(QRect(560, 0, 31, 31));
+        MinimizeButton->setGeometry(QRect(570, 10, 31, 31));
         MinimizeButton->setFocusPolicy(Qt::NoFocus);
         MinimizeButton->setStyleSheet(QLatin1String("QToolButton#MinimizeButton{\n"
 "    border-style: flat;\n"
-"	background-image: url(:/new/prefix1/Resources/button_minimize_light.png);\n"
+"	background-image: url(:/new/prefix1/Resources/button_minimize50.png);\n"
 "}\n"
 "QToolButton#MinimizeButton:hover{\n"
 "    border-style: flat;\n"
-"	background-image: url(:/new/prefix1/Resources/button_minimize_normal.png);\n"
+"	background-image: url(:/new/prefix1/Resources/button_minimize.png);\n"
 "}"));
         QIcon icon2;
-        icon2.addFile(QStringLiteral(":/new/prefix1/Resources/button_minimize_normal.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon2.addFile(QStringLiteral(":/new/prefix1/Resources/button_minimize.png"), QSize(), QIcon::Normal, QIcon::Off);
         MinimizeButton->setIcon(icon2);
         MinimizeButton->setIconSize(QSize(25, 25));
-        TaskyButton = new QToolButton(MainPart);
-        TaskyButton->setObjectName(QStringLiteral("TaskyButton"));
-        TaskyButton->setGeometry(QRect(20, 5, 41, 21));
+        StatusBar = new QLabel(MainPart);
+        StatusBar->setObjectName(QStringLiteral("StatusBar"));
+        StatusBar->setGeometry(QRect(20, 450, 611, 41));
+        sizePolicy.setHeightForWidth(StatusBar->sizePolicy().hasHeightForWidth());
+        StatusBar->setSizePolicy(sizePolicy);
         QFont font3;
-        font3.setPointSize(10);
+        font3.setPointSize(11);
         font3.setBold(true);
         font3.setWeight(75);
-        TaskyButton->setFont(font3);
-        TaskyButton->setFocusPolicy(Qt::NoFocus);
-        TaskyButton->setStyleSheet(QLatin1String("QToolButton#TaskyButton{\n"
-"border-style: flat;\n"
-"background-color: transparent;\n"
-"color: #85FFD6;\n"
+        StatusBar->setFont(font3);
+        Tasky = new QLabel(MainPart);
+        Tasky->setObjectName(QStringLiteral("Tasky"));
+        Tasky->setGeometry(QRect(20, 20, 51, 20));
+        QFont font4;
+        font4.setPointSize(13);
+        font4.setBold(true);
+        font4.setWeight(75);
+        Tasky->setFont(font4);
+        Tasky->setStyleSheet(QLatin1String("QLabel#Tasky{\n"
+"    color: yellow;\n"
 "}"));
         TaskyDesignClass->setCentralWidget(MainPart);
-        statusBar = new QStatusBar(TaskyDesignClass);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
-        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(statusBar->sizePolicy().hasHeightForWidth());
-        statusBar->setSizePolicy(sizePolicy2);
-        statusBar->setMinimumSize(QSize(580, 35));
-        QFont font4;
-        font4.setPointSize(11);
-        font4.setBold(false);
-        font4.setWeight(50);
-        statusBar->setFont(font4);
-        statusBar->setStyleSheet(QLatin1String("background-color: #003329;\n"
-"border-radius: 2px;\n"
-"color: #FFFFFF;\n"
-"margin: 0px 0px 0px 0px;\n"
-"padding: 2px 10px 10px 10px;\n"
-""));
-        statusBar->setSizeGripEnabled(true);
-        TaskyDesignClass->setStatusBar(statusBar);
         QWidget::setTabOrder(InputBox, DisplayPanel);
 
         retranslateUi(TaskyDesignClass);
@@ -243,7 +236,8 @@ public:
         InputBox->setPlaceholderText(QApplication::translate("TaskyDesignClass", "input your command here", 0));
         CloseButton->setText(QString());
         MinimizeButton->setText(QString());
-        TaskyButton->setText(QApplication::translate("TaskyDesignClass", "Tasky", 0));
+        StatusBar->setText(QString());
+        Tasky->setText(QApplication::translate("TaskyDesignClass", "Tasky", 0));
     } // retranslateUi
 
 };

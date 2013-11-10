@@ -5,7 +5,7 @@ void UI::UI_interface(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	string command;
 	bool statusFlag = false;
-	displayWelcomeMessage();
+	displayWelcomeMessage(hConsole);
 	while (!statusFlag) {
 		displayCommandMessage(command, hConsole);
 		displayProcessorMessage(command, hConsole, statusFlag);
@@ -13,7 +13,8 @@ void UI::UI_interface(){
 }
 
 
-void UI::displayWelcomeMessage(){
+void UI::displayWelcomeMessage(HANDLE hConsole){
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 	cout << MESSAGE_WELCOME;
 	string message;
 	vector<string> feedback;

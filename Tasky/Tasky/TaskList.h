@@ -111,7 +111,17 @@ public:
 	* @return status code
 	*/
 	int search(string searchLine, vector<Task>& _temp);
+	/**
+	* Purpose:
+	* Collates all the tasks, puts them into a vector and pass to FileProcessing
+	* @return status code
+	*/
 	int saveFile();
+	/**
+	* Purpose:
+	* Retrieves the data of tasks and by reading vector of string from FileProcessing
+	* @return status code
+	*/
 	int loadFile();
 
 private:

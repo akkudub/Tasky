@@ -944,7 +944,7 @@ TEST(outstrings_searchSlots, search){
 		"2:From: 22/11/2020 23:59:59 To: 23/11/2020 00:00:00"
 		"3:From: 24/11/2020 12:00:00 To: 24/11/2020 13:00:00";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
-		EXPECT_EQ(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 TEST(message_searchSlotsInvalid, search){
@@ -956,7 +956,7 @@ TEST(message_searchSlotsInvalid, search){
 	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("search slots from 21/11/2020 to 22/11/2020", message, outStrings);
-	
+
 	EXPECT_EQ("Warning! No slots found", message);
 }
 
@@ -988,6 +988,40 @@ TEST(outstrings_searchSlotsPlus, search){
 	expected =
 		"Following empty slots found:"
 		"1:From: 25/11/2020 23:59:59 To: 26/11/2020 23:59:59";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+
+/* test cases for undo */
+TEST(message_undo, undo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo", message, outStrings);
+
+	EXPECT_EQ("Success! Task removed", message);
+}
+
+TEST(outstrings_undo, undo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo", message, outStrings);
+	expected = "Undo Tasks removed:"
+		"Title:      test case 5\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   None\n"
+		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
 }

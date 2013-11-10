@@ -47,6 +47,7 @@ private:
 	static const string MESSAGE_WARNING_UPDATE_CLASH;
 	static const string MESSAGE_WARNING_MARK_NO_CHANGE;
 	static const string MESSAGE_WARNING_SEARCH_NO_RESULT;
+	static const string MESSAGE_WARNING_SEARCH_NO_SLOTS;
 	static const string MESSAGE_WARNING_UNDO_NO_TASKS;
 	static const string MESSAGE_WARNING_REDO_NO_TASKS;
 	static const string MESSAGE_WARNING_LOAD_EMPTY_FILE;	

@@ -39,6 +39,7 @@ const string Messages::MESSAGE_WARNING_UPDATE_SAME            = "Warning! The ne
 const string Messages::MESSAGE_WARNING_UPDATE_CLASH           = "Warning! The new task is clashing with the following:";
 const string Messages::MESSAGE_WARNING_MARK_NO_CHANGE         = "Warning! There is no change for the status";
 const string Messages::MESSAGE_WARNING_SEARCH_NO_RESULT       = "Warning! No such task";
+const string Messages::MESSAGE_WARNING_SEARCH_NO_SLOTS		  = "Warning! No slots found";
 const string Messages::MESSAGE_WARNING_UNDO_NO_TASKS          = "Warning! There is nothing to undo";
 const string Messages::MESSAGE_WARNING_REDO_NO_TASKS          = "Warning! There is nothing to redo";
 const string Messages::MESSAGE_WARNING_LOAD_EMPTY_FILE        = "Warning! The file being loaded is empty";	
@@ -118,6 +119,7 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_WARNING_UPDATE_CLASH,
 	MESSAGE_WARNING_MARK_NO_CHANGE,
 	MESSAGE_WARNING_SEARCH_NO_RESULT,
+	MESSAGE_WARNING_SEARCH_NO_SLOTS,
 	MESSAGE_WARNING_UNDO_NO_TASKS,
 	MESSAGE_WARNING_REDO_NO_TASKS,
 	MESSAGE_WARNING_LOAD_EMPTY_FILE,	

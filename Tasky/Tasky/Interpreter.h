@@ -124,106 +124,18 @@ private:
 
 public:
 	Interpreter();
-	/**
-	 *a method created specially for Processor::addCommandProcessor, as this will take in a string without command type and try to  parse the string
-	 *according to 'add' format on Tasky's user guide.
-	 *e.g.: "'title' from 12/12/2012 1200 to 13/12/2013 1300 -m comment goes here"
-	 *@param str (string) input from processor
-	 *@param title (string reference) will change the content of the string if the input format is correct, contain the title
-	 *@param type (string reference) will change the content of the innt if the input format is correct, stating 0--floating; 1--deadline; 2--timed
-	 *@param start (BasicDateTime reference) will change the value of start if format is correct
-	 *@param end (BasicDateTime reference) will change the value of end if format is correct
-	 *@param comment (string reference) will change the value of comment if format is correct, will be empty string not input
-	 *@return int status code
-	 */
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
-	/**
-	*a method for Processor::searchCommandProcessor, as this will take in a string with command type and try to parse the string
-	*@param str (string) input from processor
-	*@param slotEnabled (bool) checking if the user wants to search for task or slots
-	*@param keywords (vector<string>) list of words broken down
-	*@param searchStatus (int) if the user is searching for tasks marked done/pending
-	*@param type (int) for checking if user is searching within a time range
-	*@param start (BasicDateTime reference) will change the value of start if format is correct
-	*@param end (BasicDateTime reference) will change the value of end if format is correct
-	*/
-
 	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
-	/**
-	 *a method for Processor::displayCommandProcessor, as this will take in a string without command type and try to parse the string
-	 *according to 'display' format on the user guide
-	 *e.g.: "pending" or "done" or "all" or "today"
-	 *@param str (string) the input from the input
-	 *@param displayType: all-0; pending-1; done-2; today-3;
-	 *return int status code
-	 */
 	int interpretDisplay(const string& str, int& displayType);
-	/**
-	 *a method for Processor::renameCommandProcessor, as this will take in a strin with command type and try to parse the string
-	 *according to 'rename' format on the user guide
-	 *e.g.:"'old title' to 'new title'"
-	 *@param str (string) input from processor
-	 *@param oldTitle (string reference) will have the extracted the first qouted string
-	 *@param newTitle (string reference) will have the extracted the second quoted string
-	 *@return int status code--will be further defined later, right now -1 means failure and 0 means success
-	 */
 	int interpretRename(string str, string& oldTitle, string& newTitle, string& newComment);
 	int interpretRenameAfterSearch(string str, int& num, string& newtitle, string& newComment);
-	/**
-	 *a method for Processor::rescheduleCommandProcessor, as this will take in a strin with command type and try to parse the string
-	 *according to 'reschedule' format on the user guide
-	 *e.g.:"'title' by 12/9/2014 12.00.06"
-	 *@param str (string) input from processor
-	 *@param title (string reference) will have the value of the extracted quoted string
-	 *@param type (int reference) will be changed according to input: 0--floating; 1--deadline task; 2--timed task;
-	 *@param start (BasicDateTime reference) will be changed if the input date time format is right
-	 *@param end (BasicDateTime reference) will be changed if the input date time format is right
-	 *@return int status code--0: success; -1: failure
-	 */
 	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
 	int interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end);
-	/**
-	 *a method for Processor::markCommandProcessor, as this will take in a strin with command type and try to parse the string
-	 *according to 'mark' format on the user guide
-	 *e.g.:"'title' done"
-	 *@param str (string) input from processor
-	 *@param title (string reference) will have the value of the extracted quoted string
-	 *@param status (bool reference) will set the value of status: true--done; false--pending
-	 *@return int status code--0: success; -1: failure
-	 */
 	int interpretMark(string str, string& title, bool& status);
 	int interpretMarkAfterSearch(string str, vector<int>& vec, bool& status);
-	/**
-	 *a method for Processor::removeCommandProcessor, as this will take in a strin with command type and try to parse the string
-	 *according to 'remove' format on the user guide
-	 *e.g.:"'title'"
-	 *@param str (string) input from processor
-	 *@param title (string reference) will have the value of the extracted quoted string
-	 *@return int status code--0: success; -1: failure
-	 */
 	int interpretRemove(string str, string& title);
-	/**
-	 *a more general method as this will take a string and try to convert it to an integer
-	 *notice that this method is very limited--only allow positive integers and will return -1 as the error code
-	 *and this method will not allow any char other than digits. plus: notice the number of digits allowed is limited to the range of int
-	 *@param str (string) input string
-	 *@return try to parse the string to int, if failure then return -1
-	 */
 	int stringToInt(string str);
-	/**
-	 *a general method as this will take a string and try to convert it to an integer vector
-	 *e.g.: 1,3,5--><1,3,5>; 1-3--><1,2,3>
-	 *notice that this method makes use of the previous one and thus only allow non-nagetive int and input format should be strict
-	 * 1, 3, 4, 5--return <1, 3, 4, 5>;  1-5--return <1, 2, 3, 4, 5>
-	 *@param str (string) input string
-	 *@return a vector of integers
-	 */
 	vector<int> stringToIntVec(string str);
-	/**
-	 *make use of <algorithm> and transfer a string to all lower case
-	 *@param input (string)
-	 *@return string of the input string 
-	 */
 	string toLowerCase(string input);
 	~Interpreter();
 

@@ -99,6 +99,30 @@ TEST(RenameTest, simpleTest1){
 	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'old title'to 'new title'", title1, title2, comment));
 }
 
+TEST(RenameAfterSearchTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	BasicDateTime start, end;
+	int num;
+
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 2 to 'this is new'", num, title1, comment));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("", comment);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 12 to 'this is new'", num, title1, comment));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("", comment);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 12 to 'this is new' -m comment", num, title1, comment));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("comment", comment);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 12 to 'this is new' -m 'comment", num, title1, comment));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("'comment", comment);
+}
+
 TEST(RemoveTest, simpleTest1){
 	Interpreter inter;
 	string title1;
@@ -197,6 +221,25 @@ TEST(RescheduleTest, simpleTest1){
 	EXPECT_EQ(2, type);
 	EXPECT_EQ("this is's title", title1);
 	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretReschedule("'this is title' by 12/12/12 12.00", title1, type, start, end));
+}
+
+TEST(RescheduleAfterSearchTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	int type;
+	BasicDateTime start, end;
+	int num;
+
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 2 from tdy to tmr", num, type, start, end));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ(2, type);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 2 by tmr", num, type, start, end));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ(1, type);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
 }
 
 TEST(StringToIntTest, simpleTes1){

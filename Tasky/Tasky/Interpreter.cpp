@@ -246,7 +246,8 @@ int Interpreter::interpretRescheduleAfterSearch(string str, int& num,int& type, 
 	bool fromToFlag=false;
 	bool byFlag=false;
 
-	if (!findStartingPosOfKeywordWithoutCase(str, FROM_KEY_WORD, pos)){
+	if (!findStartingPosOfKeywordWithoutCase(str, FROM_KEY_WORD, pos)
+		&& !findStartingPosOfKeywordWithoutCase(str, BY_KEY_WORD, pos)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RESCHEDULE;
 	}
 	num=stringToInt(str.substr(0, pos-1));

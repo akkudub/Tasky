@@ -760,6 +760,7 @@ TEST(message_markSame, mark){
 	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
 	EXPECT_EQ("Warning! There is no change for the status", message);
 }
+
 TEST(outstrings_markSame, mark){
 	remove("Tasky.txt");
 	Processor tempProcessor;
@@ -776,4 +777,118 @@ TEST(outstrings_markSame, mark){
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
+}
+
+/*test cases for search
+* not every possible scenario is tested as
+* some testing from the tasklist class for all those cases is assumed
+*/
+/* simple keyword search*/
+TEST(message_searchKeywords, search){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test nocase 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search 'test case keyword3'", message, outStrings);
+	EXPECT_EQ("Success! Search successful", message);
+}
+
+TEST(outstrings_searchKeywords, search){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test nocase 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search 'test case keyword3'", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1 keyword1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test nocase 1 keyword2\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    3\n"
+		"Title:      notest case 2 keyword4\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    4\n"
+		"Title:      notest nocase 1 keyword3\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   20/12/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_searchKeywordsRange, search){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search 'case' from 22/11/2020 to 25/11/2020", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1 keyword2\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      notest case 2 keyword4\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 00:00:00\n"
+		"Comment:    ";
+		actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_searchKeywordsRangeStatus, search){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'notest case 2 keyword4' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search 'case' pending from 22/11/2020 to 25/11/2020", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1 keyword2\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(message_searchInvalid, search){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'notest case 2 keyword4' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search 'invalid' pending from 22/11/2020 to 25/11/2020", message, outStrings);
+	
+	EXPECT_EQ("Warning! No such task", message);
 }

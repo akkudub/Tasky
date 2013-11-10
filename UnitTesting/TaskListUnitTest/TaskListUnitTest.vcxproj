@@ -41,10 +41,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Kaiwen\Dropbox\Visual Studio 2012\TaskyV0.1\Tasky\LogLibrary\LogLibrary;C:\Users\Kaiwen\Dropbox\Visual Studio 2012\TaskyV0.1\Tasky\LogLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary;F:\Documents\Visual Studio 2012\Projects\CS2103 Tasky\Tasky\LogLibrary\LogLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

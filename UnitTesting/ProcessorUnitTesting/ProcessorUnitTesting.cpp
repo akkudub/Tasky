@@ -1,4 +1,11 @@
-// TaskyTest.cpp : Defines the entry point for the console application.
+/*
+* ProcessorUnitTesting.cpp
+* @author A0103516U
+* Unit tests for the Processor task
+* tests using actual classes, not stubs
+* as stubs would be pointless due to high coupling
+*/
+
 #include "gtest/gtest.h"
 #include "Processor.h"
 #include <string>
@@ -13,19 +20,20 @@ int statusCode;
 TEST(message_addSingle, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 08.00 to 22/11/2020 09.00", message, outStrings);
 	EXPECT_EQ("Success! Task added",message);
 }
 
 TEST(outStrings_addSingleNormal, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00 -m Adding comment", message, outStrings);
-	expected = "Task Added:"
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 08.00 to 22/11/2020 09.00 -m Adding comment", message, outStrings);
+	expected = 
+		"Task Added:"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 08:00:00\n"
-		"End time:   22/11/2013 09:00:00\n"
+		"Start time: 21/11/2020 08:00:00\n"
+		"End time:   22/11/2020 09:00:00\n"
 		"Comment:    Adding comment";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -34,12 +42,13 @@ TEST(outStrings_addSingleNormal, add){
 TEST(outStrings_addSingleDeadline, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' by 21/11/2013 08.00", message, outStrings);
-	expected = "Task Added:"
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' by 21/11/2020 08.00", message, outStrings);
+	expected = 
+		"Task Added:"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
-		"End time:   21/11/2013 08:00:00\n"
+		"End time:   21/11/2020 08:00:00\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -49,7 +58,8 @@ TEST(outStrings_addSingleFloating, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1'", message, outStrings);
-	expected = "Task Added:"
+	expected = 
+		"Task Added:"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
@@ -63,8 +73,8 @@ TEST(outStrings_addSingleFloating, add){
 TEST(message_addExisting, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 08.00 to 22/11/2020 09.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 08.00 to 22/11/2020 09.00", message, outStrings);
 	EXPECT_EQ("Error! Task already exists. Task not added",message);
 }
 
@@ -72,29 +82,30 @@ TEST(message_addExisting, add){
 TEST(message_addClash, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 08.00 to 22/11/2020 09.00", message, outStrings);
 
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2013 to 22/11/2013", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2020 to 22/11/2020", message, outStrings);
 	EXPECT_EQ("Warning! Task clashes with existing ones",message);
 }
 
 TEST(outStrings_addClash1, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2013 08.00 to 22/11/2013 12.00", message, outStrings);
-	expected = "Task Added:"
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 08.00 to 22/11/2020 09.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2020 08.00 to 22/11/2020 12.00", message, outStrings);
+	expected = 
+		"Task Added:"
 		"Title:      test case 2\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 08:00:00\n"
-		"End time:   22/11/2013 12:00:00\n"
+		"Start time: 21/11/2020 08:00:00\n"
+		"End time:   22/11/2020 12:00:00\n"
 		"Comment:    "
 		"Clashes:"
 		"Task no:    1\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 08:00:00\n"
-		"End time:   22/11/2013 09:00:00\n"
+		"Start time: 21/11/2020 08:00:00\n"
+		"End time:   22/11/2020 09:00:00\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected,actual);
@@ -103,27 +114,28 @@ TEST(outStrings_addClash1, add){
 TEST(outStrings_addClash2, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 08.00 to 22/11/2013 09.00", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2013 08.00 to 22/11/2013 12.00", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 20/11/2013 to 23/11/2013", message, outStrings);
-	expected = "Task Added:"
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 08.00 to 22/11/2020 09.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 21/11/2020 08.00 to 22/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 20/11/2020 to 23/11/2020", message, outStrings);
+	expected = 
+		"Task Added:"
 		"Title:      test case 3\n"
 		"Status:     Pending\n"
-		"Start time: 20/11/2013 00:00:00\n"
-		"End time:   23/11/2013 00:00:00\n"
+		"Start time: 20/11/2020 00:00:00\n"
+		"End time:   23/11/2020 00:00:00\n"
 		"Comment:    "
 		"Clashes:"
 		"Task no:    1\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 08:00:00\n"
-		"End time:   22/11/2013 09:00:00\n"
+		"Start time: 21/11/2020 08:00:00\n"
+		"End time:   22/11/2020 09:00:00\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 2\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 08:00:00\n"
-		"End time:   22/11/2013 12:00:00\n"
+		"Start time: 21/11/2020 08:00:00\n"
+		"End time:   22/11/2020 12:00:00\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3]+outStrings[4];
 	EXPECT_EQ(expected, actual);
@@ -134,20 +146,21 @@ TEST(outStrings_addClash2, add){
 TEST(outStrings_addBorderClashPlus, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013 12.00", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 11.59 to 24/11/2013", message, outStrings);
-	expected = "Task Added:"
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 11.59 to 24/11/2020", message, outStrings);
+	expected = 
+		"Task Added:"
 		"Title:      test case 2\n"
 		"Status:     Pending\n"
-		"Start time: 22/11/2013 11:59:00\n"
-		"End time:   24/11/2013 00:00:00\n"
+		"Start time: 22/11/2020 11:59:00\n"
+		"End time:   24/11/2020 00:00:00\n"
 		"Comment:    "
 		"Clashes:"
 		"Task no:    1\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 00:00:00\n"
-		"End time:   22/11/2013 12:00:00\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 12:00:00\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);
@@ -156,20 +169,21 @@ TEST(outStrings_addBorderClashPlus, add){
 TEST(outStrings_addBorderClashMinus, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 16.00 to 22/11/2013", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 20/11/2013 to 21/11/2013 16.01", message, outStrings);
-	expected = "Task Added:"
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 16.00 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 20/11/2020 to 21/11/2020 16.01", message, outStrings);
+	expected = 
+		"Task Added:"
 		"Title:      test case 2\n"
 		"Status:     Pending\n"
-		"Start time: 20/11/2013 00:00:00\n"
-		"End time:   21/11/2013 16:01:00\n"
+		"Start time: 20/11/2020 00:00:00\n"
+		"End time:   21/11/2020 16:01:00\n"
 		"Comment:    "
 		"Clashes:"
 		"Task no:    1\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 16:00:00\n"
-		"End time:   22/11/2013 00:00:00\n"
+		"Start time: 21/11/2020 16:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);}
@@ -178,31 +192,34 @@ TEST(outStrings_addBorderClashMinus, add){
 TEST(message_addBorderNoClash, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
 	EXPECT_EQ("Success! Task added",message);
 }
 
 TEST(outStrings_addBorderNoClash, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
-	expected = "Task Added:"
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	expected =
+		"Task Added:"
 		"Title:      test case 2\n"
 		"Status:     Pending\n"
-		"Start time: 22/11/2013 00:00:00\n"
-		"End time:   24/11/2013 00:00:00\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
 }
+
+/*test cases for remove*/
 /* single remove*/
 TEST(message_remove, remove){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
 	EXPECT_EQ("Success! Task removed",message);
 }
@@ -210,25 +227,553 @@ TEST(message_remove, remove){
 TEST(outStrings_remove, remove){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
-	expected = "Tasks removed:"
+	expected = 
+		"Tasks removed:"
 		"Task no:    1\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
-		"Start time: 21/11/2013 00:00:00\n"
-		"End time:   22/11/2013 00:00:00\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
 }
 
+/*invalid remove*/
 TEST(message_removeInvalid, remove){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2013 to 22/11/2013", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2013 to 24/11/2013", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("remove 'test case 3'", message, outStrings);
 	EXPECT_EQ("Warning! No such task",message);
+}
+
+/*remove with choices*/
+TEST(message_removeChoose, remove){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	EXPECT_EQ("Enter task number to remove:", message);
+}
+
+TEST(prompt_removeChoose, remove){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_removeChoose, remove){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("2", message, outStrings);
+	expected = 
+		"Tasks removed:"
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+
+	EXPECT_EQ(expected, actual);
+}
+
+/*remove with multiple choices*/
+TEST(outstrings_removeChooseMultiple, remove){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' by 20/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("1-2", message, outStrings);
+	expected = 
+		"Tasks removed:"
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   20/12/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2];
+	EXPECT_EQ(expected, actual);
+}
+
+/*test cases for display*/
+TEST(message_display, display){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 2' pending", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("display all", message, outStrings);
+	EXPECT_EQ("Success! Tasks displayed",message);
+}
+
+TEST(outstrings_displayAll, display){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 2' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("display all", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test case 2\n"
+		"Status:     Done\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_displayDone, display){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 2' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("display done", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 2\n"
+		"Status:     Done\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_displayPending, display){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 2' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("display pending", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0];
+	EXPECT_EQ(expected, actual);
+}
+
+/*test cases for rename*/
+TEST(message_rename, rename){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3'", message, outStrings);
+	EXPECT_EQ("Success! Task updated",message);
+}
+
+TEST(outStrings_rename, rename){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3'", message, outStrings);
+	expected = 
+		"Task renamed:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Updated to:"
+		"Title:      test case 3\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(message_renameInvalid, rename){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("rename 'test case 3' to 'test case 1'", message, outStrings);
+	EXPECT_EQ("Warning! No such task",message);
+}
+
+TEST(message_renameChoose, rename){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3'", message, outStrings);
+	EXPECT_EQ("Enter task number to rename:", message);
+}
+
+TEST(prompt_renameChoose, rename){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3'", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_renameChoose, rename){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("1", message, outStrings);
+	expected = 
+		"Task renamed:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Updated to:"
+		"Title:      test case 3\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
+	EXPECT_EQ(expected, actual);
+}
+
+/*test cases for reschedule*/
+TEST(message_reschedule, reschedule){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 22/12/2020", message, outStrings);
+	EXPECT_EQ("Success! Task updated",message);
+}
+
+TEST(outStrings_reschedule, reschedule){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 22/12/2020", message, outStrings);
+	expected = 
+		"Task rescheduled:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Updated to:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   22/12/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(message_rescheduleInvalid, reschedule){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 3' by 22/12/2020", message, outStrings);
+	EXPECT_EQ("Warning! No such task",message);
+}
+
+TEST(message_rescheduleChoose, reschedule){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 22/12/2020", message, outStrings);
+	EXPECT_EQ("Enter task number to reschedule:", message);
+}
+
+TEST(prompt_rescheduleChoose, reschedule){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 22/12/2020", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_rescheduleChoose, reschedule){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 22/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("1", message, outStrings);
+	expected = 
+		"Task rescheduled:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Updated to:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   22/12/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
+	EXPECT_EQ(expected, actual);
+}
+
+/*test cases for mark*/
+/* single mark*/
+TEST(message_mark, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	EXPECT_EQ("Success! Task(s) marked",message);
+}
+
+TEST(outStrings_mark, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	expected = 
+		"Tasks marked:"
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Done\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+/*invalid mark*/
+TEST(message_markInvalid, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 3' Done", message, outStrings);
+	EXPECT_EQ("Warning! No such task",message);
+}
+
+/*mark with choices*/
+TEST(message_markChoose, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	EXPECT_EQ("Enter task number to mark:", message);
+}
+
+TEST(prompt_markChoose, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	expected = 
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outstrings_markChoose, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("2", message, outStrings);
+	expected = 
+		"Tasks marked:"
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Done\n"
+		"Start time: 22/11/2020 00:00:00\n"
+		"End time:   24/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+
+	EXPECT_EQ(expected, actual);
+}
+
+/*mark with multiple choices*/
+TEST(outstrings_markChooseMultiple, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' by 20/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("1-2", message, outStrings);
+	expected = 
+		"Tasks marked:"
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Done\n"
+		"Start time: None\n"
+		"End time:   20/12/2020 00:00:00\n"
+		"Comment:    "
+		"Task no:    2\n"
+		"Title:      test case 1\n"
+		"Status:     Done\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2];
+	EXPECT_EQ(expected, actual);
+}
+
+/*test a mark toggle*/
+TEST(outstrings_markToggle, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' pending", message, outStrings);
+	expected = 
+		"Tasks marked:"
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+/* test mark same status*/ 
+TEST(message_markSame, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	EXPECT_EQ("Warning! There is no change for the status", message);
+}
+TEST(outstrings_markSame, mark){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 1' done", message, outStrings);
+	expected = 
+		"Tasks marking error:"
+		"Task no:    1\n"
+		"Title:      test case 1\n"
+		"Status:     Done\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 00:00:00\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
 }

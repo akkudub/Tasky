@@ -51,7 +51,7 @@ int TaskList::update(Task existingTask, Task newTask, vector<Task>& _temp){
 	if(existingTask.isEqualTo(newTask))
 		return WARNING_UPDATE_SAME;
 
-	assert(remove(existingTask) == SUCCESS_REMOVE);
+	remove(existingTask);
 
 	add(newTask, _temp);
 

@@ -289,10 +289,10 @@ int Interpreter::interpretMarkAfterSearch(string str, vector<int>& vec, bool& st
 
 	if (strVec.at(size-1)==PENDING_KEY_WORD){
 		status=false;
-		pos=size-8;
+		pos=str.size()-8;
 	}else if (strVec.at(size-1)==DONE_KEY_WORD){
 		status=true;
-		pos=size-5;
+		pos=str.size()-5;
 	}else{
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_MARK;
 	}

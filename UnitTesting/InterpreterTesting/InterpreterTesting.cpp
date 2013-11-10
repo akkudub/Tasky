@@ -82,22 +82,21 @@ TEST(AddTest, simpleTest1){
 TEST(RenameTest, simpleTest1){
     Interpreter inter;
 	string title1, title2 , comment;
-	int type;
 	BasicDateTime start, end;
 
 	//standard
-	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME, inter.interpretRename(" 'this is old' to 'this is new'", title1, title2));
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME, inter.interpretRename(" 'this is old' to 'this is new'", title1, title2, comment));
 	EXPECT_EQ("this is old", title1);
 	EXPECT_EQ("this is new", title2);
 	//multiple single quotes
-	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME, inter.interpretRename(" 'this 'is' old' to 'this is' new'", title1, title2));
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME, inter.interpretRename(" 'this 'is' old' to 'this is' new'", title1, title2, comment));
 	EXPECT_EQ("this 'is' old", title1);
 	EXPECT_EQ("this is' new", title2);
 	//return error code
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is is'", title1, title2));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is ' to '", title1, title2));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT,inter.interpretRename("'this is is is' to ''", title1, title2));
-	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'old title'to 'new title'", title1, title2));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is is'", title1, title2, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is ' to '", title1, title2, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT,inter.interpretRename("'this is is is' to ''", title1, title2, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'old title'to 'new title'", title1, title2, comment));
 }
 
 TEST(RemoveTest, simpleTest1){

@@ -71,7 +71,7 @@ void TaskyDesign::processInputString(){
 void TaskyDesign::updateStatusBar(QString text){
 	QPalette mypalette;
 	mypalette.setColor(QPalette::WindowText, Qt::white);
-	ui.statusBar->setPalette(mypalette);
+	ui.StatusBar->setPalette(mypalette);
 	if (startWithCaseInsensitive(text, ADD_COMPLETE_WORD)){
 		showStatusBarMsg(ADD_OPERATION_REMINDER);
 	}else if(startWithCaseInsensitive(text, DISPLAY_COMPLETE_WORD)){
@@ -96,7 +96,9 @@ void TaskyDesign::updateStatusBar(QString text){
 		showStatusBarMsg(HIDE_OPERATION_REMIDER);
     }else if(startWithCaseInsensitive(text, EXIT_COMPLETE_WORD)){
 		showStatusBarMsg(EXIT_OPERATION_REMINDER);
-	}else{
+	}else if(isValidForNumberInput(text)){
+		showStatusBarMsg("Input numbers if you are asked to");
+    }else{
 		showStatusBarMsg(OTHER_OPERATION_REMINDER);
 	}
 }
@@ -191,6 +193,12 @@ bool TaskyDesign::eventFilter(QObject* watched, QEvent* event){
 				return true;
 			}
 			break;
+		case Qt::Key_Y:
+			if (keyEvent->modifiers()==Qt::ControlModifier){
+				sendStdStringToBackEnd("redo");
+				return true;
+			}
+			break;
 		default:
 			break;
 		}
@@ -216,7 +224,7 @@ void TaskyDesign::trayHiddenMsg(){
 }
 
 void TaskyDesign::showStatusBarMsg(QString content){
-	ui.statusBar->showMessage(content);
+	ui.StatusBar->setText(content);
 }
 
 void TaskyDesign::hideWindow(){
@@ -236,9 +244,10 @@ void TaskyDesign::sendStdStringToBackEnd(QString input){
 	_msgType=_logic->UImainProcessor(input.toStdString(), _msg, _vec);
 	int size=_vec.size();
 	ui.DisplayPanel->clear();
-	ui.statusBar->clearMessage();
 	setStatusBarMsgAndColor();
-	ui.DisplayPanel->setHtml(combineOutput(size));
+	if (_msg!="Warning! Wrong input"){
+		ui.DisplayPanel->setHtml(combineOutput(size));
+	}
 }
 
 void TaskyDesign::setStatusBarMsgAndColor(){
@@ -252,8 +261,8 @@ void TaskyDesign::setStatusBarMsgAndColor(){
 	}else{
 		mypalette.setColor(QPalette::WindowText, Qt::white);
 	}
-	ui.statusBar->setPalette(mypalette);
-	ui.statusBar->showMessage(QString::fromStdString(_msg));
+	ui.StatusBar->setPalette(mypalette);
+	ui.StatusBar->setText(QString::fromStdString(_msg));
 }
 
 bool TaskyDesign::equalsToKeywordWithoutCase(const QString& input, const QString& keyword){
@@ -262,6 +271,12 @@ bool TaskyDesign::equalsToKeywordWithoutCase(const QString& input, const QString
 
 bool TaskyDesign::startWithCaseInsensitive(QString text, const QString& keyword){
 	return text.startsWith(keyword, Qt::CaseInsensitive);
+}
+
+bool TaskyDesign::isValidForNumberInput(QString text){
+	QRegularExpression reg("[0-9, \-]");
+	QRegularExpressionMatch mch=reg.match(text);
+	return mch.hasMatch();
 }
 
 QString TaskyDesign::combineOutput( int size ){
@@ -283,7 +298,7 @@ QString TaskyDesign::formatString(int num){
 }
 
 QString TaskyDesign::singleLineInDisplayPanel(std::string str){
-	return "<font color=\"Red\">"+QString::fromStdString(str)+"</font><br/>";
+	return QString::fromStdString(str)+"<br/>";
 }
 
 QString TaskyDesign::multipleLinesInDisplayPanel(std::string str){
@@ -293,7 +308,7 @@ QString TaskyDesign::multipleLinesInDisplayPanel(std::string str){
 	initStr.append(QString::fromStdString(str));
 	initStr.replace(" ", "&nbsp;");
 	initStr.replace(QString("\n"), QString("<br/>"));
-	initStr.append("<br/><br/>");
+	initStr.append("<br/>");
 	initStr.append("</pre>");
 	return initStr;
 }

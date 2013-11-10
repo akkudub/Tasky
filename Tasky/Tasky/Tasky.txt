@@ -1,7 +1,0 @@
-Type: Timed task
-Title: this
-Status: Pending
-Start: 09/11/2013 00:00:00
-End: 10/11/2013 00:00:00
-Comment: 
-

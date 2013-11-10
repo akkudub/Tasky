@@ -23,7 +23,7 @@ const string Messages::MESSAGE_SUCCESS_HELP 				  = "Success! Help displayed";
 const string Messages::MESSAGE_SUCCESS_RECORD 				  = "Success! Previous action recorded";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH_RENAME= "Success! Renamed after search";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH_RESCHEDULE
-	                                                          = "Success! Rescheduled after search";
+	= "Success! Rescheduled after search";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH_MARK  = "Success! Marked after search";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_ADD      	  = "Success! Interpreted add";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_REMOVE 	  = "Success! Interpreted remove";
@@ -60,6 +60,7 @@ const string Messages::MESSAGE_ERROR_LOAD_CORRUPTED_DATA 	  = "Error! File corru
 const string Messages::MESSAGE_ERROR_SAVE_SAVEFILE 			  = "Error! Unexpected error while saving to file";
 const string Messages::MESSAGE_ERROR_RECORD 				  = "Error! Unexpected error while recording task";
 const string Messages::MESSAGE_ERROR_INVALID_CHOICE       	  = "Error! Invalid Choice";
+const string Messages::MESSAGE_ERROR_NO_SEARCH_ACTION		  = "Error! Error not a valid action after search";
 const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_RENAME  = "Error! Error interpreting rename after search";
 const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_RESCHEDULE = "Error! Error interpreting reschedule after search";
 const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_MARK= "Error! Error interpreting mark after search";
@@ -140,6 +141,7 @@ const string Messages::MESSAGE_ARRAY [MAX_MESSAGES] = {
 	MESSAGE_ERROR_SAVE_SAVEFILE,
 	MESSAGE_ERROR_RECORD,
 	MESSAGE_ERROR_INVALID_CHOICE,
+	MESSAGE_ERROR_NO_SEARCH_ACTION,
 	MESSAGE_ERROR_INTERPRET_SEARCH_RENAME,
 	MESSAGE_ERROR_INTERPRET_SEARCH_RESCHEDULE,
 	MESSAGE_ERROR_INTERPRET_SEARCH_MARK,

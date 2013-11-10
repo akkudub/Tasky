@@ -122,7 +122,7 @@ TEST(outStrings_addClash2, add){
 		"Title:      test case 3\n"
 		"Status:     Pending\n"
 		"Start time: 20/11/2020 00:00:00\n"
-		"End time:   23/11/2020 00:00:00\n"
+		"End time:   23/11/2020 23:59:59\n"
 		"Comment:    "
 		"Clashes:"
 		"Task no:    1\n"
@@ -153,7 +153,7 @@ TEST(outStrings_addBorderClashPlus, add){
 		"Title:      test case 2\n"
 		"Status:     Pending\n"
 		"Start time: 22/11/2020 11:59:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    "
 		"Clashes:"
 		"Task no:    1\n"
@@ -183,7 +183,7 @@ TEST(outStrings_addBorderClashMinus, add){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 16:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);}
@@ -193,7 +193,7 @@ TEST(message_addBorderNoClash, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020", message, outStrings);
 	EXPECT_EQ("Success! Task added",message);
 }
 
@@ -201,13 +201,13 @@ TEST(outStrings_addBorderNoClash, add){
 	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020", message, outStrings);
 	expected =
 		"Task Added:"
 		"Title:      test case 2\n"
 		"Status:     Pending\n"
-		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"Start time: 23/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -236,7 +236,7 @@ TEST(outStrings_remove, remove){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -275,13 +275,13 @@ TEST(prompt_removeChoose, remove){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -301,7 +301,7 @@ TEST(outstrings_removeChoose, remove){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 
@@ -324,13 +324,13 @@ TEST(outstrings_removeChooseMultiple, remove){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
-		"End time:   20/12/2020 00:00:00\n"
+		"End time:   20/12/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2];
 	EXPECT_EQ(expected, actual);
@@ -359,13 +359,13 @@ TEST(outstrings_displayAll, display){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 2\n"
 		"Status:     Done\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -383,7 +383,7 @@ TEST(outstrings_displayDone, display){
 		"Title:      test case 2\n"
 		"Status:     Done\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0];
 	EXPECT_EQ(expected, actual);
@@ -401,7 +401,7 @@ TEST(outstrings_displayPending, display){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0];
 	EXPECT_EQ(expected, actual);
@@ -412,7 +412,7 @@ TEST(message_rename, rename){
 	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3'", message, outStrings);
 	EXPECT_EQ("Success! Task updated",message);
 }
@@ -420,22 +420,45 @@ TEST(message_rename, rename){
 TEST(outStrings_rename, rename){
 	remove("Tasky.txt");
 	Processor tempProcessor;
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020 -m A comment", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3'", message, outStrings);
 	expected = 
 		"Task renamed:"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
+		"Comment:    A comment"
+		"Updated to:"
+		"Title:      test case 3\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
+		"Comment:    A comment";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(outStrings_renameComment, rename){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("rename 'test case 1' to 'test case 3' -m A comment", message, outStrings);
+	expected = 
+		"Task renamed:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Updated to:"
 		"Title:      test case 3\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
-		"Comment:    ";
+		"End time:   22/11/2020 23:59:59\n"
+		"Comment:    A comment";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);
 }
@@ -471,13 +494,13 @@ TEST(prompt_renameChoose, rename){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -496,13 +519,13 @@ TEST(outstrings_renameChoose, rename){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Updated to:"
 		"Title:      test case 3\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);
@@ -529,13 +552,13 @@ TEST(outStrings_reschedule, reschedule){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Updated to:"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
-		"End time:   22/12/2020 00:00:00\n"
+		"End time:   22/12/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);
@@ -572,13 +595,13 @@ TEST(prompt_rescheduleChoose, reschedule){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -597,13 +620,13 @@ TEST(outstrings_rescheduleChoose, reschedule){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Updated to:"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
-		"End time:   22/12/2020 00:00:00\n"
+		"End time:   22/12/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);
@@ -632,7 +655,7 @@ TEST(outStrings_mark, mark){
 		"Title:      test case 1\n"
 		"Status:     Done\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -671,13 +694,13 @@ TEST(prompt_markChoose, mark){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -697,7 +720,7 @@ TEST(outstrings_markChoose, mark){
 		"Title:      test case 1\n"
 		"Status:     Done\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 
@@ -720,13 +743,13 @@ TEST(outstrings_markChooseMultiple, mark){
 		"Title:      test case 1\n"
 		"Status:     Done\n"
 		"Start time: None\n"
-		"End time:   20/12/2020 00:00:00\n"
+		"End time:   20/12/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test case 1\n"
 		"Status:     Done\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2];
 	EXPECT_EQ(expected, actual);
@@ -745,7 +768,7 @@ TEST(outstrings_markToggle, mark){
 		"Title:      test case 1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -773,7 +796,7 @@ TEST(outstrings_markSame, mark){
 		"Title:      test case 1\n"
 		"Status:     Done\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -808,25 +831,25 @@ TEST(outstrings_searchKeywords, search){
 		"Title:      test case 1 keyword1\n"
 		"Status:     Pending\n"
 		"Start time: 21/11/2020 00:00:00\n"
-		"End time:   22/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      test nocase 1 keyword2\n"
 		"Status:     Pending\n"
 		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    3\n"
 		"Title:      notest case 2 keyword4\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
-		"End time:   25/11/2020 00:00:00\n"
+		"End time:   25/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    4\n"
 		"Title:      notest nocase 1 keyword3\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
-		"End time:   20/12/2020 00:00:00\n"
+		"End time:   20/12/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 	EXPECT_EQ(expected, actual);
@@ -836,23 +859,23 @@ TEST(outstrings_searchKeywordsRange, search){
 	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 23/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword5'", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("search 'case' from 22/11/2020 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search 'case' from 23/11/2020 to 25/11/2020", message, outStrings);
 	expected = 
 		"Task no:    1\n"
 		"Title:      test case 1 keyword2\n"
 		"Status:     Pending\n"
-		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"Start time: 23/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    "
 		"Task no:    2\n"
 		"Title:      notest case 2 keyword4\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
-		"End time:   25/11/2020 00:00:00\n"
+		"End time:   25/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
@@ -862,18 +885,18 @@ TEST(outstrings_searchKeywordsRangeStatus, search){
 	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 23/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword5'", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("mark 'notest case 2 keyword4' done", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("search 'case' pending from 22/11/2020 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("search 'case' pending from 23/11/2020 to 25/11/2020", message, outStrings);
 	expected = 
 		"Task no:    1\n"
 		"Title:      test case 1 keyword2\n"
 		"Status:     Pending\n"
-		"Start time: 22/11/2020 00:00:00\n"
-		"End time:   24/11/2020 00:00:00\n"
+		"Start time: 23/11/2020 00:00:00\n"
+		"End time:   24/11/2020 23:59:59\n"
 		"Comment:    ";
 	actual = outStrings[0];
 	EXPECT_EQ(expected, actual);
@@ -883,7 +906,7 @@ TEST(message_searchInvalid, search){
 	remove("Tasky.txt");
 	Processor tempProcessor;
 	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword1' from 21/11/2020 to 22/11/2020", message, outStrings);
-	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 22/11/2020 to 24/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1 keyword2' from 23/11/2020 to 24/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest nocase 1 keyword3' by 20/12/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword4' by 25/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'notest case 2 keyword5'", message, outStrings);
@@ -918,7 +941,7 @@ TEST(outstrings_searchSlots, search){
 	expected =
 		"Following empty slots found:"
 		"1:From: 20/11/2020 00:00:00 To: 21/11/2020 00:00:00"
-		"2:From: 22/11/2020 00:00:00 To: 23/11/2020 00:00:00"
+		"2:From: 22/11/2020 23:59:59 To: 23/11/2020 00:00:00"
 		"3:From: 24/11/2020 12:00:00 To: 24/11/2020 13:00:00";
 	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3];
 		EXPECT_EQ(expected, actual);
@@ -964,7 +987,7 @@ TEST(outstrings_searchSlotsPlus, search){
 	statusCode = tempProcessor.UImainProcessor("search slots from 25/11/2020 to 26/11/2020", message, outStrings);
 	expected =
 		"Following empty slots found:"
-		"1:From: 25/11/2020 00:00:00 To: 26/11/2020 00:00:00";
+		"1:From: 25/11/2020 23:59:59 To: 26/11/2020 23:59:59";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
 }

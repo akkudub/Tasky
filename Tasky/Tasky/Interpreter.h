@@ -211,23 +211,18 @@ private:
     void generalTranslationOfDateTime(const vector<string>& vec, bool& fromFlag, int either);
 	bool fromToCheck(string str);
 	bool byCheck(string str);
-	bool isStartEarlierThanEnd();
-	bool validateYear(int year);
 	bool isLeapYear(int year);
-	bool containChar(string input, char ch);
+	bool validateYear(int year);
 	bool validateMonthDay(int month, int day, bool leap);
 	bool validateDate(int year, int month, int day);
 	bool validateTime(int hour, int month, int day);
-	bool findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos);
-	bool firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
-	bool secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
+	bool isStartEarlierThanEnd();
 	bool checkSizeOfDateTimeStringVec(const vector<string>& vec);
 	bool translateDateTime(string str1, string str2, int either);
 	bool translateNaturalDateTime(string str1, string str2, string str3, int either);
 	bool translateOnlyDate(string str1, int either);
 	bool translateNaturalDate(string str1, string str2, int either);
 	bool interpretDate(string str1, int either);
-	bool interpretNaturalDate(string str1, string str2, int either);
 	bool interpretTime(string str1, int either);
 	bool dateStandardInput(string str, int either);
 	bool dateTodayOrTomorrow(string str, int either);
@@ -236,16 +231,20 @@ private:
 	bool timeSpecialNumsOnly(string str, int either);
 	bool timeDotAMOrPM(string str, int either);
 	bool timeNumsAMOrPM(string str, int either);
+	bool firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
+	bool secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
 	//////////////////////////////////////////////////////////////////////////
 	//private functions related to strings                                  //
 	//////////////////////////////////////////////////////////////////////////
 	int findFirstOfWord(const string& source, const string& word);
 	int findLastOfWord(const string& source, const string& word);
+	bool containChar(string input, char ch);
 	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
 	bool containKeywordWithoutCase(string str, const string& keyword);
 	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
 	bool extractComment(const string& str, string& comment, int& pos);
 	bool extractFirstWord(string str, string& firstWord);
+	bool findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos);
 	string removeLeadingSpaces(string str);
 	string removeTailSpaces(string str);
 	string removeSpacesFromBothEnds(string str);

@@ -209,11 +209,11 @@ int Interpreter::interpretRenameAfterSearch(string str, int& num, string& newTit
 	if (pos2<=5){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
 	}
-	strVec=breakStringWithDelim(str.substr(0,pos2), SPACE);
+	strVec=breakStringWithDelim(str.substr(0,pos1-1), SPACE);
 	if (strVec.size()!=2){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
 	}
-	if (strVec.at(1)!=TO_KEY_WORD){
+	if (strVec.at(1)!="to"){
         return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
 	}else{
 		num=stringToInt(strVec.at(0));
@@ -346,96 +346,87 @@ string Interpreter::toLowerCase(string str){
 	return str;
 }
 
-bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int& pos2){
-	if (str.find_first_of(SINGLE_QUOTE)!=std::string::npos){
-		pos1=str.find_first_of(SINGLE_QUOTE);
-		pos2=str.find_last_of(SINGLE_QUOTE);
-	}else{
-		return false;
-	}
-	if (pos1 < pos2-1){
-		title=str.substr(pos1+1, pos2-pos1-1);
-	}else{
-		return false;
-	}
-	return true;
+int Interpreter::mapTodayDayOfWeek(){
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+
+	return time2.tm_wday;
 }
 
-bool Interpreter::extractComment(const string& str, string& comment, int& pos){
-	if (str.find(DASH_M)!=std::string::npos){
-		pos=findLastOfWord(str, DASH_M);
-		comment=str.substr(pos+3);
+int Interpreter::mapDayOfWeekToInt(const string& str){
+	string str1=toLowerCase(str);
+	if (str1==SUN_KEY_WORD || str1==SUN_FULL_KEY_WORD){
+		return INT_SUNDAY;
+	}else if(str1==MON_KEY_WORD || str1==MON_FULL_KEY_WORD){
+		return INT_MONDAY;
+	}else if(str1==TUE_KEY_WORD || str1==TUE_FULL_KEY_WORD){
+		return INT_TUESDAY;
+	}else if(str1==WED_KEY_WORD || str1==WED_FULL_KEY_WORD){
+		return INT_WEDNESDAY;
+	}else if(str1==THU_KEY_WORD || str1==THU_FULL_KEY_WORD){
+		return INT_THURSDAY;
+	}else if(str1==FRI_KEY_WORD || str1==FRI_FULL_KEY_WORD){
+		return INT_FRIDAY;
+	}else if(str1==SAT_KEY_WORD || str1==SAT_FULL_KEY_WORD){
+		return INT_SATURDAY;
 	}else{
-		pos=str.size();
-		comment=EMPTY_STRING;
-	}
-	return true;
-}
-
-bool Interpreter::extractFirstWord(string str, string& firstWord){
-	vector<string> vec=breakStringWithDelim(str, SPACE);
-	if (vec.size()==0){
-		return false;
-	}else{
-		firstWord=vec.at(0);
-		return true;
+		return INTERNAL_ERROR_CODE;
 	}
 }
 
-bool Interpreter::isEqualToKeyWordWithoutCase(string str, const string& keyword){
-	str=toLowerCase(str);
-	return str==keyword;
+void Interpreter::setStartToNow(){
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+	_start=BasicDateTime(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, time2.tm_hour, time2.tm_min, time2.tm_sec);
 }
 
-bool Interpreter::containKeywordWithoutCase(string str, const string& keyword){
-	str=toLowerCase(str);
-	return (str.find(keyword)!=std::string::npos);
-}
 
-bool Interpreter::findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos){
-	if (containKeywordWithoutCase(str, keyword)){
-		str=toLowerCase(str);
-		pos=str.find(keyword);
-		return true;
+void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int either){
+	if (either==EITHER_AS_START){
+		_start.setYear(yearValue);
+		_start.setMonth(monthValue);
+		_start.setDay(dayValue);
 	}else{
-		return false;
+		_end.setYear(yearValue);
+		_end.setMonth(monthValue);
+		_end.setDay(dayValue);
 	}
 }
 
-vector<string> Interpreter::extractKeywords(const string& str){
-	vector<string> keywords;
-	vector<string> temp=breakStringWithDelim(str, SPACE);
-	keywords.push_back(str);
-	keywords.insert(keywords.end(),temp.begin(), temp.end());
-	return keywords;
-}
-
-bool Interpreter::firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){
-	if (containKeywordWithoutCase(str, FROM_KEY_WORD) && containKeywordWithoutCase(str, TO_KEY_WORD)){
-		fromToFlag=fromToCheck(str);
-		return true;
-	}else if(containKeywordWithoutCase(str, BY_KEY_WORD)){
-		byFlag=byCheck(str);
-		return true;
+void Interpreter::setDefaultTimeParams(int either){
+	if (either==EITHER_AS_START){
+		_start.setHour(HOUR_LOWER_BOUND);
+		_start.setMinute(MINUTE_LOWER_BOUND);
+		_start.setSec(SECOND_LOWER_BOUND);
 	}else{
-		return false;
+		_end.setHour(HOUR_UPPER_BOUND);
+		_end.setMinute(MINUTE_UPPER_BOUND);
+		_end.setSec(SECOND_UPPER_BOUND);
 	}
 }
 
-bool Interpreter::secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end){
-	assert(!(fromToFlag&&byFlag));
-	if (fromToFlag){
-        start=_start;
-		end=_end;
-		type=TWO_DATETIME;
-		return true;
-	}else if(byFlag){
-		start=_start;
-		end=_end;
-		type=ONE_DATETIME;
-		return true;
+void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue, int either){
+	if (either==EITHER_AS_START){
+		_start.setHour(hourValue);
+		_start.setMinute(minuteValue);
+		_start.setSec(secondValue);
 	}else{
-		return false;  //contains the keyword(s) but does not pass further test
+		_end.setHour(hourValue);
+		_end.setMinute(minuteValue);
+		_end.setSec(secondValue);
+	}
+}
+
+void Interpreter::generalTranslationOfDateTime(const vector<string>& vec, bool &fromFlag, int either){
+	assert(vec.size()>0 && vec.size()<4);
+	if (vec.size()==1){
+		fromFlag=translateDateTime(vec.at(0), EMPTY_STRING, either);
+	}else if (vec.size()==2){
+		fromFlag=translateDateTime(vec.at(0), vec.at(1), either) || translateNaturalDate(vec.at(0), vec.at(1), either);
+	}else if (vec.size()==3){
+		fromFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), either);
 	}
 }
 
@@ -495,6 +486,85 @@ bool Interpreter::byCheck(string str){
 	}
 }
 
+bool Interpreter::isLeapYear(int year){
+	if (year<=YEAR_LOWER_BOUND || year>=YEAR_UPPER_BOUND){
+		return false;
+	}
+	if (year%LEAP_YEAR_CONSTANT_100==0){
+		return year%LEAP_YEAR_CONSTANT_400==0;
+	}else{
+		return year%LEAP_YEAR_CONSTANT_4==0;
+	}
+}
+
+bool Interpreter::validateYear(int year){
+	if (year>=YEAR_LOWER_BOUND && year<=YEAR_UPPER_BOUND){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::validateMonthDay(int month, int day, bool leap){
+	bool valid=false;
+	switch (month){
+	case JANUARY: case MARCH: case MAY: case JULY: case AUGUST: case OCTOBER: case DECEMBER:
+		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND1){
+			valid=true;
+		}
+		break;
+	case APRIL: case JUNE: case SEPTEMBER: case NOVEMBER:
+		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND2){
+			valid=true;
+		}
+		break;
+	case FEBRUARY:
+		if (leap){
+			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3-1){
+				valid=true;
+			}
+		}else{
+			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3){
+				valid=true;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return valid;
+}
+
+bool Interpreter::validateDate(int year, int month, int day){
+	if (!validateYear(year)){
+		return false;
+	}
+	if (isLeapYear(year)){
+		return validateMonthDay(month, day, false);
+	}else{
+		return validateMonthDay(month, day, true);
+	}
+	return true;
+}
+
+bool Interpreter::validateTime(int hour, int minute, int second){
+	bool hourFlag=false, minuteFlag=false, secondFlag=false;
+	if (hour>=HOUR_LOWER_BOUND && hour<=HOUR_UPPER_BOUND){
+		hourFlag=true;
+	}
+	if (minute>=MINUTE_LOWER_BOUND && minute<=MINUTE_UPPER_BOUND){
+		minuteFlag=true;
+	}
+	if (second>=SECOND_LOWER_BOUND && second<=SECOND_UPPER_BOUND){
+		secondFlag=true;
+	}
+	return hourFlag&&minuteFlag&&secondFlag;
+}
+
+bool Interpreter::isStartEarlierThanEnd(){
+	return (_start.compareTo(_end)<0);
+}
+
 bool Interpreter::checkSizeOfDateTimeStringVec(const vector<string>& vec){
 	if (vec.size()>3 || vec.size()<1){
 		return false;
@@ -502,31 +572,6 @@ bool Interpreter::checkSizeOfDateTimeStringVec(const vector<string>& vec){
 		return true;
 	}
 }
-
-void Interpreter::generalTranslationOfDateTime(const vector<string>& vec, bool &fromFlag, int either){
-	assert(vec.size()>0 && vec.size()<4);
-	if (vec.size()==1){
-		fromFlag=translateDateTime(vec.at(0), EMPTY_STRING, either);
-	}else if (vec.size()==2){
-		fromFlag=translateDateTime(vec.at(0), vec.at(1), either) || translateNaturalDate(vec.at(0), vec.at(1), either);
-	}else if (vec.size()==3){
-		fromFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), either);
-	}
-}
-
-
-void Interpreter::setStartToNow(){
-	time_t time1=time(NULL);
-	struct tm time2;
-	localtime_s(&time2, &time1);
-	_start=BasicDateTime(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, time2.tm_hour, time2.tm_min, time2.tm_sec);
-}
-
-
-bool Interpreter::isStartEarlierThanEnd(){
-	return (_start.compareTo(_end)<0);
-}
-
 
 bool Interpreter::translateDateTime(string str1, string str2, int either){
 	bool dateFlag=false, timeFlag=false;
@@ -602,7 +647,7 @@ bool Interpreter::dateStandardInput(string str, int either){
 	}
 	if (dateFlag){
 		setDateParams(year, month, day, either);
-	    return true;
+		return true;
 	}else{
 		return false;
 	}
@@ -708,7 +753,7 @@ bool Interpreter::timeDotAMOrPM(string str, int either){
 		return false;
 	}
 	if (posDot<pos){
-	    vec=breakStringWithDelim(str.substr(0, pos), DOT);
+		vec=breakStringWithDelim(str.substr(0, pos), DOT);
 	}else{
 		return false;
 	}
@@ -750,7 +795,7 @@ bool Interpreter::timeNumsAMOrPM(string str, int either){
 	}else{
 		return false;
 	}
-    rawNum=stringToInt(str.substr(0, pos));
+	rawNum=stringToInt(str.substr(0, pos));
 	if (HOUR_LOWER_BOUND<=rawNum && rawNum<=HOUR_UPPER_BOUND/2+1){
 		hour=rawNum;
 		minute=MINUTE_LOWER_BOUND;
@@ -777,133 +822,97 @@ bool Interpreter::timeNumsAMOrPM(string str, int either){
 	return true;
 }
 
-int Interpreter::mapTodayDayOfWeek(){
-	time_t time1=time(NULL);
-	struct tm time2;
-	localtime_s(&time2, &time1);
-
-	return time2.tm_wday;
-}
-
-int Interpreter::mapDayOfWeekToInt(const string& str){
-	string str1=toLowerCase(str);
-	if (str1==SUN_KEY_WORD || str1==SUN_FULL_KEY_WORD){
-		return INT_SUNDAY;
-	}else if(str1==MON_KEY_WORD || str1==MON_FULL_KEY_WORD){
-		return INT_MONDAY;
-	}else if(str1==TUE_KEY_WORD || str1==TUE_FULL_KEY_WORD){
-		return INT_TUESDAY;
-	}else if(str1==WED_KEY_WORD || str1==WED_FULL_KEY_WORD){
-		return INT_WEDNESDAY;
-	}else if(str1==THU_KEY_WORD || str1==THU_FULL_KEY_WORD){
-		return INT_THURSDAY;
-	}else if(str1==FRI_KEY_WORD || str1==FRI_FULL_KEY_WORD){
-		return INT_FRIDAY;
-	}else if(str1==SAT_KEY_WORD || str1==SAT_FULL_KEY_WORD){
-		return INT_SATURDAY;
-	}else{
-		return INTERNAL_ERROR_CODE;
-	}
-}
-
-void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int either){
-	if (either==EITHER_AS_START){
-		_start.setYear(yearValue);
-		_start.setMonth(monthValue);
-		_start.setDay(dayValue);
-	}else{
-		_end.setYear(yearValue);
-		_end.setMonth(monthValue);
-		_end.setDay(dayValue);
-	}
-}
-
-void Interpreter::setDefaultTimeParams(int either){
-	if (either==EITHER_AS_START){
-		_start.setHour(HOUR_LOWER_BOUND);
-		_start.setMinute(MINUTE_LOWER_BOUND);
-		_start.setSec(SECOND_LOWER_BOUND);
-	}else{
-		_end.setHour(HOUR_UPPER_BOUND);
-		_end.setMinute(MINUTE_UPPER_BOUND);
-		_end.setSec(SECOND_UPPER_BOUND);
-	}
-}
-
-void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue, int either){
-	if (either==EITHER_AS_START){
-		_start.setHour(hourValue);
-		_start.setMinute(minuteValue);
-		_start.setSec(secondValue);
-	}else{
-		_end.setHour(hourValue);
-		_end.setMinute(minuteValue);
-		_end.setSec(secondValue);
-	}
-}
-
-bool Interpreter::validateDate(int year, int month, int day){
-	if (!validateYear(year)){
-		return false;
-	}
-	if (isLeapYear(year)){
-		return validateMonthDay(month, day, false);
-	}else{
-		return validateMonthDay(month, day, true);
-	}
-	return true;
-}
-
-bool Interpreter::validateTime(int hour, int minute, int second){
-	bool hourFlag=false, minuteFlag=false, secondFlag=false;
-	if (hour>=HOUR_LOWER_BOUND && hour<=HOUR_UPPER_BOUND){
-		hourFlag=true;
-	}
-	if (minute>=MINUTE_LOWER_BOUND && minute<=MINUTE_UPPER_BOUND){
-		minuteFlag=true;
-	}
-	if (second>=SECOND_LOWER_BOUND && second<=SECOND_UPPER_BOUND){
-		secondFlag=true;
-	}
-	return hourFlag&&minuteFlag&&secondFlag;
-}
-
-bool Interpreter::validateYear(int year){
-	if (year>=YEAR_LOWER_BOUND && year<=YEAR_UPPER_BOUND){
+bool Interpreter::firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){
+	if (containKeywordWithoutCase(str, FROM_KEY_WORD) && containKeywordWithoutCase(str, TO_KEY_WORD)){
+		fromToFlag=fromToCheck(str);
+		return true;
+	}else if(containKeywordWithoutCase(str, BY_KEY_WORD)){
+		byFlag=byCheck(str);
 		return true;
 	}else{
 		return false;
 	}
 }
 
-bool Interpreter::validateMonthDay(int month, int day, bool leap){
-	bool valid=false;
-	switch (month){
-	case JANUARY: case MARCH: case MAY: case JULY: case AUGUST: case OCTOBER: case DECEMBER:
-		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND1){
-			valid=true;
-		}
-		break;
-	case APRIL: case JUNE: case SEPTEMBER: case NOVEMBER:
-		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND2){
-			valid=true;
-		}
-		break;
-	case FEBRUARY:
-		if (leap){
-			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3-1){
-				valid=true;
-			}
-		}else{
-			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3){
-				valid=true;
-			}
-		}
-		break;
-	default:
-		break;
+bool Interpreter::secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end){
+	assert(!(fromToFlag&&byFlag));
+	if (fromToFlag){
+		start=_start;
+		end=_end;
+		type=TWO_DATETIME;
+		return true;
+	}else if(byFlag){
+		start=_start;
+		end=_end;
+		type=ONE_DATETIME;
+		return true;
+	}else{
+		return false;  //contains the keyword(s) but does not pass further test
 	}
-	return valid;
+}
+
+bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int& pos2){
+	if (str.find_first_of(SINGLE_QUOTE)!=std::string::npos){
+		pos1=str.find_first_of(SINGLE_QUOTE);
+		pos2=str.find_last_of(SINGLE_QUOTE);
+	}else{
+		return false;
+	}
+	if (pos1 < pos2-1){
+		title=str.substr(pos1+1, pos2-pos1-1);
+	}else{
+		return false;
+	}
+	return true;
+}
+
+bool Interpreter::extractComment(const string& str, string& comment, int& pos){
+	if (str.find(DASH_M)!=std::string::npos){
+		pos=findLastOfWord(str, DASH_M);
+		comment=str.substr(pos+3);
+	}else{
+		pos=str.size();
+		comment=EMPTY_STRING;
+	}
+	return true;
+}
+
+bool Interpreter::extractFirstWord(string str, string& firstWord){
+	vector<string> vec=breakStringWithDelim(str, SPACE);
+	if (vec.size()==0){
+		return false;
+	}else{
+		firstWord=vec.at(0);
+		return true;
+	}
+}
+
+bool Interpreter::isEqualToKeyWordWithoutCase(string str, const string& keyword){
+	str=toLowerCase(str);
+	return str==keyword;
+}
+
+bool Interpreter::containKeywordWithoutCase(string str, const string& keyword){
+	str=toLowerCase(str);
+	return (str.find(keyword)!=std::string::npos);
+}
+
+bool Interpreter::findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos){
+	if (containKeywordWithoutCase(str, keyword)){
+		str=toLowerCase(str);
+		pos=str.find(keyword);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+vector<string> Interpreter::extractKeywords(const string& str){
+	vector<string> keywords;
+	vector<string> temp=breakStringWithDelim(str, SPACE);
+	keywords.push_back(str);
+	keywords.insert(keywords.end(),temp.begin(), temp.end());
+	return keywords;
 }
 
 vector<string> Interpreter::breakStringWithDelim(string str, char delim){
@@ -985,15 +994,4 @@ bool Interpreter::containChar(string input, char ch){
 }
 
 Interpreter::~Interpreter(){
-}
-
-bool Interpreter::isLeapYear(int year){
-	if (year<=YEAR_LOWER_BOUND || year>=YEAR_UPPER_BOUND){
-		return false;
-	}
-	if (year%LEAP_YEAR_CONSTANT_100==0){
-		return year%LEAP_YEAR_CONSTANT_400==0;
-	}else{
-		return year%LEAP_YEAR_CONSTANT_4==0;
-	}
 }

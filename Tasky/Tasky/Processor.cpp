@@ -423,7 +423,7 @@ int Processor::searchCommandProcessor(string input){
 int Processor::searchActionProcessor(string command, string input){
 	string oldTitle;
 	Task oldTask, newTask;
-	int choice, interReturn;
+	int choice;
 	vector<int> choiceVec;
 	int returnCode = STATUS_CODE_SET_ERROR::ERROR_NO_SEARCH_ACTION;
 	vector<Task> success, error;
@@ -439,31 +439,31 @@ int Processor::searchActionProcessor(string command, string input){
 		}
 		_tempTaskList.clear();
 	}else if(command == COMMAND_RENAME){
-		interReturn = _interpreter.interpretRenameAfterSearch(input, choice, _tempTitle, _tempComment);
+		int interReturn = _interpreter.interpretRenameAfterSearch(input, choice, _tempTitle, _tempComment);
 		if (choiceIsValid(choice)){
-			if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME){
+			if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME){
 				return interReturn;
 			}else{
-				newTask = _tempTaskList[choice];
+				newTask = _tempTaskList[choice-1];
 				returnCode = renameTask(oldTask, newTask);
 			}
 		}
 		_tempTaskList.clear();
 	}else if(command == COMMAND_RESCHEDULE){
-		interReturn = _interpreter.interpretRescheduleAfterSearch(input, choice, _tempType, _tempStart, _tempEnd);
+		int interReturn = _interpreter.interpretRescheduleAfterSearch(input, choice, _tempType, _tempStart, _tempEnd);
 		if (choiceIsValid(choice)){
-			if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE){
+			if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE){
 				return interReturn;
 			}else{
-				newTask = _tempTaskList[choice];
+				newTask = _tempTaskList[choice-1];
 				returnCode = rescheduleTask(oldTask, newTask);
 			}
 		}
 		_tempTaskList.clear();
 	}else if(command == COMMAND_MARK){
-		interReturn = _interpreter.interpretMarkAfterSearch(input, choiceVec, _tempStatus);
+		int interReturn = _interpreter.interpretMarkAfterSearch(input, choiceVec, _tempStatus);
 		if(choiceIsValidVec(choiceVec)){
-			if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK){
+			if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK){
 				return interReturn;
 			}else{
 				for (unsigned int i = 0; i < choiceVec.size(); i++){
@@ -808,17 +808,15 @@ string Processor::getCommand(string& input){
 
 bool Processor::canProceed( string command, string input, int& returnCode )
 {
-	if (_searched){
+	if (command == COMMAND_EXIT){
+		returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
+		return false;
+	}else if(_searched && _statusFlag == 0){
 		returnCode = searchActionProcessor(command, input);
-		if (command == COMMAND_EXIT){
-			returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
+		if(returnCode == STATUS_CODE_SET_ERROR::ERROR_NO_SEARCH_ACTION){
+			return true;
+		}else{
 			return false;
-		}else if(_statusFlag == 0){
-			if(returnCode == STATUS_CODE_SET_ERROR::ERROR_NO_SEARCH_ACTION){
-				return true;
-			}else{
-				return false;
-			}
 		}
 	}
 	return true;

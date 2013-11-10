@@ -80,7 +80,7 @@ TEST(AddTest, simpleTest1){
 }
 
 TEST(RenameTest, simpleTest1){
-    Interpreter inter;
+	Interpreter inter;
 	string title1, title2 , comment;
 	BasicDateTime start, end;
 
@@ -140,18 +140,27 @@ TEST(PowerSearchTest, simpleTest1){
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'title1 title2'from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
 	EXPECT_FALSE(slotEnabled);
 	EXPECT_EQ("title1", vec.at(1));
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch(" slot from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
 	EXPECT_TRUE(slotEnabled);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'keyword1 keyword2'from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
 	EXPECT_EQ("keyword2", vec.at(2));
 	EXPECT_FALSE(slotEnabled);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'keyword1 slot slot'from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
 	EXPECT_EQ("slot", vec.at(3));
 	EXPECT_FALSE(slotEnabled);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("by 12/12/2013 12:13:13", slotEnabled, vec, searchStatus, type, start, end));
 	EXPECT_TRUE(slotEnabled);
 	cout<<end.getDateTimeString()<<endl;
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'title keyword'", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ("title", vec.at(1));
 	EXPECT_TRUE(!slotEnabled);
 	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretPowerSearch("random string", slotEnabled, vec, searchStatus, type, start, end));
 	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretPowerSearch("'random string", slotEnabled, vec, searchStatus, type, start, end));

@@ -536,7 +536,7 @@ bool Interpreter::translateDateTime(string str1, string str2, int either){
 	}else if(str1!=EMPTY_STRING){
 		dateFlag=interpretDate(str1, either);
 		timeFlag=true;
-		setTimeParams(HOUR_LOWER_BOUND, MINUTE_LOWER_BOUND, SECOND_LOWER_BOUND, either);
+		setDefaultTimeParams(either);
 	}else{
 		return false;  //if reach here, a bug found
 	}
@@ -614,11 +614,13 @@ bool Interpreter::dateTodayOrTomorrow(string str, int either){
 	localtime_s(&time2, &time1);
 	if (containKeywordWithoutCase(str, TODAY_KEY_WORD) || containKeywordWithoutCase(str, TODAY_KEY_WORD_SHORTCUT)){
 		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
+		setDefaultTimeParams(either);
 		return true;
 	}else if(containKeywordWithoutCase(str, TOMORROW_KEY_WORD) || containKeywordWithoutCase(str, TOMORROW_KEY_WORD_SHORTCUT)){
 		time2.tm_mday=time2.tm_mday+1;
 		mktime(&time2);
 		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
+		setDefaultTimeParams(either);
 		return true;
 	}
 	return false;
@@ -635,6 +637,7 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 	time2.tm_mday=time2.tm_mday+incremental;
 	mktime(&time2);
 	setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
+	setDefaultTimeParams(either);
 	return true;
 }
 
@@ -812,6 +815,18 @@ void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int
 		_end.setYear(yearValue);
 		_end.setMonth(monthValue);
 		_end.setDay(dayValue);
+	}
+}
+
+void Interpreter::setDefaultTimeParams(int either){
+	if (either==EITHER_AS_START){
+		_start.setHour(HOUR_LOWER_BOUND);
+		_start.setMinute(MINUTE_LOWER_BOUND);
+		_start.setSec(SECOND_LOWER_BOUND);
+	}else{
+		_end.setHour(HOUR_UPPER_BOUND);
+		_end.setMinute(MINUTE_UPPER_BOUND);
+		_end.setSec(SECOND_UPPER_BOUND);
 	}
 }
 

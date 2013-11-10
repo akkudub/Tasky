@@ -199,12 +199,14 @@ public:
 	~Interpreter();
 
 private:
+	//////////////////////////////////////////////////////////////////////////
+	//private functions related to date time checking                       //
+	//////////////////////////////////////////////////////////////////////////
 	int mapTodayDayOfWeek();
 	int mapDayOfWeekToInt(const string& str);
-	int findFirstOfWord(const string& source, const string& word);
-	int findLastOfWord(const string& source, const string& word);
 	void setStartToNow();
 	void setDateParams(int yearValue, int monthValue, int dayValue, int either);
+	void setDefaultTimeParams(int either);
 	void setTimeParams(int hourValue, int minuteValue, int secondValue, int either);
     void generalTranslationOfDateTime(const vector<string>& vec, bool& fromFlag, int either);
 	bool fromToCheck(string str);
@@ -216,8 +218,6 @@ private:
 	bool validateMonthDay(int month, int day, bool leap);
 	bool validateDate(int year, int month, int day);
 	bool validateTime(int hour, int month, int day);
-	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
-	bool containKeywordWithoutCase(string str, const string& keyword);
 	bool findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos);
 	bool firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
 	bool secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
@@ -236,6 +236,13 @@ private:
 	bool timeSpecialNumsOnly(string str, int either);
 	bool timeDotAMOrPM(string str, int either);
 	bool timeNumsAMOrPM(string str, int either);
+	//////////////////////////////////////////////////////////////////////////
+	//private functions related to strings                                  //
+	//////////////////////////////////////////////////////////////////////////
+	int findFirstOfWord(const string& source, const string& word);
+	int findLastOfWord(const string& source, const string& word);
+	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
+	bool containKeywordWithoutCase(string str, const string& keyword);
 	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
 	bool extractComment(const string& str, string& comment, int& pos);
 	bool extractFirstWord(string str, string& firstWord);

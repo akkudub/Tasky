@@ -132,13 +132,22 @@ public:
 	 *@param title (string reference) will change the content of the string if the input format is correct, contain the title
 	 *@param type (string reference) will change the content of the innt if the input format is correct, stating 0--floating; 1--deadline; 2--timed
 	 *@param start (BasicDateTime reference) will change the value of start if format is correct
-	 *@param start (BasicDateTime reference) will change the value of end if format is correct
-	 *@param start (BasicDateTime reference) will change the value of comment if format is correct, will be empty string not input
+	 *@param end (BasicDateTime reference) will change the value of end if format is correct
+	 *@param comment (string reference) will change the value of comment if format is correct, will be empty string not input
 	 *@return int status code
 	 */
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
 	/**
-	 */
+	*a method for Processor::searchCommandProcessor, as this will take in a string with command type and try to parse the string
+	*@param str (string) input from processor
+	*@param slotEnabled (bool) checking if the user wants to search for task or slots
+	*@param keywords (vector<string>) list of words broken down
+	*@param searchStatus (int) if the user is searching for tasks marked done/pending
+	*@param type (int) for checking if user is searching within a time range
+	*@param start (BasicDateTime reference) will change the value of start if format is correct
+	*@param end (BasicDateTime reference) will change the value of end if format is correct
+	*/
+
 	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *a method for Processor::displayCommandProcessor, as this will take in a string without command type and try to parse the string

@@ -162,14 +162,18 @@ int Interpreter::interpretDisplay(const string& str, int& displayType){
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
 }
 
-int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle){
+int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle, string& newComment){
 	int posQuote1=0;
 	int posKey=0;
 	int posQuote2=0;
+	int posDashM=0;
 	string str1;
 	string str2;
+	if (!extractComment(str, newComment, posDashM)){
+		posDashM=str.size();
+	}
 	posQuote1=str.find_first_of(SINGLE_QUOTE);
-	posQuote2=str.find_last_of(SINGLE_QUOTE);
+	posQuote2=str.substr(0, posDashM).find_last_of(SINGLE_QUOTE);
 	if (!findStartingPosOfKeywordWithoutCase(str, RENAME_KEY_WORD, posKey)){
         return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
 	}
@@ -187,10 +191,43 @@ int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle)
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME;
 }
 
+int Interpreter::interpretRenameAfterSearch(string str, int& num, string& newTitle, string& newComment){
+	string title=EMPTY_STRING;
+	int posDashM=0;
+	int pos1=0;
+	int pos2=0;
+	vector<string> strVec;
+
+	if (!extractComment(str, newComment, posDashM)){
+		posDashM=str.size();
+	}
+	if (!extractTitle(str.substr(0,posDashM), title, pos1, pos2)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}else{
+		newTitle=title;
+	}
+	if (pos2<=5){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
+	}
+	strVec=breakStringWithDelim(str.substr(0,pos2), SPACE);
+	if (strVec.size()!=2){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
+	}
+	if (strVec.at(1)!=TO_KEY_WORD){
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
+	}else{
+		num=stringToInt(strVec.at(0));
+	}
+	
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME;
+}
+
 int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
 	int posQuote1=0;
 	int posQuote2=0;
-	bool fromToFlag=false, byFlag=false;
+	bool fromToFlag=false;
+	bool byFlag=false;
+
 	if (!extractTitle(str, title, posQuote1, posQuote2)){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
 	}
@@ -202,6 +239,26 @@ int Interpreter::interpretReschedule(string str, string& title, int& type, Basic
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
+}
+
+int Interpreter::interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end){
+	int pos=0;
+	bool fromToFlag=false;
+	bool byFlag=false;
+
+	if (!findStartingPosOfKeywordWithoutCase(str, FROM_KEY_WORD, pos)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RESCHEDULE;
+	}
+	num=stringToInt(str.substr(0, pos-1));
+	if (!firstVerifyFromToOrBy(str.substr(pos-1), fromToFlag, byFlag)){
+		type=NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE;
+	}
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
+	}
+
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE;
 }
 
 int Interpreter::interpretMark(string str, string& title, bool& status){
@@ -222,6 +279,25 @@ int Interpreter::interpretMark(string str, string& title, bool& status){
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
 	}
 	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK;
+}
+
+int Interpreter::interpretMarkAfterSearch(string str, vector<int>& vec, bool& status){
+	vector<string> strVec=breakStringWithDelim(str, SPACE);
+	int size=strVec.size();
+	int pos=0;
+
+	if (strVec.at(size-1)==PENDING_KEY_WORD){
+		status=false;
+		pos=size-8;
+	}else if (strVec.at(size-1)==DONE_KEY_WORD){
+		status=true;
+		pos=size-5;
+	}else{
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_MARK;
+	}
+	vec=stringToIntVec(str.substr(0, pos));
+
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK;
 }
 
 int Interpreter::interpretRemove(string str, string& title){
@@ -290,6 +366,7 @@ bool Interpreter::extractComment(const string& str, string& comment, int& pos){
 		pos=findLastOfWord(str, DASH_M);
 		comment=str.substr(pos+3);
 	}else{
+		pos=str.size();
 		comment=EMPTY_STRING;
 	}
 	return true;

@@ -167,7 +167,8 @@ public:
 	 *@param newTitle (string reference) will have the extracted the second quoted string
 	 *@return int status code--will be further defined later, right now -1 means failure and 0 means success
 	 */
-	int interpretRename(string str, string& oldTitle, string& newTitle);
+	int interpretRename(string str, string& oldTitle, string& newTitle, string& newComment);
+	int interpretRenameAfterSearch(string str, int& num, string& newtitle, string& newComment);
 	/**
 	 *a method for Processor::rescheduleCommandProcessor, as this will take in a strin with command type and try to parse the string
 	 *according to 'reschedule' format on the user guide
@@ -180,6 +181,7 @@ public:
 	 *@return int status code--0: success; -1: failure
 	 */
 	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *a method for Processor::markCommandProcessor, as this will take in a strin with command type and try to parse the string
 	 *according to 'mark' format on the user guide
@@ -190,6 +192,7 @@ public:
 	 *@return int status code--0: success; -1: failure
 	 */
 	int interpretMark(string str, string& title, bool& status);
+	int interpretMarkAfterSearch(string str, vector<int>& vec, bool& status);
 	/**
 	 *a method for Processor::removeCommandProcessor, as this will take in a strin with command type and try to parse the string
 	 *according to 'remove' format on the user guide

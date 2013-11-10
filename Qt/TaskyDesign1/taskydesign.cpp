@@ -141,7 +141,7 @@ void TaskyDesign::fillUpWordList(){
 }
 
 void TaskyDesign::setUpGlobalShortCutKey(){
-	QxtGlobalShortcut* scOpenMainWin = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+t"), this);
+	QxtGlobalShortcut* scOpenMainWin = new QxtGlobalShortcut(QKeySequence("Ctrl+Home+t"), this);
 	connect(scOpenMainWin, SIGNAL(activated()),this, SLOT(showMainWindow()));
 }
 
@@ -160,13 +160,37 @@ void TaskyDesign::setUpUI(){
 	setAttribute(Qt::WA_TranslucentBackground);
 	this->setWindowIcon(QIcon(ICON_STRING));
 	ui.InputBox->setFocus();
+	ui.InputBox->installEventFilter(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
 //UI special functionality handling functions                           //
 //////////////////////////////////////////////////////////////////////////
 bool TaskyDesign::eventFilter(QObject* watched, QEvent* event){
-	return false;
+	if (watched==ui.InputBox && event->type()==QEvent::KeyPress){
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		QString qstr=ui.InputBox->text();
+		int pos=ui.InputBox->cursorPosition();
+		switch (keyEvent->key()){
+		case '\'':
+			ui.InputBox->setText(qstr+"''");
+			ui.InputBox->setCursorPosition(pos+1);
+			return true;
+			break;
+		case Qt::Key_Up:
+			ui.InputBox->undo();
+			return true;
+			break;
+		case Qt::Key_Down:
+			ui.InputBox->redo();
+			return true;
+			break;
+		default:
+			break;
+		}
+	}
+	//trigger the normal handling procedure
+	return QObject::eventFilter(watched, event);
 }
 
 void TaskyDesign::mousePressEvent(QMouseEvent *event){

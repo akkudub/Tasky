@@ -18,6 +18,12 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
+    <Filter Include="libqxt">
+      <UniqueIdentifier>{e94cfbb5-87b4-4e1c-b373-8508393477f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="icon">
+      <UniqueIdentifier>{a4887cda-b101-4f40-9545-fdfe7b3e49d8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Generated Files">
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>moc;h;cpp</Extensions>
@@ -33,12 +39,6 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
-    <Filter Include="libqxt">
-      <UniqueIdentifier>{e94cfbb5-87b4-4e1c-b373-8508393477f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="icon">
-      <UniqueIdentifier>{a4887cda-b101-4f40-9545-fdfe7b3e49d8}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,32 +47,23 @@
     <ClCompile Include="GeneratedFiles\qrc_taskydesign.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_taskydesign.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_taskydesign.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="taskydesign.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libqxt\qxtglobalshortcut.cpp">
       <Filter>libqxt</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_qxtglobalshortcut.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_qxtglobalshortcut.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="libqxt\qxtglobalshortcut_win.cpp">
       <Filter>libqxt</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_qxtglobalshortcut.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_taskydesign.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="taskydesign1.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="taskydesign.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
@@ -81,6 +72,9 @@
     </CustomBuild>
     <CustomBuild Include="libqxt\qxtglobalshortcut.h">
       <Filter>libqxt</Filter>
+    </CustomBuild>
+    <CustomBuild Include="taskydesign.qrc">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

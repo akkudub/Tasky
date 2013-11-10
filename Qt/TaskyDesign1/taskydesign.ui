@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
+    <width>620</width>
     <height>430</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>580</width>
+    <width>620</width>
     <height>430</height>
    </size>
   </property>
@@ -56,7 +56,7 @@ padding: 0px 0px 5px 0px;
    </property>
    <property name="maximumSize">
     <size>
-     <width>580</width>
+     <width>620</width>
      <height>430</height>
     </size>
    </property>
@@ -71,7 +71,7 @@ border-radius: 2px;
      <rect>
       <x>20</x>
       <y>30</y>
-      <width>541</width>
+      <width>581</width>
       <height>351</height>
      </rect>
     </property>
@@ -89,7 +89,7 @@ border-radius: 2px;
        </property>
        <property name="styleSheet">
         <string notr="true">QTextEdit#DisplayPanel{
-background-color: #2E534C;
+background-color: #294B44;
 color: #FFFFFF;
 border: 1px solid  #FFFFFF;
 border-radius: 8px;
@@ -205,7 +205,7 @@ background-color: #2E534C;
    <widget class="QToolButton" name="CloseButton">
     <property name="geometry">
      <rect>
-      <x>550</x>
+      <x>580</x>
       <y>0</y>
       <width>31</width>
       <height>31</height>
@@ -217,11 +217,11 @@ background-color: #2E534C;
     <property name="styleSheet">
      <string notr="true">QToolButton#CloseButton{	
     border-style:flat;
-	background-image: url(:/TaskyDesign1/Resources/button_close_light.png);
+	background-image: url(:/new/prefix1/Resources/button_close_light.png);
 }
 QToolButton#CloseButton:hover{
     border-style:flat;
-	background-image: url(:/TaskyDesign1/Resources/button_close_normal.png);
+	background-image: url(:/new/prefix1/Resources/button_close_normal.png);
 }
 </string>
     </property>
@@ -229,8 +229,8 @@ QToolButton#CloseButton:hover{
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="taskydesign1.qrc">
-      <normaloff>:/TaskyDesign1/Resources/button_close_normal.png</normaloff>:/TaskyDesign1/Resources/button_close_normal.png</iconset>
+     <iconset resource="taskydesign.qrc">
+      <normaloff>:/new/prefix1/Resources/button_close_normal.png</normaloff>:/new/prefix1/Resources/button_close_normal.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -242,7 +242,7 @@ QToolButton#CloseButton:hover{
    <widget class="QToolButton" name="MinimizeButton">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>560</x>
       <y>0</y>
       <width>31</width>
       <height>31</height>
@@ -254,25 +254,55 @@ QToolButton#CloseButton:hover{
     <property name="styleSheet">
      <string notr="true">QToolButton#MinimizeButton{
     border-style: flat;
-	background-image: url(:/TaskyDesign1/Resources/button_minimize_light.png);
+	background-image: url(:/new/prefix1/Resources/button_minimize_light.png);
 }
 QToolButton#MinimizeButton:hover{
     border-style: flat;
-	background-image: url(:/TaskyDesign1/Resources/button_minimize_normal.png);
+	background-image: url(:/new/prefix1/Resources/button_minimize_normal.png);
 }</string>
     </property>
     <property name="text">
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="taskydesign1.qrc">
-      <normaloff>:/TaskyDesign1/Resources/button_minimize_normal.png</normaloff>:/TaskyDesign1/Resources/button_minimize_normal.png</iconset>
+     <iconset resource="taskydesign.qrc">
+      <normaloff>:/new/prefix1/Resources/button_minimize_normal.png</normaloff>:/new/prefix1/Resources/button_minimize_normal.png</iconset>
     </property>
     <property name="iconSize">
      <size>
       <width>25</width>
       <height>25</height>
      </size>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="TaskyButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>5</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QToolButton#TaskyButton{
+border-style: flat;
+background-color: transparent;
+color: #85FFD6;
+}</string>
+    </property>
+    <property name="text">
+     <string>Tasky</string>
     </property>
    </widget>
   </widget>
@@ -315,7 +345,7 @@ padding: 2px 10px 10px 10px;
   <tabstop>DisplayPanel</tabstop>
  </tabstops>
  <resources>
-  <include location="taskydesign1.qrc"/>
+  <include location="taskydesign.qrc"/>
  </resources>
  <connections/>
 </ui>

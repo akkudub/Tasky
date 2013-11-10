@@ -48,3 +48,4 @@ TaskyV0.1/TaskyV0.1.sdf
 *.opensdf
 Tasky/TaskyV0.1/FileProcessingLog.orig
 Tasky/TaskyV0.1/Tasky.txt
+UnitTesting/ProcessorUnitTesting/Tasky.txt

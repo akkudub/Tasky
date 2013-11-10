@@ -185,6 +185,12 @@ bool TaskyDesign::eventFilter(QObject* watched, QEvent* event){
 			ui.InputBox->redo();
 			return true;
 			break;
+		case Qt::Key_Z:
+			if (keyEvent->modifiers()==Qt::ControlModifier){
+				sendStdStringToBackEnd("undo");
+				return true;
+			}
+			break;
 		default:
 			break;
 		}

@@ -48,7 +48,7 @@ private:
 	vector<Task> _tempTaskList;
 	vector<string> _tempStringList; 
 	int _statusFlag;
-	bool searched;
+	bool _searched;
 
 	string _tempTitle;
 	string _tempComment;
@@ -132,6 +132,7 @@ public:
 	* @return overall status code
 	*/
 	int UImainProcessor(string input, string& message, vector<string>& list);
+
 	int GUImainProcessor(string);
 	~Processor();
 
@@ -290,7 +291,7 @@ private:
 
 	void recordAndFeedbackAdd( Task oldTask, Task newTask );
 
-	int removeTask(vector<Task>& removed, vector<Task>& error, Task newTask, Task oldTask);
+	int removeTask( Task newTask, Task oldTask, vector<Task>& removed, vector<Task>& error);
 
 	int renameTask( Task &oldTask, Task &newTask );
 
@@ -313,6 +314,8 @@ private:
 	int redoUpdate( HistoryCommand command );
 
 	string getCommand(string& input);
+
+	bool canProceed( string command, string input, int& returnCode );
 
 	/*
 	* Purpose:

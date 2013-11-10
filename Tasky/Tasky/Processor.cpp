@@ -62,6 +62,7 @@ const string Processor::SLOT_FROM = "From: ";
 const string Processor::SLOT_TO = "To: ";
 
 Processor::Processor(){
+	_searched = false;
 	_statusFlag=0;
 	loadFile();
 }
@@ -86,7 +87,7 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 		}
 	}
 
-	if (command != COMMAND_EXIT){
+	if (canProceed(command, input, returnCode)){
 		switch (_statusFlag){
 		case 0:
 			if(command == COMMAND_ADD){
@@ -164,8 +165,10 @@ int Processor::removeCommandProcessor(string input){
 		if(choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
 				oldTask = _tempTaskList[choice[i]-1];
-				returnCode = removeTask(removedTasks, errorTasks, oldTask, newTask);
+				returnCode = removeTask( oldTask, newTask, removedTasks, errorTasks);
 			}
+		}else{
+			returnCode = STATUS_CODE_SET_ERROR::ERROR_INVALID_CHOICE;
 		}
 		pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
 		pushFeedackToStringVec(errorTasks, TASKS_REMOVING_ERROR);
@@ -184,7 +187,7 @@ int Processor::removeCommandProcessor(string input){
 			_taskList.search(_tempTitle, _tempTaskList);
 			if (_tempTaskList.size() == 1){
 				oldTask = _tempTaskList[0];
-				returnCode = removeTask(removedTasks, errorTasks, oldTask, newTask);
+				returnCode = removeTask( oldTask, newTask, removedTasks, errorTasks);
 				pushFeedackToStringVec(removedTasks, TASKS_REMOVED);
 				pushFeedackToStringVec(errorTasks, TASKS_REMOVING_ERROR);
 				_tempTaskList.clear();
@@ -250,6 +253,8 @@ int Processor::renameCommandProcessor(string input){
 		if(choiceIsValid(choice)){
 			newTask = _tempTaskList[choice-1];
 			returnCode = renameTask(oldTask, newTask);
+		}else{
+			returnCode = STATUS_CODE_SET_ERROR::ERROR_INVALID_CHOICE;
 		}
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -295,6 +300,8 @@ int Processor::rescheduleCommandProcessor(string input){
 		if(choiceIsValid(choice)){
 			newTask = _tempTaskList[choice-1];
 			returnCode = rescheduleTask(oldTask, newTask);
+		}else{
+			returnCode = STATUS_CODE_SET_ERROR::ERROR_INVALID_CHOICE;
 		}
 		_tempTaskList.clear();
 		_statusFlag = 0;
@@ -346,6 +353,8 @@ int Processor::markCommandProcessor(string input){
 				oldTask = _tempTaskList[choice[i]-1];
 				returnCode = markTask(newTask, oldTask, markedTasks, errorTasks);
 			}
+		}else{
+			returnCode = STATUS_CODE_SET_ERROR::ERROR_INVALID_CHOICE;
 		}
 		pushFeedackToStringVec(markedTasks, TASKS_MARKED);
 		pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
@@ -406,33 +415,69 @@ int Processor::searchCommandProcessor(string input){
 			returnCode = _taskList.searchTasks(keywords, status, type, start, end, _tempTaskList);
 			taskVecToStringVec(_tempTaskList, _tempStringList);
 		}
-		searched = true;
+		_searched = true;
 	}
-	_tempTaskList.clear();
 	return returnCode;
 }
 
 int Processor::searchActionProcessor(string command, string input){
-	string title;
+	string oldTitle;
 	Task oldTask, newTask;
-	int returnCode;
+	int choice, interReturn;
+	vector<int> choiceVec;
+	int returnCode = STATUS_CODE_SET_ERROR::ERROR_NO_SEARCH_ACTION;
 	vector<Task> success, error;
 	if (command == COMMAND_REMOVE){
-		vector<int> choice = _interpreter.stringToIntVec(input);
-		if (choiceIsValidVec(choice)){
-			for (unsigned int i = 0; i<choice.size(); i++){
-				newTask = _tempTaskList[i-1];
-				returnCode = removeTask(success, error, newTask, oldTask);
+		choiceVec = _interpreter.stringToIntVec(input);
+		if (choiceIsValidVec(choiceVec)){
+			for (unsigned int i = 0; i<choiceVec.size(); i++){
+				newTask = _tempTaskList[choiceVec[i]-1];
+				returnCode = removeTask( newTask, oldTask, success, error);
+			}
+			pushFeedackToStringVec(success, TASKS_REMOVED);
+			pushFeedackToStringVec(error, TASKS_REMOVING_ERROR);
+		}
+		_tempTaskList.clear();
+	}else if(command == COMMAND_RENAME){
+		interReturn = _interpreter.interpretRenameAfterSearch(input, choice, _tempTitle, _tempComment);
+		if (choiceIsValid(choice)){
+			if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME){
+				return interReturn;
+			}else{
+				newTask = _tempTaskList[choice];
+				returnCode = renameTask(oldTask, newTask);
 			}
 		}
-		pushFeedackToStringVec(success, TASKS_REMOVED);
-		pushFeedackToStringVec(error, TASKS_REMOVING_ERROR);
-
 		_tempTaskList.clear();
-		_statusFlag = 0;
-		return returnCode;
+	}else if(command == COMMAND_RESCHEDULE){
+		interReturn = _interpreter.interpretRescheduleAfterSearch(input, choice, _tempType, _tempStart, _tempEnd);
+		if (choiceIsValid(choice)){
+			if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE){
+				return interReturn;
+			}else{
+				newTask = _tempTaskList[choice];
+				returnCode = rescheduleTask(oldTask, newTask);
+			}
+		}
+		_tempTaskList.clear();
+	}else if(command == COMMAND_MARK){
+		interReturn = _interpreter.interpretMarkAfterSearch(input, choiceVec, _tempStatus);
+		if(choiceIsValidVec(choiceVec)){
+			if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK){
+				return interReturn;
+			}else{
+				for (unsigned int i = 0; i < choiceVec.size(); i++){
+					oldTask = _tempTaskList[choiceVec[i]-1];
+					returnCode = markTask(newTask, oldTask, success, error);
+				}
+				pushFeedackToStringVec(success, TASKS_MARKED);
+				pushFeedackToStringVec(error, TASKS_MARKING_ERROR);
+			}
+		}
+		_tempTaskList.clear();
 	}
-	return 0;
+	_searched = false;
+	return returnCode;
 }
 
 int Processor::undoCommandProcessor(string input){
@@ -573,7 +618,7 @@ void Processor::recordAndFeedbackAdd( Task oldTask, Task newTask )
 	_tempStringList.push_back(newTask.toString());
 }
 
-int Processor::removeTask( vector<Task>& removed, vector<Task>& error, Task oldTask, Task newTask )
+int Processor::removeTask(  Task oldTask, Task newTask, vector<Task>& removed, vector<Task>& error )
 {
 	int tempReturn =  _taskList.remove(oldTask);
 	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_REMOVE)	{
@@ -761,6 +806,23 @@ string Processor::getCommand(string& input){
 	}
 }
 
+bool Processor::canProceed( string command, string input, int& returnCode )
+{
+	if (_searched){
+		returnCode = searchActionProcessor(command, input);
+		if (command == COMMAND_EXIT){
+			returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
+			return false;
+		}else if(_statusFlag == 0){
+			if(returnCode == STATUS_CODE_SET_ERROR::ERROR_NO_SEARCH_ACTION){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+	return true;
+}
 
 bool Processor::isEscape(string command){
 	if (_statusFlag != 0 && (commandIsNormal(command))){
@@ -846,3 +908,5 @@ void Processor::checkComment(Task task){
 		_tempComment = task.getComment();
 	}
 }
+
+

@@ -68,6 +68,7 @@ private:
 	static const string MESSAGE_ERROR_SAVE_SAVEFILE;
 	static const string MESSAGE_ERROR_RECORD;
 	static const string MESSAGE_ERROR_INVALID_CHOICE;
+	static const string MESSAGE_ERROR_NO_SEARCH_ACTION;
 	static const string MESSAGE_ERROR_INTERPRET_SEARCH_RENAME;
 	static const string MESSAGE_ERROR_INTERPRET_SEARCH_RESCHEDULE;
 	static const string MESSAGE_ERROR_INTERPRET_SEARCH_MARK;

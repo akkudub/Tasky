@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>620</width>
-    <height>430</height>
+    <width>646</width>
+    <height>494</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,16 +24,16 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>620</width>
-    <height>430</height>
+    <width>900</width>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Tasky</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/TaskyDesign1/Resources/logo.png</normaloff>:/TaskyDesign1/Resources/logo.png</iconset>
+   <iconset resource="taskydesign.qrc">
+    <normaloff>:/new/prefix1/logo.ico</normaloff>:/new/prefix1/logo.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow#TaskyDesignClass{
@@ -56,23 +56,23 @@ padding: 0px 0px 5px 0px;
    </property>
    <property name="maximumSize">
     <size>
-     <width>620</width>
-     <height>430</height>
+     <width>650</width>
+     <height>495</height>
     </size>
    </property>
    <property name="styleSheet">
     <string notr="true">QWidget#MainPart{
-background-color: #2E534C; 
-border-radius: 2px;
+	background-image: url(:/new/prefix1/Resources/background_main.png);
+    backgrund-position: bottom left;
 }</string>
    </property>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>30</y>
-      <width>581</width>
-      <height>351</height>
+      <y>40</y>
+      <width>611</width>
+      <height>401</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="VerticalLayout">
@@ -89,22 +89,29 @@ border-radius: 2px;
        </property>
        <property name="styleSheet">
         <string notr="true">QTextEdit#DisplayPanel{
-background-color: #294B44;
-color: #FFFFFF;
-border: 1px solid  #FFFFFF;
-border-radius: 8px;
-padding: 10px 10px 18px 5px;
+	background-color: #294B44;
+    border-radius: 8px;
+    border: 1px solid white;
+    color: #FFFFFF;
+    padding: 10px 10px 0px 5px;
 }
 QTextEdit#DisplatPanel:hover{
-background-color: black;
+    background-color: black;
 }
 QTextEdit#DisplayPanel QScrollBar:vertical{
-background-color: #233333;
-width: 5px;
+    background-color: #233333;
+    width: 5px;
 }
 QTextEdit#DisplayPanel QScrollBar::handle:vertical{
-height:200px;
-background-color: #2E334C;
+   height:200px;
+   background-color: #2E334C;
+}
+QTextEdit#DisplayPanel QScrollBar:horizontal{
+    background-color: #233333;
+    width: 5px;
+}
+QTextEdit#DisplayPanel QScrollBar::handle:horizontal{
+   background-color: #2E334C;
 }
 </string>
        </property>
@@ -118,7 +125,7 @@ background-color: #2E334C;
         <enum>Qt::ScrollBarAsNeeded</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
+        <enum>Qt::ScrollBarAsNeeded</enum>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -205,8 +212,8 @@ background-color: #2E534C;
    <widget class="QToolButton" name="CloseButton">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>0</y>
+      <x>600</x>
+      <y>10</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -217,11 +224,11 @@ background-color: #2E534C;
     <property name="styleSheet">
      <string notr="true">QToolButton#CloseButton{	
     border-style:flat;
-	background-image: url(:/new/prefix1/Resources/button_close_light.png);
+	background-image: url(:/new/prefix1/Resources/button_close.png);
 }
 QToolButton#CloseButton:hover{
     border-style:flat;
-	background-image: url(:/new/prefix1/Resources/button_close_normal.png);
+	background-image: url(:/new/prefix1/Resources/button_close.png);
 }
 </string>
     </property>
@@ -230,7 +237,7 @@ QToolButton#CloseButton:hover{
     </property>
     <property name="icon">
      <iconset resource="taskydesign.qrc">
-      <normaloff>:/new/prefix1/Resources/button_close_normal.png</normaloff>:/new/prefix1/Resources/button_close_normal.png</iconset>
+      <normaloff>:/new/prefix1/Resources/button_close50.png</normaloff>:/new/prefix1/Resources/button_close50.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -238,12 +245,15 @@ QToolButton#CloseButton:hover{
       <height>25</height>
      </size>
     </property>
+    <property name="toolButtonStyle">
+     <enum>Qt::ToolButtonFollowStyle</enum>
+    </property>
    </widget>
    <widget class="QToolButton" name="MinimizeButton">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>0</y>
+      <x>570</x>
+      <y>10</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -254,11 +264,11 @@ QToolButton#CloseButton:hover{
     <property name="styleSheet">
      <string notr="true">QToolButton#MinimizeButton{
     border-style: flat;
-	background-image: url(:/new/prefix1/Resources/button_minimize_light.png);
+	background-image: url(:/new/prefix1/Resources/button_minimize50.png);
 }
 QToolButton#MinimizeButton:hover{
     border-style: flat;
-	background-image: url(:/new/prefix1/Resources/button_minimize_normal.png);
+	background-image: url(:/new/prefix1/Resources/button_minimize.png);
 }</string>
     </property>
     <property name="text">
@@ -266,7 +276,7 @@ QToolButton#MinimizeButton:hover{
     </property>
     <property name="icon">
      <iconset resource="taskydesign.qrc">
-      <normaloff>:/new/prefix1/Resources/button_minimize_normal.png</normaloff>:/new/prefix1/Resources/button_minimize_normal.png</iconset>
+      <normaloff>:/new/prefix1/Resources/button_minimize.png</normaloff>:/new/prefix1/Resources/button_minimize.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -275,68 +285,57 @@ QToolButton#MinimizeButton:hover{
      </size>
     </property>
    </widget>
-   <widget class="QToolButton" name="TaskyButton">
+   <widget class="QLabel" name="StatusBar">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>5</y>
-      <width>41</width>
-      <height>21</height>
+      <y>450</y>
+      <width>611</width>
+      <height>41</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>11</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="Tasky">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>13</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">QToolButton#TaskyButton{
-border-style: flat;
-background-color: transparent;
-color: #85FFD6;
+     <string notr="true">QLabel#Tasky{
+    color: yellow;
 }</string>
     </property>
     <property name="text">
      <string>Tasky</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>580</width>
-     <height>35</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>11</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: #003329;
-border-radius: 2px;
-color: #FFFFFF;
-margin: 0px 0px 0px 0px;
-padding: 2px 10px 10px 10px;
-</string>
-   </property>
-   <property name="sizeGripEnabled">
-    <bool>true</bool>
-   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

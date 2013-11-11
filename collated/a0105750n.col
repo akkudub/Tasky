@@ -37,16 +37,6 @@ int main(int argc, char *argv[])
 
 #include "taskydesign.h"
 #include <QPalette>
-	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.cpp
-
-
-
-
-
-	/**
-	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.cpp
-	 */
-
 
 const QString TaskyDesign::ADD_COMPLETE_WORD                 = "add";
 const QString TaskyDesign::DISPLAY_COMPLETE_WORD             = "display";
@@ -717,6 +707,12 @@ bool HelpUser::equalWithoutCase(string input, const string& keyword){
 	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
 	 */
 
+#ifndef HELPUSER_H
+#define HELPUSER_H
+
+#include <iostream>
+#include <string>
+#include <algorithm>
 using namespace std;
 
 /**
@@ -744,45 +740,6 @@ using namespace std;
 
 
 	/**
-	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
-	 */
-
-	string getHelpMsg(string input);
-
-private:
-	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
-
-
-
-
-
-	/**
-	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
-	 */
-
-	string determineHelperString(const string& input);
-	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
-
-
-
-
-
-	/**
-	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
-	 */
-
-	bool equalWithoutCase(string input, const string& keyword);
-};
-
-#endif
-
-	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
-
-
-
-
-
-	/**
 	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.cpp
 	 */
 
@@ -790,7 +747,6 @@ private:
 #include "LogLibrary/Log.h"
 #include <assert.h>
 #include <algorithm>
-//@a0105750n
 
 const string Interpreter::EMPTY_STRING               = "";
 const string Interpreter::FROM_KEY_WORD              = "from ";
@@ -1926,16 +1882,6 @@ private:
 
 public:
 	Interpreter();
-	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
-
-
-
-
-
-	/**
-	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
-	 */
-
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
 	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
 	int interpretDisplay(const string& str, int& displayType);

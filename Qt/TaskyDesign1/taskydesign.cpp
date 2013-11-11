@@ -1,7 +1,6 @@
 //@author A0105750N
 #include "taskydesign.h"
 #include <QPalette>
-//@author A0105750N
 
 const QString TaskyDesign::ADD_COMPLETE_WORD                 = "add";
 const QString TaskyDesign::DISPLAY_COMPLETE_WORD             = "display";

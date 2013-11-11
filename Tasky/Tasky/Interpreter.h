@@ -135,7 +135,6 @@ private:
 
 public:
 	Interpreter();
-	//@author A0105750N
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
 	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
 	int interpretDisplay(const string& str, int& displayType);

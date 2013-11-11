@@ -552,19 +552,25 @@ int Processor::feedbackToUI(int returnCode, string& message, vector<string>& lis
 	if (returnCode == STATUS_CODE_SET_OVERALL::OVERALL_EXIT){
 		message += NEW_LINE_STRING + _messages.getMessage(saveFile());
 		list.clear();
+		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_INFO, message,"ProcessorLog.txt");
 		return returnCode;
 	}else if(returnCode == STATUS_CODE_SET_WARNING::WARNING_WRONG_INPUT){
+		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_WARNING, message,"ProcessorLog.txt");
 		return STATUS_CODE_SET_OVERALL::OVERALL_WARNING;
 	}else{
 		list = _tempStringList;
 
 		if (returnCode >= SUCCESS_ADD && returnCode < WARNING_ADD_CLASH){
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_INFO, message,"ProcessorLog.txt");
 			return STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS;
 		}else if (returnCode >= WARNING_ADD_CLASH && returnCode < ERROR_ADD){
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_WARNING, message,"ProcessorLog.txt");
 			return STATUS_CODE_SET_OVERALL::OVERALL_WARNING;
 		}else if (returnCode >= ERROR_ADD && returnCode < PROMPT_REMOVE_CHOOSE){
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR, message,"ProcessorLog.txt");
 			return STATUS_CODE_SET_OVERALL::OVERALL_ERROR;
 		}else if (returnCode >= PROMPT_REMOVE_CHOOSE && returnCode <= PROMPT_MARK_CHOOSE){
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_INFO, message,"ProcessorLog.txt");
 			return STATUS_CODE_SET_OVERALL::OVERALL_PROMPT;
 		}else{
 			return STATUS_CODE_SET_OVERALL::OVERALL_ERROR;

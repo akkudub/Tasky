@@ -30,7 +30,7 @@ const QString TaskyDesign::HIDE_OPERATION_REMIDER            = "Hide: Tasky will
 const QString TaskyDesign::EXIT_OPERATION_REMINDER           = "Exit: have a nice day";
 const QString TaskyDesign::NUMBER_INPUT_REMINDER             = "Type in numbers if you are asked to";
 const QString TaskyDesign::OTHER_OPERATION_REMINDER          = "Attention: invalid command type";
-const QString TaskyDesign::TRAY_MSG_TITLE                    = "Tasky message";
+const QString TaskyDesign::TRAY_MSG_TITLE                    = "Tasky";
 const QString TaskyDesign::TRAY_MSG_CONTENT                  = "Tasky is now hiding";
 const QString TaskyDesign::EMPTY_STRING                      = "";
 const QString TaskyDesign::UNDO                              = "undo";
@@ -332,4 +332,5 @@ QString TaskyDesign::multipleLinesInDisplayPanel(std::string str){
 }
 
 TaskyDesign::~TaskyDesign(){
+	delete trayIcon;
 }

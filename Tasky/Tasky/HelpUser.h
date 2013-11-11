@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-
+//@author A0105750N
 using namespace std;
 
 /**

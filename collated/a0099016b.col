@@ -3,6 +3,255 @@
 
 
 	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.cpp
+	 */
+
+#include "BasicDateTime.h"
+
+const string BasicDateTime::DASH = "/";
+const string BasicDateTime::SPACE = " ";
+const string BasicDateTime::COLON = ":";
+const string BasicDateTime::ZERO_STRING = "0";
+
+BasicDateTime::BasicDateTime(){
+	_year=1;
+	_month=1;
+	_day=1;
+	_hour=0;
+	_minute=0;
+	_sec=0;
+}
+
+BasicDateTime::~BasicDateTime(){
+}
+
+BasicDateTime::BasicDateTime(int year, int month, int day){
+	_year=year;
+	_month=month;
+	_day=day;
+	_hour=0;
+	_minute=0;
+	_sec=0;
+}
+
+BasicDateTime::BasicDateTime(int year, int month, int day, int hour, int minute){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec=0;
+}
+
+BasicDateTime::BasicDateTime(int year, int month, int day, int hour, int minute, int sec){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec=sec;
+}
+
+void BasicDateTime::setDateTime(int year, int month, int day){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = 0;
+	_minute = 0;
+	_sec = 0;
+}
+
+void BasicDateTime::setDateTime(int year, int month, int day, int hour, int minute){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec = 0;
+}
+
+void BasicDateTime::setDateTime(int year, int month, int day, int hour, int minute, int sec){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec=sec;
+}
+
+int BasicDateTime::getYear(){ 
+	return _year;
+}
+
+void BasicDateTime::setYear(int year){
+	_year=year;
+}
+
+int BasicDateTime::getMonth(){ 
+	return _month;
+}
+
+void BasicDateTime::setMonth(int month){
+	_month=month;
+}
+
+int BasicDateTime::getDay(){
+	return _day;
+}
+
+void BasicDateTime::setDay(int day){
+	_day=day;
+}
+
+int BasicDateTime::getHour(){ 
+	return _hour;
+}
+
+void BasicDateTime::setHour(int hour){
+	_hour=hour;
+}
+
+int BasicDateTime::getMinute(){
+	return _minute;
+}
+
+void BasicDateTime::setMinute(int minute){
+	_minute=minute;
+}
+
+int BasicDateTime::getSec(){
+	return _sec;
+}
+
+void BasicDateTime::setSec(int sec){
+	_sec=sec;
+}
+
+string BasicDateTime::getDateTimeString(){
+	string syear=addZeroFromFront(to_string(_year)), smonth=addZeroFromFront(to_string(_month)), sday=addZeroFromFront(to_string(_day));
+	string shour=addZeroFromFront(to_string(_hour)), sminute=addZeroFromFront(to_string(_minute)), ssec=addZeroFromFront(to_string(_sec));
+	return sday+DASH+smonth+DASH+syear+SPACE+shour+COLON+sminute+COLON+ssec;
+}
+
+int BasicDateTime::compareTo(BasicDateTime another){
+	if (this->getYear() != another.getYear()){
+		return this->getYear() - another.getYear();
+	}else if(this->getMonth() != another.getMonth()){
+		return this->getMonth() - another.getMonth();
+	}else if(this->getDay() != another.getDay()){
+		return this->getDay() - another.getDay();
+	}else if(this->getHour() != another.getHour()){
+		return this->getHour() - another.getHour();
+	}else if(this->getMinute() != another.getMinute()){
+		return this->getMinute() - another.getMinute();
+	}else if(this->getSec() != another.getSec()){
+		return this->getSec() - another.getSec();
+	}else{
+		return ZERO;
+	}
+}
+
+string BasicDateTime::addZeroFromFront(string str){
+	if (str.size()==1){
+		return ZERO_STRING+str;
+	}else if (str.size()==0){
+		return ZERO_STRING+ZERO_STRING;
+	}else{
+		return str;
+	}
+}
+
+string BasicDateTime::dayOfWeek(){
+	struct tm time2;
+	time2.tm_year=_year-1900;
+	time2.tm_mon=_month-1;
+	time2.tm_mday=_day;
+	mktime(&time2);
+	return "";
+}
+
+string BasicDateTime::mapDayOfWeekToString(int dayOfWeek){
+	return "";
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.h
+	 */
+
+/**
+* Tasky's version of storing date and time 
+* 1. able to set based on date, month, year ,  hour , min , sec
+* 2. able to compare to another BasicDateTime object based on contained DateTime object
+* 3. format the date and time to be inclusive of 0s
+*/
+
+class BasicDateTime
+{
+private:
+	int _year;
+	int _month;
+	int _day;
+	int _hour;
+	int _minute;
+	int _sec;
+
+private:
+	static const string DASH;
+	static const string SPACE;
+	static const string COLON;
+	static const string ZERO_STRING;
+	static const int ZERO=0;
+
+public:
+	BasicDateTime();
+	BasicDateTime(int year, int month, int day);
+	BasicDateTime(int year, int month, int day, int hour, int minute);
+	BasicDateTime(int year,int month,int day,int hour,int minute,int sec);
+	~BasicDateTime();
+	void setDateTime(int year, int month, int day);
+	void setDateTime(int year, int month, int day, int hour, int minute);
+	void setDateTime(int year, int month, int day, int hour, int minute, int sec);
+	void setYear(int year);	
+	void setMonth(int month);	
+	void setDay(int day);	
+	void setHour(int hour);	
+	void setMinute(int minute);	
+	void setSec(int sec);
+	int getYear();
+	int getMonth();
+	int getDay();
+	int getHour();
+	int getMinute();
+	int getSec();
+	string getDateTimeString();
+	/**
+	 * compare to another BasicDateTime object based on internal DateTime object comparison
+	 * @param another BasicDateTime Object to be compared to
+	 * @return value of comparision(compareTo)
+	 */
+	int compareTo(BasicDateTime another);
+
+private:
+	string addZeroFromFront(string str);
+	string dayOfWeek();
+	string mapDayOfWeekToString(int dayOfWeek);
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.h
+
+
+
+
+
+	/**
 	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\FileProcessing.cpp
 	 */
 

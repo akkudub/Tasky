@@ -7,5 +7,6 @@
         <file>Resources/button_close50.png</file>
         <file>Resources/button_minimize.png</file>
         <file>Resources/button_minimize50.png</file>
+        <file>logo.png</file>
     </qresource>
 </RCC>

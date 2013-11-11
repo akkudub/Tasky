@@ -61,10 +61,13 @@ private:
 	static const string ABOUT_STR;
 
 public:
+	//@author A0105750N
 	string getHelpMsg(string input);
 
 private:
+	//@author A0105750N
 	string determineHelperString(const string& input);
+	//@author A0105750N
 	bool equalWithoutCase(string input, const string& keyword);
 };
 

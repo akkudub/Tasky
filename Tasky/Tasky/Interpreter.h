@@ -6,7 +6,7 @@
  *make use of. all the public APIs are set up to meet the requirement of processor.
  *(logic flow in this class will follow later)
  *
- *Author: Junchao
+ *@author: Junchao
  */
 
 #include <sstream>
@@ -139,62 +139,50 @@ public:
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretDisplay(const string& str, int& displayType);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretRename(string str, string& oldTitle, string& newTitle, string& newComment);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretRenameAfterSearch(string str, int& num, string& newtitle, string& newComment);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretMark(string str, string& title, bool& status);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretMarkAfterSearch(string str, vector<int>& vec, bool& status);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int interpretRemove(string str, string& title);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	int stringToInt(string str);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	vector<int> stringToIntVec(string str);
 	/**
 	 *                                                                  
 	 */
-	//@author A0105750N
 	string toLowerCase(string input);
 	~Interpreter();
 

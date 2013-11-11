@@ -1,5 +1,11 @@
 #ifndef TASKYDESIGN1_H
 #define TASKYDESIGN1_H
+/**
+ * This the main window of tasky. Based on Framework Qt, this class is inherited
+ * from QMainWindow and some modifications to fit in the design of tasky
+ *
+ *@author: Junchao
+ */
 //////////////////////////////////////////////////////////////////////////
 //all the Qt libraries                                                  //
 //////////////////////////////////////////////////////////////////////////
@@ -93,6 +99,7 @@ private slots:
 	//////////////////////////////////////////////////////////////////////////
 	//slots to handle signals emitted                                       //
 	//////////////////////////////////////////////////////////////////////////
+	//@author A0105750N
 	void trayIconActivated(QSystemTrayIcon::ActivationReason);
 	void showMainWindow();
 	void processInputString();

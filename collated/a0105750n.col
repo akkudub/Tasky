@@ -1,0 +1,220 @@
+//@author: a0105750n
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\main.cpp
+	 */
+
+int main(int argc, char *argv[])
+{
+	const int ONE_INSTANCE_MODE = 1;
+	const QString APP_NAME = "TaskyDesign";
+
+	int ret = 0;
+	QSharedMemory singletonCheck(APP_NAME);
+
+	singletonCheck.create(ONE_INSTANCE_MODE);
+	if(singletonCheck.error() != QSharedMemory::AlreadyExists){
+		QApplication app(argc, argv);
+		Q_INIT_RESOURCE(taskydesign);
+		TaskyDesign window;
+		window.show();
+		ret = app.exec();
+	}
+	return ret;
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\main.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+	 */
+
+	void trayIconActivated(QSystemTrayIcon::ActivationReason);
+	void showMainWindow();
+	void processInputString();
+	void updateStatusBar(QString text);
+	void checkMinimize();
+	void checkExit();
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//set up functions for the main window                                  //
+	//////////////////////////////////////////////////////////////////////////
+	void overallSetUp();
+	void setUpTrayIcon();
+	void setUpCompleter();
+	void fillUpWordList();
+	void setUpConnections();
+	void setUpGlobalShortCutKey();
+	void setUpUI();
+	//////////////////////////////////////////////////////////////////////////
+	//UI special functionality handling functions                           //
+	//////////////////////////////////////////////////////////////////////////
+	bool eventFilter(QObject* watched, QEvent* event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void trayHiddenMsg();
+	void showStatusBarMsg(QString content);
+	void hideWindow();
+	void exitProgram();
+	//////////////////////////////////////////////////////////////////////////
+	//UI logic parts and helper methods                                     //
+	//////////////////////////////////////////////////////////////////////////
+	void sendStdStringToBackEnd(QString input);
+	void setStatusBarMsgAndColor();
+	bool startWithCaseInsensitive(QString text, const QString& keyword);
+	bool equalsToKeywordWithoutCase(const QString& input, const QString& keyword);
+	bool isValidForNumberInput(QString text);
+	QString combineOutput(int size);
+	QString formatString(int num);
+	QString singleLineInDisplayPanel(std::string str);
+	QString multipleLinesInDisplayPanel(std::string str);
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//private attributes for the main window                                //
+	//////////////////////////////////////////////////////////////////////////
+	Ui::TaskyDesignClass ui;
+	QStringList wordlist;
+	QPoint windowPosition;
+	QPoint mousePressPosition;
+	QPoint mouseMovePosition;
+	QSystemTrayIcon* trayIcon;
+};
+
+#endif // TASKYDESIGN1_H
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+	 */
+
+	string getHelpMsg(string input);
+
+private:
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+	 */
+
+	string determineHelperString(const string& input);
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+	 */
+
+	bool equalWithoutCase(string input, const string& keyword);
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
+	 */
+
+	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
+	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretDisplay(const string& str, int& displayType);
+	int interpretRename(string str, string& oldTitle, string& newTitle, string& newComment);
+	int interpretRenameAfterSearch(string str, int& num, string& newtitle, string& newComment);
+	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretMark(string str, string& title, bool& status);
+	int interpretMarkAfterSearch(string str, vector<int>& vec, bool& status);
+	int interpretRemove(string str, string& title);
+	int stringToInt(string str);
+	vector<int> stringToIntVec(string str);
+	string toLowerCase(string input);
+	~Interpreter();
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//private functions related to date time checking                       //
+	//////////////////////////////////////////////////////////////////////////
+	int mapTodayDayOfWeek();
+	int mapDayOfWeekToInt(const string& str);
+	void setStartToNow();
+	void setDateParams(int yearValue, int monthValue, int dayValue, int either);
+	void setDefaultTimeParams(int either);
+	void setTimeParams(int hourValue, int minuteValue, int secondValue, int either);
+    void generalTranslationOfDateTime(const vector<string>& vec, bool& fromFlag, int either);
+	bool fromToCheck(string str);
+	bool byCheck(string str);
+	bool isLeapYear(int year);
+	bool validateYear(int year);
+	bool validateMonthDay(int month, int day, bool leap);
+	bool validateDate(int year, int month, int day);
+	bool validateTime(int hour, int month, int day);
+	bool isStartEarlierThanEnd();
+	bool checkSizeOfDateTimeStringVec(const vector<string>& vec);
+	bool translateDateTime(string str1, string str2, int either);
+	bool translateNaturalDateTime(string str1, string str2, string str3, int either);
+	bool translateOnlyDate(string str1, int either);
+	bool translateNaturalDate(string str1, string str2, int either);
+	bool interpretDate(string str1, int either);
+	bool interpretTime(string str1, int either);
+	bool dateStandardInput(string str, int either);
+	bool dateTodayOrTomorrow(string str, int either);
+	bool dateThisOrNextDateFormat(int day, int week, int either);
+	bool timeStandardInput(string str, char delim, int either);
+	bool timeSpecialNumsOnly(string str, int either);
+	bool timeDotAMOrPM(string str, int either);
+	bool timeNumsAMOrPM(string str, int either);
+	bool firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
+	bool secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
+	//////////////////////////////////////////////////////////////////////////
+	//private functions related to strings                                  //
+	//////////////////////////////////////////////////////////////////////////
+	int findFirstOfWord(const string& source, const string& word);
+	int findLastOfWord(const string& source, const string& word);
+	bool containChar(string input, char ch);
+	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
+	bool containKeywordWithoutCase(string str, const string& keyword);
+	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
+	bool extractComment(const string& str, string& comment, int& pos);
+	bool extractFirstWord(string str, string& firstWord);
+	bool findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos);
+	string removeLeadingSpaces(string str);
+	string removeTailSpaces(string str);
+	string removeSpacesFromBothEnds(string str);
+	vector<int> pushNumsWithComma(const vector<string>& strVec);
+	vector<int> pushNumsWithDash(const vector<string>& strVec);
+	vector<string> extractKeywords(const string& str);
+	vector<string> breakStringWithDelim(string str, char delim);
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
+
+
+
+
+

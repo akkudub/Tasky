@@ -63,7 +63,7 @@ const string Processor::SLOT_TO = "To: ";
 
 Processor::Processor(){
 	_searched = false;
-	_statusFlag=0;
+	_statusFlag= NOTHING_PENDING;
 	loadFile();
 }
 
@@ -77,10 +77,10 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 	int returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
 	string command = _interpreter.toLowerCase(getCommand(input));
 
-	assert(_statusFlag >= 0 && _statusFlag < 5);
-	if (_statusFlag != 0){
+	assert(_statusFlag >= NOTHING_PENDING && _statusFlag <= MARK_PENDING);
+	if (_statusFlag != NOTHING_PENDING){
 		if (commandIsNormal(command)){
-			_statusFlag = 0;
+			_statusFlag = NOTHING_PENDING;
 			_tempTaskList.clear();
 		}else{
 			input = command+input;
@@ -89,7 +89,7 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 
 	if (canProceed(command, input, returnCode)){
 		switch (_statusFlag){
-		case 0:
+		case NOTHING_PENDING:
 			if(command == COMMAND_ADD){
 				returnCode = addCommandProcessor(input);
 			}else if(command == COMMAND_REMOVE){
@@ -115,16 +115,16 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 			}
 			break;
 
-		case 1:
+		case REMOVE_PENDING:
 			returnCode = removeCommandProcessor(input);
 			break;
-		case 2:
+		case RENAME_PENDING:
 			returnCode = renameCommandProcessor(input);
 			break;
-		case 3:
+		case RESCHEDULE_PENDING:
 			returnCode = rescheduleCommandProcessor(input);
 			break;
-		case 4:
+		case MARK_PENDING:
 			returnCode = markCommandProcessor(input);
 			break;
 		default:
@@ -159,7 +159,7 @@ int Processor::removeCommandProcessor(string input){
 	vector<int> choice;
 
 	switch (_statusFlag){
-	case 1:
+	case REMOVE_PENDING:
 		choice = _interpreter.stringToIntVec(input);
 		if(choiceIsValidVec(choice)){
 			for (unsigned int i = 0; i < choice.size(); i++){
@@ -173,10 +173,10 @@ int Processor::removeCommandProcessor(string input){
 		pushFeedackToStringVec(errorTasks, TASKS_REMOVING_ERROR);
 
 		_tempTaskList.clear();
-		_statusFlag = 0;
+		_statusFlag = NOTHING_PENDING;
 		return returnCode;
 		break;
-	case 0:
+	case NOTHING_PENDING:
 		_tempTaskList.clear();
 
 		returnCode = _interpreter.interpretRemove(input, _tempTitle);
@@ -192,7 +192,7 @@ int Processor::removeCommandProcessor(string input){
 				_tempTaskList.clear();
 				return returnCode;
 			}else if(!_tempTaskList.empty()){
-				_statusFlag = 1;
+				_statusFlag = REMOVE_PENDING;
 				taskVecToStringVec(_tempTaskList, _tempStringList);
 				return PROMPT_REMOVE_CHOOSE;
 			}else if(_tempTaskList.empty()){
@@ -247,7 +247,7 @@ int Processor::renameCommandProcessor(string input){
 	string oldTitle;
 	Task newTask, oldTask;
 	switch (_statusFlag){
-	case 2:
+	case RENAME_PENDING:
 		choice = _interpreter.stringToInt(input);
 		if(choiceIsValid(choice)){
 			newTask = _tempTaskList[choice-1];
@@ -256,10 +256,10 @@ int Processor::renameCommandProcessor(string input){
 			returnCode = STATUS_CODE_SET_ERROR::ERROR_INVALID_CHOICE;
 		}
 		_tempTaskList.clear();
-		_statusFlag = 0;
+		_statusFlag = NOTHING_PENDING;
 		return returnCode;
 		break;
-	case 0:
+	case NOTHING_PENDING:
 		_tempTaskList.clear();
 
 		returnCode = _interpreter.interpretRename(input, oldTitle, _tempTitle, _tempComment);
@@ -274,7 +274,7 @@ int Processor::renameCommandProcessor(string input){
 				return returnCode;
 			}else if(!_tempTaskList.empty()){
 				taskVecToStringVec(_tempTaskList, _tempStringList);
-				_statusFlag = 2;
+				_statusFlag = RENAME_PENDING;
 				return PROMPT_RENAME_CHOOSE;
 			}else if(_tempTaskList.empty()){
 				return WARNING_SEARCH_NO_RESULT;
@@ -294,7 +294,7 @@ int Processor::rescheduleCommandProcessor(string input){
 	int returnCode, choice;
 	Task newTask, oldTask;
 	switch (_statusFlag){
-	case 3:
+	case RESCHEDULE_PENDING:
 		choice = _interpreter.stringToInt(input);
 		if(choiceIsValid(choice)){
 			newTask = _tempTaskList[choice-1];
@@ -303,10 +303,10 @@ int Processor::rescheduleCommandProcessor(string input){
 			returnCode = STATUS_CODE_SET_ERROR::ERROR_INVALID_CHOICE;
 		}
 		_tempTaskList.clear();
-		_statusFlag = 0;
+		_statusFlag = NOTHING_PENDING;
 		return returnCode;
 		break;
-	case 0:
+	case NOTHING_PENDING:
 		_tempTaskList.clear();
 
 		returnCode = _interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
@@ -323,7 +323,7 @@ int Processor::rescheduleCommandProcessor(string input){
 
 			}else if(!_tempTaskList.empty()){
 				taskVecToStringVec(_tempTaskList, _tempStringList);
-				_statusFlag = 3;
+				_statusFlag = RESCHEDULE_PENDING;
 				return PROMPT_RESCHEDULE_CHOOSE;
 			}else if(_tempTaskList.empty()){
 				return WARNING_SEARCH_NO_RESULT;
@@ -344,7 +344,7 @@ int Processor::markCommandProcessor(string input){
 	vector<Task> markedTasks, errorTasks;
 	vector<int> choice;
 	switch (_statusFlag){
-	case 4:
+	case MARK_PENDING:
 		choice = _interpreter.stringToIntVec(input);
 
 		if(choiceIsValidVec(choice)){
@@ -359,10 +359,10 @@ int Processor::markCommandProcessor(string input){
 		pushFeedackToStringVec(errorTasks, TASKS_MARKING_ERROR);
 
 		_tempTaskList.clear();
-		_statusFlag = 0;
+		_statusFlag = NOTHING_PENDING;
 		return returnCode;
 		break;
-	case 0:
+	case NOTHING_PENDING:
 		_tempTaskList.clear();
 
 		returnCode = _interpreter.interpretMark(input, _tempTitle, _tempStatus);
@@ -380,7 +380,7 @@ int Processor::markCommandProcessor(string input){
 				return returnCode;
 			}else if(!_tempTaskList.empty()){
 				taskVecToStringVec(_tempTaskList, _tempStringList);
-				_statusFlag = 4;
+				_statusFlag = MARK_PENDING;
 				return PROMPT_MARK_CHOOSE;
 			}else if(_tempTaskList.empty()){
 				return WARNING_SEARCH_NO_RESULT;
@@ -428,51 +428,22 @@ int Processor::searchActionProcessor(string command, string input){
 	vector<Task> success, error;
 	if (command == COMMAND_REMOVE){
 		choiceVec = _interpreter.stringToIntVec(input);
-		if (choiceIsValidVec(choiceVec)){
-			for (unsigned int i = 0; i<choiceVec.size(); i++){
-				newTask = _tempTaskList[choiceVec[i]-1];
-				returnCode = removeTask( newTask, oldTask, success, error);
-			}
-			pushFeedackToStringVec(success, TASKS_REMOVED);
-			pushFeedackToStringVec(error, TASKS_REMOVING_ERROR);
-		}
+		searchRemove(choiceVec, newTask, returnCode, oldTask, success, error);
 		_tempTaskList.clear();
+
 	}else if(command == COMMAND_RENAME){
 		int interReturn = _interpreter.interpretRenameAfterSearch(input, choice, _tempTitle, _tempComment);
-		if (choiceIsValid(choice)){
-			if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME){
-				return interReturn;
-			}else{
-				newTask = _tempTaskList[choice-1];
-				returnCode = renameTask(oldTask, newTask);
-			}
-		}
+		searchRename(choice, interReturn, newTask, returnCode, oldTask);
 		_tempTaskList.clear();
+
 	}else if(command == COMMAND_RESCHEDULE){
 		int interReturn = _interpreter.interpretRescheduleAfterSearch(input, choice, _tempType, _tempStart, _tempEnd);
-		if (choiceIsValid(choice)){
-			if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE){
-				return interReturn;
-			}else{
-				newTask = _tempTaskList[choice-1];
-				returnCode = rescheduleTask(oldTask, newTask);
-			}
-		}
+		searchReschedule(choice, interReturn, newTask, returnCode, oldTask);
 		_tempTaskList.clear();
+
 	}else if(command == COMMAND_MARK){
 		int interReturn = _interpreter.interpretMarkAfterSearch(input, choiceVec, _tempStatus);
-		if(choiceIsValidVec(choiceVec)){
-			if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK){
-				return interReturn;
-			}else{
-				for (unsigned int i = 0; i < choiceVec.size(); i++){
-					oldTask = _tempTaskList[choiceVec[i]-1];
-					returnCode = markTask(newTask, oldTask, success, error);
-				}
-				pushFeedackToStringVec(success, TASKS_MARKED);
-				pushFeedackToStringVec(error, TASKS_MARKING_ERROR);
-			}
-		}
+		searchMark(choiceVec, interReturn, oldTask, returnCode, newTask, success, error);
 		_tempTaskList.clear();
 	}
 	_searched = false;
@@ -781,6 +752,63 @@ int Processor::redoUpdate( HistoryCommand command )
 	return tempReturn;
 }
 
+
+void Processor::searchRemove( vector<int> &choiceVec, Task &newTask, int &returnCode, Task oldTask, vector<Task> success, vector<Task> error )
+{
+	if (choiceIsValidVec(choiceVec)){
+		for (unsigned int i = 0; i<choiceVec.size(); i++){
+			newTask = _tempTaskList[choiceVec[i]-1];
+			returnCode = removeTask( newTask, oldTask, success, error);
+		}
+		pushFeedackToStringVec(success, TASKS_REMOVED);
+		pushFeedackToStringVec(error, TASKS_REMOVING_ERROR);
+	}
+}
+
+
+void Processor::searchRename( int choice, int interReturn, Task &newTask, int &returnCode, Task oldTask )
+{
+	if (choiceIsValid(choice)){
+		if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME){
+			returnCode = interReturn;
+		}else{
+			newTask = _tempTaskList[choice-1];
+			returnCode = renameTask(oldTask, newTask);
+		}
+	}
+}
+
+
+void Processor::searchReschedule( int choice, int interReturn, Task &newTask, int &returnCode, Task oldTask )
+{
+	if (choiceIsValid(choice)){
+		if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE){
+			returnCode = interReturn;
+		}else{
+			newTask = _tempTaskList[choice-1];
+			returnCode = rescheduleTask(oldTask, newTask);
+		}
+	}
+}
+
+
+void Processor::searchMark( vector<int> &choiceVec, int interReturn, Task &oldTask, int &returnCode, Task newTask, vector<Task> success, vector<Task> error )
+{
+	if(choiceIsValidVec(choiceVec)){
+		if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK){
+			returnCode = interReturn;
+		}else{
+			for (unsigned int i = 0; i < choiceVec.size(); i++){
+				oldTask = _tempTaskList[choiceVec[i]-1];
+				returnCode = markTask(newTask, oldTask, success, error);
+			}
+			pushFeedackToStringVec(success, TASKS_MARKED);
+			pushFeedackToStringVec(error, TASKS_MARKING_ERROR);
+		}
+	}
+}
+
+
 string Processor::getCommand(string& input){
 	stringstream ss(input);
 	string tempStr, command;
@@ -810,7 +838,7 @@ bool Processor::canProceed( string command, string input, int& returnCode )
 	if (command == COMMAND_EXIT){
 		returnCode = STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
 		return false;
-	}else if(_searched && _statusFlag == 0){
+	}else if(_searched && _statusFlag == NOTHING_PENDING){
 		returnCode = searchActionProcessor(command, input);
 		if(returnCode == STATUS_CODE_SET_ERROR::ERROR_NO_SEARCH_ACTION){
 			return true;
@@ -822,7 +850,7 @@ bool Processor::canProceed( string command, string input, int& returnCode )
 }
 
 bool Processor::isEscape(string command){
-	if (_statusFlag != 0 && (commandIsNormal(command))){
+	if (_statusFlag != NOTHING_PENDING && (commandIsNormal(command))){
 		return true;
 	}
 	else{

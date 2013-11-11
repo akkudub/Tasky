@@ -42,12 +42,20 @@ class Processor{
 	*             2--rename operation has not ended;
 	*             3--reschedule operation has not ended;
 	*			  4--mark operation has not ended;
-	*			  5--last operation was search
 	*/
 private:
+
+	enum STATUSES{
+		NOTHING_PENDING,
+		REMOVE_PENDING,
+		RENAME_PENDING,
+		RESCHEDULE_PENDING,
+		MARK_PENDING,
+	};
+
 	vector<Task> _tempTaskList;
 	vector<string> _tempStringList; 
-	int _statusFlag;
+	STATUSES _statusFlag;
 	bool _searched;
 
 	string _tempTitle;
@@ -312,6 +320,14 @@ private:
 	int redoRemove( HistoryCommand command );
 
 	int redoUpdate( HistoryCommand command );
+
+	void searchMark( vector<int> &choiceVec, int interReturn, Task &oldTask, int &returnCode, Task newTask, vector<Task> success, vector<Task> error );
+
+	void searchReschedule( int choice, int interReturn, Task &newTask, int &returnCode, Task oldTask );
+
+	void searchRename( int choice, int interReturn, Task &newTask, int &returnCode, Task oldTask );
+
+	void searchRemove( vector<int> &choiceVec, Task &newTask, int &returnCode, Task oldTask, vector<Task> success, vector<Task> error );
 
 	string getCommand(string& input);
 

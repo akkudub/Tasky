@@ -43,6 +43,7 @@ const QString TaskyDesign::SPACE_HTML                        = "&nbsp;";
 const QString TaskyDesign::NEW_LINE                          = "\n";
 const QString TaskyDesign::NEW_LINE_HTML                     = "<br/>";
 const QString TaskyDesign::ICON_STRING                       = "logo.ico";
+const QString TaskyDesign::TRAY_ICON_STRING                  = "logo.png";
 
 const std::string TaskyDesign::SUCCESS_STR                   = "Success!";
 const std::string TaskyDesign::ERROR_STR                     = "Error!";
@@ -137,8 +138,9 @@ void TaskyDesign::overallSetUp(){
 
 void TaskyDesign::setUpTrayIcon(){
 	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon(QIcon(ICON_STRING));
+	trayIcon->setIcon(QIcon(TRAY_ICON_STRING));
 	trayIcon->show();
+	trayIcon->setToolTip(TRAY_MSG_TITLE);
 }
 
 void TaskyDesign::setUpCompleter(){

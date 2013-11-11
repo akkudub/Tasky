@@ -66,7 +66,7 @@ TEST(AddTest, simpleTest1){
 	EXPECT_EQ(1, type);
 	EXPECT_EQ("this is comment2", comment);
 	cout<<end.getDateTimeString()<<endl;
-	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by this mon 1600 -m this is comment3", title, type, start, end, comment));
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by this sun 1600 -m this is comment3", title, type, start, end, comment));
 	cout<<end.getDateTimeString()<<endl;
 	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this' from today to tomorrow", title, type, start, end, comment));
 	//time out of boundary
@@ -240,6 +240,12 @@ TEST(RescheduleAfterSearchTest, simpleTest1){
 	EXPECT_EQ(1, type);
 	cout<<start.getDateTimeString()<<endl;
 	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 2", num, type, start, end));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ(0, type);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 12", num, type, start, end));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ(0, type);
 }
 
 TEST(StringToIntTest, simpleTes1){

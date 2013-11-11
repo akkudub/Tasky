@@ -1,0 +1,2261 @@
+//@author: a0105750n
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\main.cpp
+	 */
+
+int main(int argc, char *argv[])
+{
+	const int ONE_INSTANCE_MODE = 1;
+	const QString APP_NAME = "TaskyDesign";
+
+	int ret = 0;
+	QSharedMemory singletonCheck(APP_NAME);
+
+	singletonCheck.create(ONE_INSTANCE_MODE);
+	if(singletonCheck.error() != QSharedMemory::AlreadyExists){
+		QApplication app(argc, argv);
+		Q_INIT_RESOURCE(taskydesign);
+		TaskyDesign window;
+		window.show();
+		ret = app.exec();
+	}
+	return ret;
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\main.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.cpp
+	 */
+
+#include "taskydesign.h"
+#include <QPalette>
+
+const QString TaskyDesign::ADD_COMPLETE_WORD                 = "add";
+const QString TaskyDesign::DISPLAY_COMPLETE_WORD             = "display";
+const QString TaskyDesign::REMOVE_COMPLETE_WORD              = "remove";
+const QString TaskyDesign::RENAME_COMPLETE_WORD              = "rename";
+const QString TaskyDesign::RESCHEDULE_COMPLETE_WORD          = "reschedule";
+const QString TaskyDesign::SEARCH_COMPLETE_WORD              = "search";
+const QString TaskyDesign::MARK_COMPLETE_WORD                = "mark";
+const QString TaskyDesign::UNDO_COMPLETE_WORD                = "undo";
+const QString TaskyDesign::REDO_COMPLETE_WORD                = "redo";
+const QString TaskyDesign::HELP_COMPLETE_WORD                = "help";
+const QString TaskyDesign::HIDE_COMPLETE_WORD                = "hide";
+const QString TaskyDesign::EXIT_COMPLETE_WORD                = "exit";
+
+const QString TaskyDesign::ADD_OPERATION_REMINDER            = "Add: help -add for more information";
+const QString TaskyDesign::DISPLAY_OPERATION_REMINDER        = "Display: try one of these:"
+	                                                           " all/today/pending or done";
+const QString TaskyDesign::REMOVE_OPERATION_REMINDER         = "Remove: remove a task by title";
+const QString TaskyDesign::RENAME_OPERATION_REMINDER         = "Rename: change the title and the comment";
+const QString TaskyDesign::RESCHEDULE_OPERATION_REMINDER     = "Reschedule: change the time domain of a task";
+const QString TaskyDesign::SEARCH_OPERATION_REMINDER         = "Search: search by keywords+status+time domain"
+	                                                            " or search empty slots";
+const QString TaskyDesign::MARK_OPERATION_REMINDER           = "Mark: mark a task done or pending";
+const QString TaskyDesign::UNDO_OPERATION_REMINDER           = "Undo: undo one or multiple times";
+const QString TaskyDesign::REDO_OPERATION_REMINDER           = "Redo: redo one or multiple times";
+const QString TaskyDesign::HELP_OPERATION_REMINDER           = "Help: learn how to better use this software";
+const QString TaskyDesign::HIDE_OPERATION_REMIDER            = "Hide: Tasky will be hidden and runs in background";
+const QString TaskyDesign::EXIT_OPERATION_REMINDER           = "Exit: have a nice day";
+const QString TaskyDesign::NUMBER_INPUT_REMINDER             = "Type in numbers if you are asked to";
+const QString TaskyDesign::OTHER_OPERATION_REMINDER          = "Attention: invalid command type";
+const QString TaskyDesign::TRAY_MSG_TITLE                    = "Tasky";
+const QString TaskyDesign::TRAY_MSG_CONTENT                  = "Tasky is now hiding";
+const QString TaskyDesign::EMPTY_STRING                      = "";
+const QString TaskyDesign::UNDO                              = "undo";
+const QString TaskyDesign::REDO                              = "redo";
+const QString TaskyDesign::DOUBLE_SINGLEQUOTES               = "''";
+const QString TaskyDesign::CODE_BLOCK_START                  = "<pre>";
+const QString TaskyDesign::CODE_BLOCK_END                    = "</pre>";
+const QString TaskyDesign::SPACE                             = " ";
+const QString TaskyDesign::SPACE_HTML                        = "&nbsp;";
+const QString TaskyDesign::NEW_LINE                          = "\n";
+const QString TaskyDesign::NEW_LINE_HTML                     = "<br/>";
+const QString TaskyDesign::ICON_STRING                       = "logo.ico";
+const QString TaskyDesign::TRAY_ICON_STRING                  = "Resources/logo.png";
+
+const std::string TaskyDesign::SUCCESS_STR                   = "Success!";
+const std::string TaskyDesign::ERROR_STR                     = "Error!";
+const std::string TaskyDesign::WARNING_STR                   = "Warning!";
+const char TaskyDesign::CHAR_NEW_LINE                        = '\n';
+
+TaskyDesign::TaskyDesign(QWidget *parent): QMainWindow(parent){
+	_logic=new Processor();
+	ui.setupUi(this);
+	overallSetUp();
+	setUpConnections();
+	setUpUI();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//private slots definitions                                             //
+//////////////////////////////////////////////////////////////////////////
+void TaskyDesign::trayIconActivated(QSystemTrayIcon::ActivationReason){
+	this->show();
+	ui.InputBox->setFocus();
+}
+
+void TaskyDesign::showMainWindow(){
+	this->show();
+	ui.InputBox->setFocus();
+}
+
+void TaskyDesign::processInputString(){
+	QString input=ui.InputBox->text();
+	ui.InputBox->clear();
+	if(equalsToKeywordWithoutCase(input, EXIT_COMPLETE_WORD)){
+        exitProgram();
+    }else if(equalsToKeywordWithoutCase(input, HIDE_COMPLETE_WORD)){
+		hideWindow();
+    }else{
+		sendStdStringToBackEnd(input);
+	}
+}
+
+void TaskyDesign::updateStatusBar(QString text){
+	QPalette mypalette;
+	mypalette.setColor(QPalette::WindowText, Qt::white);
+	ui.StatusBar->setPalette(mypalette);
+	if (startWithCaseInsensitive(text, ADD_COMPLETE_WORD)){
+		showStatusBarMsg(ADD_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, DISPLAY_COMPLETE_WORD)){
+		showStatusBarMsg(DISPLAY_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, REMOVE_COMPLETE_WORD)){
+		showStatusBarMsg(REMOVE_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, RENAME_COMPLETE_WORD)){
+		showStatusBarMsg(RENAME_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, RESCHEDULE_COMPLETE_WORD)){
+		showStatusBarMsg(RESCHEDULE_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, SEARCH_COMPLETE_WORD)){
+		showStatusBarMsg(SEARCH_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, MARK_COMPLETE_WORD)){
+		showStatusBarMsg(MARK_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, UNDO_COMPLETE_WORD)){
+		showStatusBarMsg(UNDO_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, REDO_COMPLETE_WORD)){
+		showStatusBarMsg(REDO_OPERATION_REMINDER);
+	}else if(startWithCaseInsensitive(text, HELP_COMPLETE_WORD)){
+		showStatusBarMsg(HELP_OPERATION_REMINDER);
+	}else if (startWithCaseInsensitive(text, HIDE_COMPLETE_WORD)){
+		showStatusBarMsg(HIDE_OPERATION_REMIDER);
+    }else if(startWithCaseInsensitive(text, EXIT_COMPLETE_WORD)){
+		showStatusBarMsg(EXIT_OPERATION_REMINDER);
+	}else if(isValidForNumberInput(text)){
+		showStatusBarMsg(NUMBER_INPUT_REMINDER);
+    }else{
+		showStatusBarMsg(OTHER_OPERATION_REMINDER);
+	}
+}
+
+void TaskyDesign::checkMinimize(){
+	QTimer::singleShot(0, this, SLOT(hide()));
+	trayHiddenMsg();
+}
+
+void TaskyDesign::checkExit(){
+	delete _logic;
+	this->close();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//set up the main window utilities                                      //
+//////////////////////////////////////////////////////////////////////////
+void TaskyDesign::overallSetUp(){
+    setUpTrayIcon();
+	setUpCompleter();
+}
+
+void TaskyDesign::setUpTrayIcon(){
+	trayIcon = new QSystemTrayIcon(this);
+	trayIcon->setIcon(QIcon(TRAY_ICON_STRING));
+	trayIcon->show();
+	trayIcon->setToolTip(TRAY_MSG_TITLE);
+}
+
+void TaskyDesign::setUpCompleter(){
+	fillUpWordList();
+	QCompleter *completer=new QCompleter(wordlist, this->ui.InputBox);
+	completer->setCaseSensitivity(Qt::CaseInsensitive);
+	completer->setCompletionMode(QCompleter::InlineCompletion);
+	ui.InputBox->setCompleter(completer);
+}
+
+void TaskyDesign::fillUpWordList(){
+	wordlist<<ADD_COMPLETE_WORD<<DISPLAY_COMPLETE_WORD<<REMOVE_COMPLETE_WORD
+		<<RENAME_COMPLETE_WORD<<RESCHEDULE_COMPLETE_WORD<<SEARCH_COMPLETE_WORD
+		<<MARK_COMPLETE_WORD<<UNDO_COMPLETE_WORD<<REDO_COMPLETE_WORD
+		<<HELP_COMPLETE_WORD<<HIDE_COMPLETE_WORD<<EXIT_COMPLETE_WORD;
+}
+
+void TaskyDesign::setUpGlobalShortCutKey(){
+	QxtGlobalShortcut* scOpenMainWin = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+t"), this);
+	connect(scOpenMainWin, SIGNAL(activated()),this, SLOT(showMainWindow()));
+}
+
+void TaskyDesign::setUpConnections(){
+	connect(ui.InputBox, SIGNAL(textChanged(QString)), this, SLOT(updateStatusBar(QString)));
+	connect(ui.InputBox, SIGNAL(returnPressed()), this, SLOT(processInputString()));
+	connect(ui.CloseButton, SIGNAL(clicked()), this, SLOT(checkExit()));
+	connect(ui.MinimizeButton, SIGNAL(clicked()), this, SLOT(checkMinimize()));
+	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+		SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+	connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(showMainWindow()));
+}
+
+void TaskyDesign::setUpUI(){
+	this->setWindowFlags(Qt::FramelessWindowHint);
+	setAttribute(Qt::WA_TranslucentBackground);
+	this->setWindowIcon(QIcon(ICON_STRING));
+	ui.InputBox->setFocus();
+	ui.InputBox->installEventFilter(this);
+	setUpGlobalShortCutKey();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//UI special functionality handling functions                           //
+//////////////////////////////////////////////////////////////////////////
+bool TaskyDesign::eventFilter(QObject* watched, QEvent* event){
+	if (watched==ui.InputBox && event->type()==QEvent::KeyPress){
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		QString qstr=ui.InputBox->text();
+		int pos=ui.InputBox->cursorPosition();
+		switch (keyEvent->key()){
+		case '\'':
+			//to catch up this kind of single quote, Qt::Key does not work
+			ui.InputBox->setText(qstr+DOUBLE_SINGLEQUOTES);
+			ui.InputBox->setCursorPosition(pos+1);
+			return true;
+			break;
+		case Qt::Key_Up:
+			ui.InputBox->undo();
+			return true;
+			break;
+		case Qt::Key_Down:
+			ui.InputBox->redo();
+			return true;
+			break;
+		case Qt::Key_Z:
+			if (keyEvent->modifiers()==Qt::ControlModifier){
+				sendStdStringToBackEnd(UNDO);
+				return true;
+			}
+			break;
+		case Qt::Key_Y:
+			if (keyEvent->modifiers()==Qt::ControlModifier){
+				sendStdStringToBackEnd(REDO);
+				return true;
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	//trigger the normal handling procedure
+	return QObject::eventFilter(watched, event);
+}
+
+void TaskyDesign::mousePressEvent(QMouseEvent *event){
+	this->windowPosition = this->pos();
+	this->mousePressPosition = event->globalPos();
+}
+
+void TaskyDesign::mouseMoveEvent(QMouseEvent *event){
+	this->mouseMovePosition = event->globalPos();
+	QPoint distanceToMove = this->mouseMovePosition - this->mousePressPosition + 
+		this->windowPosition;
+	this->move(distanceToMove);   
+}
+
+void TaskyDesign::trayHiddenMsg(){
+	trayIcon->showMessage(TRAY_MSG_TITLE, TRAY_MSG_CONTENT);
+}
+
+void TaskyDesign::showStatusBarMsg(QString content){
+	ui.StatusBar->setText(content);
+}
+
+void TaskyDesign::hideWindow(){
+	QTimer::singleShot(0, this, SLOT(hide()));
+	trayHiddenMsg();
+}
+
+void TaskyDesign::exitProgram(){
+	delete _logic;
+	this->close();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//UI logic parts                                                        //
+//////////////////////////////////////////////////////////////////////////
+void TaskyDesign::sendStdStringToBackEnd(QString input){
+	_msgType=_logic->UImainProcessor(input.toStdString(), _msg, _vec);
+	int size=_vec.size();
+	ui.DisplayPanel->clear();
+	setStatusBarMsgAndColor();
+	if (_msg!="Warning! Wrong input"){
+		ui.DisplayPanel->setHtml(combineOutput(size));
+	}
+}
+
+void TaskyDesign::setStatusBarMsgAndColor(){
+	QPalette mypalette;
+
+	if (_msg.find(SUCCESS_STR)!=std::string::npos){
+		mypalette.setColor(QPalette::WindowText, Qt::green);
+	}else if(_msg.find(ERROR_STR)!=std::string::npos){
+		mypalette.setColor(QPalette::WindowText, Qt::red);
+	}else if(_msg.find(WARNING_STR)!=std::string::npos){
+		mypalette.setColor(QPalette::WindowText, Qt::yellow);
+	}else{
+		mypalette.setColor(QPalette::WindowText, Qt::white);
+	}
+	ui.StatusBar->setPalette(mypalette);
+	ui.StatusBar->setText(QString::fromStdString(_msg));
+}
+
+bool TaskyDesign::equalsToKeywordWithoutCase(const QString& input, const QString& keyword){
+	return input.toLower()==keyword;
+}
+
+bool TaskyDesign::startWithCaseInsensitive(QString text, const QString& keyword){
+	return text.startsWith(keyword, Qt::CaseInsensitive);
+}
+
+bool TaskyDesign::isValidForNumberInput(QString text){
+	QRegularExpression reg("[0-9, \-]");
+	QRegularExpressionMatch mch=reg.match(text);
+	return mch.hasMatch();
+}
+
+QString TaskyDesign::combineOutput( int size ){
+	QString initStr="";
+	for (unsigned int i=0;i<size;i++){
+		initStr.append(formatString(i));
+	}
+	return initStr;
+}
+
+QString TaskyDesign::formatString(int num){
+	std::string str=_vec.at(num);
+	
+	if (str.find(CHAR_NEW_LINE)==std::string::npos){
+		return singleLineInDisplayPanel(str);
+	}else{
+		return multipleLinesInDisplayPanel(str);		
+	}
+}
+
+QString TaskyDesign::singleLineInDisplayPanel(std::string str){
+	return QString::fromStdString(str);
+}
+
+QString TaskyDesign::multipleLinesInDisplayPanel(std::string str){
+	QString initStr=EMPTY_STRING;
+
+	initStr.append(CODE_BLOCK_START);
+	initStr.append(QString::fromStdString(str));
+	initStr.replace(SPACE, SPACE_HTML);
+	initStr.replace(NEW_LINE, NEW_LINE_HTML);
+	initStr.append(CODE_BLOCK_END);
+	return initStr;
+}
+
+TaskyDesign::~TaskyDesign(){
+	delete trayIcon;
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+	 */
+
+#ifndef TASKYDESIGN1_H
+#define TASKYDESIGN1_H
+/**
+ * This the main window of tasky. Based on Framework Qt, this class is inherited
+ * from QMainWindow and some modifications to fit in the design of tasky
+ *
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+	 */
+
+class TaskyDesign : public QMainWindow
+{
+	Q_OBJECT
+
+public:
+	TaskyDesign(QWidget *parent = 0);
+	~TaskyDesign();
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//private attributes to communicate with logic back end                 //
+	//////////////////////////////////////////////////////////////////////////
+	Processor* _logic;
+	std::string _msg;
+	std::vector<std::string> _vec;
+	int _msgType;
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//const string definitions                                              //
+	//////////////////////////////////////////////////////////////////////////
+	static const QString ADD_COMPLETE_WORD;
+	static const QString DISPLAY_COMPLETE_WORD;
+	static const QString REMOVE_COMPLETE_WORD;
+	static const QString RENAME_COMPLETE_WORD;
+	static const QString RESCHEDULE_COMPLETE_WORD;
+	static const QString SEARCH_COMPLETE_WORD;
+	static const QString MARK_COMPLETE_WORD;
+	static const QString UNDO_COMPLETE_WORD;
+	static const QString REDO_COMPLETE_WORD;
+	static const QString HELP_COMPLETE_WORD;
+	static const QString HIDE_COMPLETE_WORD;
+	static const QString EXIT_COMPLETE_WORD;
+
+	static const QString ADD_OPERATION_REMINDER;
+	static const QString DISPLAY_OPERATION_REMINDER;
+	static const QString REMOVE_OPERATION_REMINDER;
+	static const QString RENAME_OPERATION_REMINDER;
+	static const QString RESCHEDULE_OPERATION_REMINDER;
+	static const QString SEARCH_OPERATION_REMINDER;
+	static const QString MARK_OPERATION_REMINDER;
+	static const QString UNDO_OPERATION_REMINDER;
+	static const QString REDO_OPERATION_REMINDER;
+	static const QString HELP_OPERATION_REMINDER;
+	static const QString HIDE_OPERATION_REMIDER;
+	static const QString EXIT_OPERATION_REMINDER;
+	static const QString NUMBER_INPUT_REMINDER;
+	static const QString OTHER_OPERATION_REMINDER;
+	static const QString TRAY_MSG_TITLE;
+	static const QString TRAY_MSG_CONTENT;
+	static const QString EMPTY_STRING;
+	static const QString UNDO;
+	static const QString REDO;
+	static const QString DOUBLE_SINGLEQUOTES;
+	static const QString CODE_BLOCK_START;
+	static const QString CODE_BLOCK_END;
+	static const QString SPACE;
+	static const QString SPACE_HTML;
+	static const QString NEW_LINE;
+	static const QString NEW_LINE_HTML;
+	static const QString ICON_STRING;
+	static const QString TRAY_ICON_STRING;
+
+	static const std::string SUCCESS_STR;
+	static const std::string ERROR_STR;
+	static const std::string WARNING_STR;
+	static const char CHAR_NEW_LINE;
+
+private slots:
+	//////////////////////////////////////////////////////////////////////////
+	//slots to handle signals emitted                                       //
+	//////////////////////////////////////////////////////////////////////////
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+	 */
+
+	void trayIconActivated(QSystemTrayIcon::ActivationReason);
+	void showMainWindow();
+	void processInputString();
+	void updateStatusBar(QString text);
+	void checkMinimize();
+	void checkExit();
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//set up functions for the main window                                  //
+	//////////////////////////////////////////////////////////////////////////
+	void overallSetUp();
+	void setUpTrayIcon();
+	void setUpCompleter();
+	void fillUpWordList();
+	void setUpConnections();
+	void setUpGlobalShortCutKey();
+	void setUpUI();
+	//////////////////////////////////////////////////////////////////////////
+	//UI special functionality handling functions                           //
+	//////////////////////////////////////////////////////////////////////////
+	bool eventFilter(QObject* watched, QEvent* event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void trayHiddenMsg();
+	void showStatusBarMsg(QString content);
+	void hideWindow();
+	void exitProgram();
+	//////////////////////////////////////////////////////////////////////////
+	//UI logic parts and helper methods                                     //
+	//////////////////////////////////////////////////////////////////////////
+	void sendStdStringToBackEnd(QString input);
+	void setStatusBarMsgAndColor();
+	bool startWithCaseInsensitive(QString text, const QString& keyword);
+	bool equalsToKeywordWithoutCase(const QString& input, const QString& keyword);
+	bool isValidForNumberInput(QString text);
+	QString combineOutput(int size);
+	QString formatString(int num);
+	QString singleLineInDisplayPanel(std::string str);
+	QString multipleLinesInDisplayPanel(std::string str);
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//private attributes for the main window                                //
+	//////////////////////////////////////////////////////////////////////////
+	Ui::TaskyDesignClass ui;
+	QStringList wordlist;
+	QPoint windowPosition;
+	QPoint mousePressPosition;
+	QPoint mouseMovePosition;
+	QSystemTrayIcon* trayIcon;
+};
+
+#endif // TASKYDESIGN1_H
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.cpp
+	 */
+
+const string HelpUser::HELP_GENERAL_MSG      = "Welcome to the help panel.\n"
+	                                           "Tasky is a text-based task management software that helps you manage \nyour schedules.\n"
+											   "For your convenience, commands can be entered within a single line.\n\n"
+											   "To view additional help on a specific topic, please enter:\n"
+											   "help -add           regarding an add operation(adding a task)\n"
+											   "help -remove        regarding a remove operation(removing a task)\n"
+											   "help -search        regarding a search\n"
+											   "help -mark          regarding a mark operation(set a task as Done/Pending)\n"
+											   "help -reschedule    regarding a reschedule(modify the details of task)\n"
+											   "help -rename        regarding a rename(modify the details of task)\n"
+											   "help -display       regarding display operation\n"
+											   "help -title         regarding the title input format\n"
+											   "help -date          regarding the date input format\n"
+											   "help -time          regarding the time input format\n"
+											   "help -comment       regarding the comment input format\n"
+											   "help -about         to view more information about Tasky\n";
+const string HelpUser::HELP_ADD_MSG          = "To add a task, enter one of the following:\n\n"
+	                                           "Format1: add '[Title]' from [StartDateTime] to [EndDateTime] -m [Comment]\n"
+											   "   e.g.: add 'task 1' from 12/12/2013 13:00 to 13/12/2013 0:00\n\n"
+											   "Format2: add '[Title]' by [Deadline] -m [Comment]\n"
+											   "   e.g.: add 'do homework' by next tue 2pm\n\n"
+											   "Format3: add '[Title]' -m [Comment]\n"
+											   "   e.g.: add 'study hard'\n\n"
+											   "The comment field is optional. '-m [Comment]'\n\n"
+											   "For more information use\n"
+											   "           help -title\n"
+											   "           help -date\n"
+											   "           help -time\n"
+											   "           help -comment\n";
+const string HelpUser::HELP_REMOVE_MSG       = "To remove a task, enter the following:\n"
+	                                           "Format: remove '[Title]'\n"
+											   "  e.g.: remove 'review'\n\n"
+											   "Note: In case of ambiguity (multiple tasks with the same name), "
+											   "\nyou will be prompted for selection of task(s) to remove.\n"
+											   "Enter the index of your selection.\n";
+const string HelpUser::HELP_SEARCH_MSG       = "To search for a task, enter one of the following combination:\n"
+												"A search is carried out according to the parameters provided.\n"
+												"Please enter the keywords in order of relevance.\n\n"
+												"Format1: search '[list of keyword(s)]'\n"
+												 "  e.g.: search 'walk the dog'\n\n"
+												 "Format2: search [DateTime] to [DateTime]\n"
+												 "  e.g.: search from 22/12/13 to 25/12/13\n\n"
+												 "Format3: search [Status]\n"
+												 "  e.g.: search done\n\n"
+											   "Format4: search '[list of keyword(s)]'from [DateTime] to [DateTime]\n"
+											    "  e.g.: search 'walk the dog' from 12/2/14 to 15/2/14\n\n"
+												"Format5: search '[list of keyword(s)]' [Status]\n"
+												"  e.g.: search 'walk the dog' done\n\n"
+												"Format6: search [Status] from [DateTime] to [DateTime]\n"
+												"  e.g.: search done from 22/12/13 to 25/12/13\n\n"
+												"Format7: search '[list of keywords(s)]' [Status] from [DateTime] to [DateTime]\n"
+												"  e.g.: search 'walk the dog' done from 12/2/14 to 15/2/14\n\n"
+											   "To search for an empty slot to schedule a task, enter the following:\n"
+											   "Format: search slot from [DateTime] to [DateTime]\n"
+											    "  e.g.: search slot from 22/12/13 to 25/2/13\n\n";
+const string HelpUser::HELP_MARK_MSG         = "To mark a task as Done/Pending, enter the following:\n"
+											   "Format: mark '[Title]' done/pending\n"
+											    "  e.g.: mark 'Mop the floor' done\n";
+const string HelpUser::HELP_RESCHEDULE_MSG   = "To reschedule a task, enter one of the following:\n"
+											   "Format1: reschedule '[Title]' from [NewStartDateTime] to [NewEndDateTime]\n"
+											    "  e.g.: reschedule 'review' from 2/2/14 to 2/3/14\n\n"
+											   "Format2: reschedule '[Title]' by [Deadline]\n"
+											    "  e.g.: reschedule 'review' by 14/2/14\n\n"
+											   "Format3: reschedule '[Title]'\n"
+											    "  e.g.: reschedule 'review'\n";
+const string HelpUser::HELP_RENAME_MSG       = "To rename a task, enter the following:\n"
+											   "Format: rename '[Title]' to '[NewTitle]' -m [Comment]\n"
+											    "  e.g.: rename 'review' to 'write commentary'\n\n"
+											   "Note: the comment field is optional. '-m [Comment]'\n\n";
+const string HelpUser::HELP_DISPLAY_MSG      = "To display all tasks, please enter: display all\n"
+											   "To display pending tasks, please enter: display pending\n"
+											   "To display today's tasks, please enter: display today";
+const string HelpUser::HELP_TITLE_MSG        = "Please enclose the title within 2 single quotes.\n"
+												"The title will be read in from the first to the last single quote.\n\n"
+											   "Format: '[title]'\n"
+											   "Example: 'it's a title' is read in by Tasky as <it's a title>";
+const string HelpUser::HELP_DATE_MSG         = "The following formats of entering dates are allowed:\n"
+	                                           "Format1: DD/MM/YYYY\n"
+											    "  e.g.:  12/13/2012\n\n"
+											   "Format2: DD/MM/YY\n"
+											   "  e.g.:  12/13/12\n\n"
+											   "Format3: today/tdy, tomorrow/tmr\n"
+											   "Note: The short form of today is tdy; the short form for tomorrow is tmr.\n\n"
+											   "Format4: this/next monday/tuesday/wednesday/thursday/friday/saturday/sunday\n"
+											   "Format5: this/next mon/tue/wed/thu/fri/sat/sun\n\n"
+											   "Note: Format 5 utilizes the short form of expressing day in Format4\n\n"
+											   "Additional notes: Range of dates allowed fall between A.D.1900 to A.D.2300\n";
+const string HelpUser::HELP_TIME_MSG         = "Please enter the time in HH.MM format.\n"
+												"  e.g.:  20.15\n\n"
+												"You may also use AM/PM.\n"
+												"  e.g.:  5.00PM\n";
+const string HelpUser::HELP_COMMENT_MSG      = "To add a comment behind a task, use -m while adding or renaming a task\n"
+											   "Format: -m [Comment]\n"
+											   "   e.g.: add 'Shopping For X'Mas Gifts' by 25/12/2013 -m bring recepient list\n";
+const string HelpUser::HELP_ABOUT_MSG        = "Developed by AY2013 Semester1 CS2103 F09-2C Team.\n"
+	                                           "Come and visit the project at : http://code.google.com/p/cs2103aug2013-f09-2c/";
+
+const string HelpUser::GENERAL_STR           = "";
+const string HelpUser::ADD_STR               = " -add";
+const string HelpUser::REMOVE_STR            = " -remove";
+const string HelpUser::SEARCH_STR            = " -search";
+const string HelpUser::MARK_STR              = " -mark";
+const string HelpUser::RESCHEDULE_STR        = " -reschedule";
+const string HelpUser::RENAME_STR            = " -rename";
+const string HelpUser::DISPLAY_STR           = " -display";
+const string HelpUser::TITLE_STR             = " -title";
+const string HelpUser::DATE_STR              = " -date";
+const string HelpUser::TIME_STR              = " -time";
+const string HelpUser::COMMENT_STR           = " -comment";
+const string HelpUser::ABOUT_STR             = " -about";
+
+string HelpUser::getHelpMsg(string input){
+	return determineHelperString(input);
+}
+
+string HelpUser::determineHelperString(const string& input){
+	if (equalWithoutCase(input, GENERAL_STR)){
+		return HELP_GENERAL_MSG;
+	}else if(equalWithoutCase(input, ADD_STR)){
+		return HELP_ADD_MSG;
+	}else if(equalWithoutCase(input, REMOVE_STR)){
+		return HELP_REMOVE_MSG;
+	}else if(equalWithoutCase(input, SEARCH_STR)){
+		return HELP_SEARCH_MSG;
+	}else if(equalWithoutCase(input, MARK_STR)){
+		return HELP_MARK_MSG;
+	}else if(equalWithoutCase(input, RESCHEDULE_STR)){
+		return HELP_RESCHEDULE_MSG;
+	}else if(equalWithoutCase(input, RENAME_STR)){
+		return HELP_RENAME_MSG;
+	}else if(equalWithoutCase(input, DISPLAY_STR)){
+		return HELP_DISPLAY_MSG;
+	}else if(equalWithoutCase(input, TITLE_STR)){
+		return HELP_TITLE_MSG;
+	}else if(equalWithoutCase(input, DATE_STR)){
+		return HELP_DATE_MSG;
+	}else if(equalWithoutCase(input, TIME_STR)){
+		return HELP_TIME_MSG;
+	}else if(equalWithoutCase(input, COMMENT_STR)){
+		return HELP_COMMENT_MSG;
+	}else if (equalWithoutCase(input, ABOUT_STR)){
+		return HELP_ABOUT_MSG;
+	}else{
+		return HELP_GENERAL_MSG;
+	}
+}
+
+bool HelpUser::equalWithoutCase(string input, const string& keyword){
+	std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+	return input==keyword;
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+	 */
+
+#ifndef HELPUSER_H
+#define HELPUSER_H
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+/**
+ * This is the class provided to user for help. All the usage of commands about this program will be included here.
+ * The basic format of getting help:
+ * help              --general help
+ * help -add         --help about add
+ * help -remove      --help about remove
+ * help -mark        --help about mark
+ * help -search      --help about search
+ * help -reschedule  --help about reschedule
+ * help -rename      --help about rename
+ * help -display     --help about display
+ * help -title       --info about format of title
+ * help -date        --info about date
+ * help -time        --info about time
+ * help -comment     --info about comment
+ * help -others      --other relevant info
+ * help -about       --about the authors of this program
+ *
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.cpp
+	 */
+
+#include "Interpreter.h"
+#include "LogLibrary/Log.h"
+#include <assert.h>
+#include <algorithm>
+
+const string Interpreter::EMPTY_STRING               = "";
+const string Interpreter::FROM_KEY_WORD              = "from ";
+const string Interpreter::TO_KEY_WORD                = "to ";
+const string Interpreter::BY_KEY_WORD                = "by ";
+const string Interpreter::DASH_M                     = "-m";
+const string Interpreter::PENDING_KEY_WORD           = "pending";
+const string Interpreter::DONE_KEY_WORD              = "done";
+const string Interpreter::SLOT_KEY_WORD              = "slot";
+const string Interpreter::RENAME_KEY_WORD            = "' to '";
+const string Interpreter::ALL_KEY_WORD               = "all";
+const string Interpreter::TODAY_KEY_WORD             = "today";
+const string Interpreter::TODAY_KEY_WORD_SHORTCUT    = "tdy";
+const string Interpreter::TOMORROW_KEY_WORD          = "tomorrow";
+const string Interpreter::TOMORROW_KEY_WORD_SHORTCUT = "tmr";
+const string Interpreter::THIS_KEY_WORD              = "this";
+const string Interpreter::NEXT_KEY_WORD              = "next";
+const string Interpreter::MON_KEY_WORD               = "mon";
+const string Interpreter::MON_FULL_KEY_WORD          = "monday";
+const string Interpreter::TUE_KEY_WORD               = "tue";
+const string Interpreter::TUE_FULL_KEY_WORD          = "tuesday";
+const string Interpreter::WED_KEY_WORD               = "wed";
+const string Interpreter::WED_FULL_KEY_WORD          = "wednesday";
+const string Interpreter::THU_KEY_WORD               = "thu";
+const string Interpreter::THU_FULL_KEY_WORD          = "thursday";
+const string Interpreter::FRI_KEY_WORD               = "fri";
+const string Interpreter::FRI_FULL_KEY_WORD          = "friday";
+const string Interpreter::SAT_KEY_WORD               = "sat";
+const string Interpreter::SAT_FULL_KEY_WORD          = "saturday";
+const string Interpreter::SUN_KEY_WORD               = "sun";
+const string Interpreter::SUN_FULL_KEY_WORD          = "sunday";
+const string Interpreter::AM_KEY_WORD                = "am";
+const string Interpreter::PM_KEY_WORD                = "pm";
+
+const string Interpreter::BUG_REPORT_PART1           = "translateDateTime";
+const string Interpreter::BUG_REPORT_PART2           = "translateNaturalDate";
+const string Interpreter::LOG_INTERPRETER            = "interpreter.log";
+
+const char Interpreter::SLASH                        = '/';
+const char Interpreter::DOT                          = '.';
+const char Interpreter::COMMA                        = ',';
+const char Interpreter::SINGLE_QUOTE                 = '\'';
+const char Interpreter::SPACE                        = ' ';
+const char Interpreter::DASH                         = '-';
+const char Interpreter::COLON                        = ':';
+const char Interpreter::ZERO                         = '0';
+const char Interpreter::NINE                         = '9';
+
+Interpreter::Interpreter(){
+	setStartToNow();
+}
+
+int Interpreter::interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment){
+	int posDashM=str.size();
+	int posQuote1=0;
+	int posQuote2=0;
+	int posBeginningOfDateTimePart=0;
+	int lengthOfDateTimePart=0;
+	bool fromToFlag=false;
+	bool byFlag=false;
+
+	if (!extractComment(str, comment, posDashM)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_ADD;
+	}
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}
+	if (title==EMPTY_STRING){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}
+	posBeginningOfDateTimePart=posQuote2+1;
+	lengthOfDateTimePart=posDashM-posQuote2-1;
+	if (!firstVerifyFromToOrBy(str.substr(posBeginningOfDateTimePart, lengthOfDateTimePart), fromToFlag, byFlag)){
+		type = NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
+	}
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD;
+}
+
+int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end){
+	int size=str.size();
+	int posQuote1=0;
+	int posQuote2=0;
+	bool fromToFlag=false;
+	bool byFlag=false;
+	bool slotFlag=false;
+	bool keywordFlag=false;
+	bool statusFlag=false;
+	bool timeFlag=true;
+	bool traditionalSearchFlag=true;
+	string title=EMPTY_STRING;
+
+	keywords.clear();
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
+		keywordFlag=false;
+	}else{
+		keywordFlag=true;
+		keywords=extractKeywords(title);
+	}
+	if (containKeywordWithoutCase(str.substr(posQuote2+1), SLOT_KEY_WORD)){
+		slotFlag=true;
+		slotEnabled=true;
+	}
+	if (containKeywordWithoutCase(str.substr(posQuote2+1), PENDING_KEY_WORD)){
+		searchStatus=POWER_SEARCH_PENDING_STATUS;
+		statusFlag=true;
+	}else if(containKeywordWithoutCase(str.substr(posQuote2+1), DONE_KEY_WORD)){
+		searchStatus=POWER_SEARCH_DONE_STATUS;
+		statusFlag=true;
+	}else{
+		searchStatus=POWER_SEARCH_NO_STATUS;
+		statusFlag=false;
+	}
+	if (!firstVerifyFromToOrBy(str.substr(posQuote2), fromToFlag, byFlag)){
+		timeFlag=false;
+		type = NO_DATETIME;
+	}else{
+        if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		    return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
+		}
+	}
+
+	if (keywordFlag || statusFlag){
+		traditionalSearchFlag=true;
+	}else{
+		traditionalSearchFlag=false;
+	}
+	if (traditionalSearchFlag && slotFlag){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MIXED_UP_INPUT;
+	}
+	if (traditionalSearchFlag){
+		slotEnabled=false;  
+	}else{
+		if (!timeFlag){
+			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
+		}else{
+			slotEnabled=true;
+		}
+	}
+
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH;
+}
+
+int Interpreter::interpretDisplay(const string& str, int& displayType){
+	bool statusFlag=false;
+	bool fromToFlag=false;
+	bool byFlag=false;
+	int pos=0, size=str.size();
+	if (containKeywordWithoutCase(str, ALL_KEY_WORD)){
+		displayType=DISPLAY_TYPE_ALL;
+	}else if(containKeywordWithoutCase(str, PENDING_KEY_WORD)){
+		displayType=DISPLAY_TYPE_PENDING;
+	}else if(containKeywordWithoutCase(str, DONE_KEY_WORD)){
+		displayType=DISPLAY_TYPE_DONE;
+	}else if(containKeywordWithoutCase(str, TODAY_KEY_WORD)){
+		displayType=DISPLAY_TYPE_TODAY;
+	}else{
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY;
+}
+
+int Interpreter::interpretRename(string str, string& oldTitle, string& newTitle, string& newComment){
+	int posQuote1=0;
+	int posKey=0;
+	int posQuote2=0;
+	int posDashM=0;
+	string str1;
+	string str2;
+	if (!extractComment(str, newComment, posDashM)){
+		posDashM=str.size();
+	}
+	posQuote1=str.find_first_of(SINGLE_QUOTE);
+	posQuote2=str.substr(0, posDashM).find_last_of(SINGLE_QUOTE);
+	if (!findStartingPosOfKeywordWithoutCase(str, RENAME_KEY_WORD, posKey)){
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
+	}
+	if (posQuote1>=posKey || posQuote2<=posKey+5){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
+	}else{
+		str1=str.substr(posQuote1+1, posKey-posQuote1-1);
+		str2=str.substr(posKey+6, posQuote2-posKey-6);
+	}
+	if (str1==EMPTY_STRING || str2==EMPTY_STRING){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}
+	oldTitle=str1;
+	newTitle=str2;
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME;
+}
+
+int Interpreter::interpretRenameAfterSearch(string str, int& num, string& newTitle, string& newComment){
+	string title=EMPTY_STRING;
+	int posDashM=0;
+	int pos1=0;
+	int pos2=0;
+	vector<string> strVec;
+
+	if (!extractComment(str, newComment, posDashM)){
+		posDashM=str.size();
+	}
+	if (!extractTitle(str.substr(0,posDashM), title, pos1, pos2)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}else{
+		newTitle=title;
+	}
+	if (pos2<=5){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
+	}
+	strVec=breakStringWithDelim(str.substr(0,pos1-1), SPACE);
+	if (strVec.size()!=2){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
+	}
+	if (strVec.at(1)!="to"){
+        return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RENAME;
+	}else{
+		num=stringToInt(strVec.at(0));
+	}
+	
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME;
+}
+
+int Interpreter::interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end){
+	int posQuote1=0;
+	int posQuote2=0;
+	bool fromToFlag=false;
+	bool byFlag=false;
+
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}
+	if (!firstVerifyFromToOrBy(str.substr(posQuote2+1), fromToFlag, byFlag)){
+		type=NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
+	}
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE;
+}
+
+int Interpreter::interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end){
+	int pos=0;
+	bool fromToFlag=false;
+	bool byFlag=false;
+    vector<string> strVec=breakStringWithDelim(str, SPACE);
+	num=stringToInt(strVec.at(0));
+	if (!firstVerifyFromToOrBy(str, fromToFlag, byFlag)){
+		type=NO_DATETIME;
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE;
+	}
+	if (!secondVerifyFromToOrBy(fromToFlag, byFlag, type, start, end)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT;
+	}
+
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE;
+}
+
+int Interpreter::interpretMark(string str, string& title, bool& status){
+	str=removeLeadingSpaces(str);
+	int posQuote1=0;
+	int posQuote2=0;
+	if (!extractTitle(str, title, posQuote1, posQuote2)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}
+	if (str.size()==posQuote2+1){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
+	}
+	if (containKeywordWithoutCase(str.substr(posQuote2+1), DONE_KEY_WORD)){
+		status=true;
+	}else if(containKeywordWithoutCase(str.substr(posQuote2+1), PENDING_KEY_WORD)){
+		status=false;
+	}else{
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK;
+}
+
+int Interpreter::interpretMarkAfterSearch(string str, vector<int>& vec, bool& status){
+	vector<string> strVec=breakStringWithDelim(str, SPACE);
+	int size=strVec.size();
+	int pos=0;
+
+	if (strVec.at(size-1)==PENDING_KEY_WORD){
+		status=false;
+		pos=str.size()-8;
+	}else if (strVec.at(size-1)==DONE_KEY_WORD){
+		status=true;
+		pos=str.size()-5;
+	}else{
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_MARK;
+	}
+	vec=stringToIntVec(str.substr(0, pos));
+
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK;
+}
+
+int Interpreter::interpretRemove(string str, string& title){
+	int num1, num2;
+	if (!extractTitle(str, title, num1, num2)){
+		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT;
+	}
+	return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE;
+}
+
+int Interpreter::stringToInt(string str){
+	str=removeLeadingSpaces(str);
+	int num=0;
+	int size=str.size();
+	for (int i=0;i<size;i++){
+		if (str[i]>=ZERO && str[i]<=NINE){
+			num=num*RADIX_TEN+str[i]-ZERO;
+		}else{
+			return STRING_TO_INT_ERROR;
+		}
+	}
+	return num;
+}
+
+vector<int> Interpreter::stringToIntVec(string str){
+	str=removeLeadingSpaces(str);
+	vector<int> vec;
+	vector<string> vecStr;
+	if (containChar(str, COMMA)){
+		vecStr=breakStringWithDelim(str, COMMA);
+		vec=pushNumsWithComma(vecStr);
+	}else if(containChar(str, DASH)){
+		vecStr=breakStringWithDelim(str, DASH);
+		vec=pushNumsWithDash(vecStr);
+	}else{
+		int temp=stringToInt(str);
+		if (temp!=-1){
+			vec.push_back(temp);
+		}
+	}
+	return vec;
+}
+
+string Interpreter::toLowerCase(string str){
+	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+	return str;
+}
+
+int Interpreter::mapTodayDayOfWeek(){
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+
+	return time2.tm_wday;
+}
+
+int Interpreter::mapDayOfWeekToInt(const string& str){
+	string str1=toLowerCase(str);
+	if (str1==SUN_KEY_WORD || str1==SUN_FULL_KEY_WORD){
+		return INT_SUNDAY;
+	}else if(str1==MON_KEY_WORD || str1==MON_FULL_KEY_WORD){
+		return INT_MONDAY;
+	}else if(str1==TUE_KEY_WORD || str1==TUE_FULL_KEY_WORD){
+		return INT_TUESDAY;
+	}else if(str1==WED_KEY_WORD || str1==WED_FULL_KEY_WORD){
+		return INT_WEDNESDAY;
+	}else if(str1==THU_KEY_WORD || str1==THU_FULL_KEY_WORD){
+		return INT_THURSDAY;
+	}else if(str1==FRI_KEY_WORD || str1==FRI_FULL_KEY_WORD){
+		return INT_FRIDAY;
+	}else if(str1==SAT_KEY_WORD || str1==SAT_FULL_KEY_WORD){
+		return INT_SATURDAY;
+	}else{
+		return INTERNAL_ERROR_CODE;
+	}
+}
+
+void Interpreter::setStartToNow(){
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+	_start=BasicDateTime(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, time2.tm_hour, time2.tm_min, time2.tm_sec);
+}
+
+
+void Interpreter::setDateParams(int yearValue, int monthValue, int dayValue, int either){
+	if (either==EITHER_AS_START){
+		_start.setYear(yearValue);
+		_start.setMonth(monthValue);
+		_start.setDay(dayValue);
+	}else{
+		_end.setYear(yearValue);
+		_end.setMonth(monthValue);
+		_end.setDay(dayValue);
+	}
+}
+
+void Interpreter::setDefaultTimeParams(int either){
+	if (either==EITHER_AS_START){
+		_start.setHour(HOUR_LOWER_BOUND);
+		_start.setMinute(MINUTE_LOWER_BOUND);
+		_start.setSec(SECOND_LOWER_BOUND);
+	}else{
+		_end.setHour(HOUR_UPPER_BOUND);
+		_end.setMinute(MINUTE_UPPER_BOUND);
+		_end.setSec(SECOND_UPPER_BOUND);
+	}
+}
+
+void Interpreter::setTimeParams(int hourValue, int minuteValue, int secondValue, int either){
+	if (either==EITHER_AS_START){
+		_start.setHour(hourValue);
+		_start.setMinute(minuteValue);
+		_start.setSec(secondValue);
+	}else{
+		_end.setHour(hourValue);
+		_end.setMinute(minuteValue);
+		_end.setSec(secondValue);
+	}
+}
+
+void Interpreter::generalTranslationOfDateTime(const vector<string>& vec, bool &fromFlag, int either){
+	assert(vec.size()>0 && vec.size()<4);
+	if (vec.size()==1){
+		fromFlag=translateDateTime(vec.at(0), EMPTY_STRING, either);
+	}else if (vec.size()==2){
+		fromFlag=translateDateTime(vec.at(0), vec.at(1), either) || translateNaturalDate(vec.at(0), vec.at(1), either);
+	}else if (vec.size()==3){
+		fromFlag=translateNaturalDateTime(vec.at(0), vec.at(1), vec.at(2), either);
+	}
+}
+
+bool Interpreter::fromToCheck(string str){
+	bool fromFlag=false;
+	bool toFlag=false;
+	int posFrom=0;
+	int posTo=0;
+	int posOfBeginningDateTime=0;
+	int lengthOfDateTime=0;
+	int posOfBeginningDateTime2=0;
+	string tempStr;
+	vector<string> vec;
+
+	posFrom=str.find(FROM_KEY_WORD);
+	posTo=str.find(TO_KEY_WORD);
+	if (posFrom<0 || (posTo<=posFrom)){
+		return false;
+	}
+	posOfBeginningDateTime=posFrom+4;
+	lengthOfDateTime=posTo-posFrom-4;
+	posOfBeginningDateTime2=posTo+3;
+	tempStr=str.substr(posOfBeginningDateTime, lengthOfDateTime);
+	vec=breakStringWithDelim(tempStr, SPACE);
+	if (!checkSizeOfDateTimeStringVec(vec)){
+		return false;
+	}
+	generalTranslationOfDateTime(vec, fromFlag, EITHER_AS_START);
+	tempStr=str.substr(posOfBeginningDateTime2);
+	vec=breakStringWithDelim(tempStr, SPACE);
+	if (!checkSizeOfDateTimeStringVec(vec)){
+		return false;
+	}
+	generalTranslationOfDateTime(vec, toFlag, EITHER_AS_END);
+	if (fromFlag&&toFlag){
+		return isStartEarlierThanEnd();
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::byCheck(string str){
+	bool byFlag=false;
+	string tempStr;
+	vector<string> vec;
+	int pos=str.find(BY_KEY_WORD);
+	tempStr=str.substr(pos+3);
+	vec=breakStringWithDelim(tempStr, SPACE);
+	if (!checkSizeOfDateTimeStringVec(vec)){
+		return false;
+	}
+	generalTranslationOfDateTime(vec, byFlag, EITHER_AS_END);
+	if (byFlag){
+		setStartToNow();
+		return isStartEarlierThanEnd(); 
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::isLeapYear(int year){
+	if (year<=YEAR_LOWER_BOUND || year>=YEAR_UPPER_BOUND){
+		return false;
+	}
+	if (year%LEAP_YEAR_CONSTANT_100==0){
+		return year%LEAP_YEAR_CONSTANT_400==0;
+	}else{
+		return year%LEAP_YEAR_CONSTANT_4==0;
+	}
+}
+
+bool Interpreter::validateYear(int year){
+	if (year>=YEAR_LOWER_BOUND && year<=YEAR_UPPER_BOUND){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::validateMonthDay(int month, int day, bool leap){
+	bool valid=false;
+	switch (month){
+	case JANUARY: case MARCH: case MAY: case JULY: case AUGUST: case OCTOBER: case DECEMBER:
+		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND1){
+			valid=true;
+		}
+		break;
+	case APRIL: case JUNE: case SEPTEMBER: case NOVEMBER:
+		if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND2){
+			valid=true;
+		}
+		break;
+	case FEBRUARY:
+		if (leap){
+			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3-1){
+				valid=true;
+			}
+		}else{
+			if (day>=DAY_LOWER_BOUND && day<=DAY_UPPER_BOUND3){
+				valid=true;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return valid;
+}
+
+bool Interpreter::validateDate(int year, int month, int day){
+	if (!validateYear(year)){
+		return false;
+	}
+	if (isLeapYear(year)){
+		return validateMonthDay(month, day, false);
+	}else{
+		return validateMonthDay(month, day, true);
+	}
+	return true;
+}
+
+bool Interpreter::validateTime(int hour, int minute, int second){
+	bool hourFlag=false, minuteFlag=false, secondFlag=false;
+	if (hour>=HOUR_LOWER_BOUND && hour<=HOUR_UPPER_BOUND){
+		hourFlag=true;
+	}
+	if (minute>=MINUTE_LOWER_BOUND && minute<=MINUTE_UPPER_BOUND){
+		minuteFlag=true;
+	}
+	if (second>=SECOND_LOWER_BOUND && second<=SECOND_UPPER_BOUND){
+		secondFlag=true;
+	}
+	return hourFlag&&minuteFlag&&secondFlag;
+}
+
+bool Interpreter::isStartEarlierThanEnd(){
+	return (_start.compareTo(_end)<0);
+}
+
+bool Interpreter::checkSizeOfDateTimeStringVec(const vector<string>& vec){
+	if (vec.size()>3 || vec.size()<1){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+bool Interpreter::translateDateTime(string str1, string str2, int either){
+	bool dateFlag=false, timeFlag=false;
+	if(str2!=EMPTY_STRING){
+		dateFlag=interpretDate(str1, either);
+		timeFlag=interpretTime(str2, either);
+	}else if(str1!=EMPTY_STRING){
+		dateFlag=interpretDate(str1, either);
+		timeFlag=true;
+		setDefaultTimeParams(either);
+	}else{
+		LogLibrary::Log::writeLog(ERROR_INTERPRET_SEARCH_RESCHEDULE,BUG_REPORT_PART1, LOG_INTERPRETER);
+		return false;  //if reach here, a bug found
+	}
+	return dateFlag&&timeFlag;
+}
+
+bool Interpreter::translateNaturalDateTime(string str1, string str2, string str3, int either){
+	return translateNaturalDate(str1, str2, either) && interpretTime(str3, either);
+}
+
+bool Interpreter::translateOnlyDate(string str1, int either){
+	return interpretDate(str1, either);
+}
+
+bool Interpreter::translateNaturalDate(string str1, string str2, int either){
+	int todayOfWeek=mapTodayDayOfWeek(), thatOfWeek=mapDayOfWeekToInt(str2);
+	if (thatOfWeek==INTERNAL_ERROR_CODE){
+		return false;
+	}
+	if (str1 == THIS_KEY_WORD){
+		return dateThisOrNextDateFormat(thatOfWeek-todayOfWeek, 0, either);
+	}else if (str1 == NEXT_KEY_WORD){
+		return dateThisOrNextDateFormat(thatOfWeek-todayOfWeek, 1, either);
+	}else{
+		LogLibrary::Log::writeLog(ERROR_INTERPRET_SEARCH_RESCHEDULE,BUG_REPORT_PART2, LOG_INTERPRETER);
+		return false;  //possibly a bug or wrong input from the user
+	}
+}
+
+bool Interpreter::interpretDate(string str1, int either){
+	return dateStandardInput(str1, either) || dateTodayOrTomorrow(str1, either);
+}
+
+bool Interpreter::interpretTime(string str1, int either){
+	return timeStandardInput(str1, DOT, either)||timeSpecialNumsOnly(str1, either)||timeStandardInput(str1, COLON, either)
+		|| timeDotAMOrPM(str1, either) || timeNumsAMOrPM(str1, either);
+}
+
+bool Interpreter::dateStandardInput(string str, int either){
+	vector<string> vec=breakStringWithDelim(str, SLASH);
+	bool dateFlag=false;
+	int year=0;
+	int month=0;
+	int day=0;
+	int size=vec.size();
+	if (size<=1 || size>=4){
+		return false;
+	}else if(size==3){
+		year=stringToInt(vec.at(2));
+		month=stringToInt(vec.at(1));
+		day=stringToInt(vec.at(0));
+		if (year>=TWO_BIT_YEAR_LOWER&&year<=TWO_BIT_YEAR_UPPER){
+			year=year+TWO_BIT_YEAR_BASE;
+		}
+		dateFlag=validateDate(year, month, day);
+	}else if(size==2){
+		time_t time1=time(NULL);
+		struct tm time2;
+		localtime_s(&time2, &time1);
+		year=YEAR_LOWER_BOUND+time2.tm_year;
+		month=stringToInt(vec.at(1));
+		day=stringToInt(vec.at(0));
+		dateFlag=validateDate(year, month, day);
+	}
+	if (dateFlag){
+		setDateParams(year, month, day, either);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::dateTodayOrTomorrow(string str, int either){
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+	if (containKeywordWithoutCase(str, TODAY_KEY_WORD) || containKeywordWithoutCase(str, TODAY_KEY_WORD_SHORTCUT)){
+		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
+		setDefaultTimeParams(either);
+		return true;
+	}else if(containKeywordWithoutCase(str, TOMORROW_KEY_WORD) || containKeywordWithoutCase(str, TOMORROW_KEY_WORD_SHORTCUT)){
+		time2.tm_mday=time2.tm_mday+1;
+		mktime(&time2);
+		setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
+		setDefaultTimeParams(either);
+		return true;
+	}
+	return false;
+}
+
+bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
+	time_t time1=time(NULL);
+	struct tm time2;
+	localtime_s(&time2, &time1);
+	int incremental=week*DAYS_IN_WEEK+day;
+	if (incremental < 0){
+		incremental+=DAYS_IN_WEEK;
+	}
+	time2.tm_mday=time2.tm_mday+incremental;
+	mktime(&time2);
+	setDateParams(YEAR_LOWER_BOUND+time2.tm_year, 1+time2.tm_mon, time2.tm_mday, either);
+	setDefaultTimeParams(either);
+	return true;
+}
+
+bool Interpreter::timeStandardInput(string str, char delim, int either){
+	bool timeFlag=false;
+	int hour;
+	int minute;
+	int second;
+	vector<string> vec=breakStringWithDelim(str, delim);
+	int size=vec.size();
+	if (size<=1 || size>=4){
+		return false;
+	}else if(size==2){
+		hour=stringToInt(vec.at(0));
+		minute=stringToInt(vec.at(1));
+		second=SECOND_LOWER_BOUND;
+		timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
+	}else if(size==3){
+		hour=stringToInt(vec.at(0));
+		minute=stringToInt(vec.at(1));
+		second=stringToInt(vec.at(2));
+		timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
+	}
+	if (timeFlag){
+		setTimeParams(hour, minute, second, either);
+		return true;
+	}else{
+		return false;
+	}	
+}
+
+bool Interpreter::timeSpecialNumsOnly(string str, int either){
+	int num=stringToInt(str);
+	int hour=num/RADIX_HUNDRED;
+	int minute=num%RADIX_HUNDRED;
+	bool timeFlag=false;
+	timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
+	if (timeFlag){
+		setTimeParams(hour, minute, SECOND_LOWER_BOUND, either);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::timeDotAMOrPM(string str, int either){
+	int posDot=0;
+	int pos=0;
+	int hour=0;
+	int minute=0;
+	int second=0;
+	vector<string> vec;
+	bool checkPM=false;
+	bool timeFlag=false;
+
+	if (str.find(DOT)!=string::npos){
+		posDot=str.find(DOT);
+	}else{
+		return false;
+	}
+	if (containKeywordWithoutCase(str, AM_KEY_WORD)){
+		findStartingPosOfKeywordWithoutCase(str, AM_KEY_WORD, pos);
+		checkPM=false;
+	}else if(containKeywordWithoutCase(str, PM_KEY_WORD)){
+		findStartingPosOfKeywordWithoutCase(str, PM_KEY_WORD, pos);
+		checkPM=true;
+	}else{
+		return false;
+	}
+	if (posDot<pos){
+		vec=breakStringWithDelim(str.substr(0, pos), DOT);
+	}else{
+		return false;
+	}
+	if (vec.size()==2){
+		hour=stringToInt(vec.at(0));
+		minute=stringToInt(vec.at(1));
+		second=SECOND_LOWER_BOUND;
+		if (checkPM){
+			hour=hour+12;
+		}
+		timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
+	}else{
+		return false;
+	}
+	if (timeFlag){
+		setTimeParams(hour, minute, second, either);
+	}else{
+		return false;
+	}
+
+	return true;
+}
+
+bool Interpreter::timeNumsAMOrPM(string str, int either){
+	int pos=0;
+	bool checkAM=false;
+	int rawNum=0;
+	int hour=0;
+	int minute=0;
+	int second=0;
+	bool timeFlag=false;
+
+	if (containKeywordWithoutCase(str, AM_KEY_WORD)){
+		findStartingPosOfKeywordWithoutCase(str, AM_KEY_WORD, pos);
+		checkAM=true;
+	}else if(containKeywordWithoutCase(str, PM_KEY_WORD)){
+		findStartingPosOfKeywordWithoutCase(str, PM_KEY_WORD, pos);
+		checkAM=false;
+	}else{
+		return false;
+	}
+	rawNum=stringToInt(str.substr(0, pos));
+	if (HOUR_LOWER_BOUND<=rawNum && rawNum<=HOUR_UPPER_BOUND/2+1){
+		hour=rawNum;
+		minute=MINUTE_LOWER_BOUND;
+		second=SECOND_LOWER_BOUND;
+		if (!checkAM){
+			hour=hour+12;
+		}
+		timeFlag=validateTime(hour, minute, second);
+	}else if(HOUR_LOWER_BOUND*100<=rawNum && rawNum<=(HOUR_UPPER_BOUND/2+1)*100){
+		hour=rawNum/100;
+		minute=rawNum%100;
+		second=SECOND_LOWER_BOUND;
+		if (!checkAM){
+			hour=hour+12;
+		}
+		timeFlag=validateTime(hour, minute, second);
+	}
+	if (timeFlag){
+		setTimeParams(hour, minute, second, either);
+	}else{
+		return false;
+	}
+
+	return true;
+}
+
+bool Interpreter::firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag){
+	if (containKeywordWithoutCase(str, FROM_KEY_WORD) && containKeywordWithoutCase(str, TO_KEY_WORD)){
+		fromToFlag=fromToCheck(str);
+		return true;
+	}else if(containKeywordWithoutCase(str, BY_KEY_WORD)){
+		byFlag=byCheck(str);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool Interpreter::secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end){
+	assert(!(fromToFlag&&byFlag));
+	if (fromToFlag){
+		start=_start;
+		end=_end;
+		type=TWO_DATETIME;
+		return true;
+	}else if(byFlag){
+		start=_start;
+		end=_end;
+		type=ONE_DATETIME;
+		return true;
+	}else{
+		return false;  //contains the keyword(s) but does not pass further test
+	}
+}
+
+bool Interpreter::extractTitle(const string& str, string& title, int& pos1, int& pos2){
+	if (str.find_first_of(SINGLE_QUOTE)!=std::string::npos){
+		pos1=str.find_first_of(SINGLE_QUOTE);
+		pos2=str.find_last_of(SINGLE_QUOTE);
+	}else{
+		return false;
+	}
+	if (pos1 < pos2-1){
+		title=str.substr(pos1+1, pos2-pos1-1);
+	}else{
+		return false;
+	}
+	return true;
+}
+
+bool Interpreter::extractComment(const string& str, string& comment, int& pos){
+	if (str.find(DASH_M)!=std::string::npos){
+		pos=findLastOfWord(str, DASH_M);
+		comment=str.substr(pos+3);
+	}else{
+		pos=str.size();
+		comment=EMPTY_STRING;
+	}
+	return true;
+}
+
+bool Interpreter::extractFirstWord(string str, string& firstWord){
+	vector<string> vec=breakStringWithDelim(str, SPACE);
+	if (vec.size()==0){
+		return false;
+	}else{
+		firstWord=vec.at(0);
+		return true;
+	}
+}
+
+bool Interpreter::isEqualToKeyWordWithoutCase(string str, const string& keyword){
+	str=toLowerCase(str);
+	return str==keyword;
+}
+
+bool Interpreter::containKeywordWithoutCase(string str, const string& keyword){
+	str=toLowerCase(str);
+	return (str.find(keyword)!=std::string::npos);
+}
+
+bool Interpreter::findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos){
+	if (containKeywordWithoutCase(str, keyword)){
+		str=toLowerCase(str);
+		pos=str.find(keyword);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+vector<string> Interpreter::extractKeywords(const string& str){
+	vector<string> keywords;
+	vector<string> temp=breakStringWithDelim(str, SPACE);
+	keywords.push_back(str);
+	keywords.insert(keywords.end(),temp.begin(), temp.end());
+	return keywords;
+}
+
+vector<string> Interpreter::breakStringWithDelim(string str, char delim){
+	vector<string> vec;
+	stringstream ss(str);
+	string tempStr;
+	while (std::getline(ss, tempStr, delim)){
+		if (tempStr!=EMPTY_STRING){
+			vec.push_back(tempStr);
+		}
+	}
+	return vec;
+}
+
+string Interpreter::removeLeadingSpaces(string str){
+	if (str==EMPTY_STRING){
+		return str;
+	}
+	int num=str.find_first_not_of(SPACE);
+	return str.substr(num);
+}
+
+string Interpreter::removeTailSpaces(string str){
+	int num=str.find_last_not_of(SPACE);
+	return str.substr(0,num+1);
+}
+
+string Interpreter::removeSpacesFromBothEnds(string str){
+	return removeTailSpaces(removeLeadingSpaces(str));
+}
+
+int Interpreter::findFirstOfWord(const string& source, const string& word){
+	int num=source.find(word);
+	return num;
+}
+
+int Interpreter::findLastOfWord(const string& source, const string& word){
+	int num=source.find(word);
+	int prev=num;
+	while(num!=INTERNAL_ERROR_CODE){
+		prev=num;
+		num=source.find(word, num+1);
+	}
+	return prev;
+}
+
+vector<int> Interpreter::pushNumsWithComma(const vector<string>& strVec){
+	vector<int> vec;
+	int size=strVec.size();
+	for (int i=0;i<size;i++){
+		int temp=stringToInt(strVec.at(i));
+		if (temp>=0){
+			vec.push_back(temp);
+		}else{
+			vec.clear();
+			return vec;
+		}
+	}
+	return vec;
+}
+
+vector<int> Interpreter::pushNumsWithDash(const vector<string>& strVec){
+	vector<int> vec;
+	int temp1=stringToInt(strVec.at(0));
+	int temp2=stringToInt(strVec.at(1));
+	if (temp1>=0 && temp2>=temp1){
+		for (int i=temp1;i<=temp2; i++){
+			vec.push_back(i);
+		}
+	}else{
+		vec.clear();
+		return vec;
+	}
+	return vec;
+}
+
+bool Interpreter::containChar(string input, char ch){
+	return input.find(ch)!=std::string::npos;
+}
+
+Interpreter::~Interpreter(){
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
+	 */
+
+#include <sstream>
+#include <ctime>
+#include "BasicDateTime.h"
+#include "Essential.h"
+
+class Interpreter {
+private:
+	string _title;
+	int _type;
+	BasicDateTime _start;
+	BasicDateTime _end;
+
+
+private:
+	static const string EMPTY_STRING;
+	static const string FROM_KEY_WORD;
+	static const string TO_KEY_WORD;
+	static const string BY_KEY_WORD;
+	static const string DASH_M;
+	static const string PENDING_KEY_WORD;
+	static const string DONE_KEY_WORD;
+	static const string SLOT_KEY_WORD;
+	static const string RENAME_KEY_WORD;
+	static const string ALL_KEY_WORD;
+	static const string TODAY_KEY_WORD;
+	static const string TODAY_KEY_WORD_SHORTCUT;
+	static const string TOMORROW_KEY_WORD;
+	static const string TOMORROW_KEY_WORD_SHORTCUT;
+	static const string THIS_KEY_WORD;
+	static const string NEXT_KEY_WORD;
+	static const string MON_KEY_WORD;
+	static const string MON_FULL_KEY_WORD;
+	static const string TUE_KEY_WORD;
+	static const string TUE_FULL_KEY_WORD;
+	static const string WED_KEY_WORD;
+	static const string WED_FULL_KEY_WORD;
+	static const string THU_KEY_WORD;
+	static const string THU_FULL_KEY_WORD;
+	static const string FRI_KEY_WORD;
+	static const string FRI_FULL_KEY_WORD;
+	static const string SAT_KEY_WORD;
+	static const string SAT_FULL_KEY_WORD;
+	static const string SUN_KEY_WORD;
+	static const string SUN_FULL_KEY_WORD;
+	static const string AM_KEY_WORD;
+	static const string PM_KEY_WORD;
+
+	//////////////////////////////////////////////////////////////////////////
+	//logging strings                                                       //
+	//////////////////////////////////////////////////////////////////////////
+	static const string BUG_REPORT_PART1;
+	static const string BUG_REPORT_PART2;
+	static const string LOG_INTERPRETER;
+
+	static const char SLASH;
+	static const char DOT;
+    static const char COMMA;
+	static const char SINGLE_QUOTE;
+	static const char SPACE;
+	static const char DASH;
+	static const char COLON;
+	static const char ZERO;
+	static const char NINE;
+
+	static const int NO_DATETIME                          = 0;
+	static const int ONE_DATETIME                         = 1;
+	static const int TWO_DATETIME                         = 2;
+	static const int TWO_DATETIME_WITH_STATUS_FOR_DISPLAY = 3;
+
+	static const int INT_SUNDAY                           = 0;
+	static const int INT_MONDAY                           = 1;
+	static const int INT_TUESDAY                          = 2;
+	static const int INT_WEDNESDAY                        = 3;
+	static const int INT_THURSDAY                         = 4;
+	static const int INT_FRIDAY                           = 5;
+	static const int INT_SATURDAY                         = 6;
+	static const int JANUARY                              = 1;
+	static const int FEBRUARY                             = 2;
+	static const int MARCH                                = 3;
+	static const int APRIL                                = 4;
+	static const int MAY                                  = 5;
+	static const int JUNE                                 = 6;
+	static const int JULY                                 = 7;
+	static const int AUGUST                               = 8;
+	static const int SEPTEMBER                            = 9;
+	static const int OCTOBER                              = 10;
+	static const int NOVEMBER                             = 11;
+	static const int DECEMBER                             = 12;
+	static const int YEAR_LOWER_BOUND                     = 1900;
+	static const int YEAR_UPPER_BOUND                     = 2300;
+	static const int DAY_LOWER_BOUND                      = 1;
+	static const int DAY_UPPER_BOUND1                     = 31;
+	static const int DAY_UPPER_BOUND2                     = 30;
+	static const int DAY_UPPER_BOUND3                     = 28;
+	static const int HOUR_LOWER_BOUND                     = 0;
+	static const int HOUR_UPPER_BOUND                     = 23;
+	static const int MINUTE_LOWER_BOUND                   = 0;
+	static const int MINUTE_UPPER_BOUND                   = 59;
+	static const int SECOND_LOWER_BOUND                   = 0;
+	static const int SECOND_UPPER_BOUND                   = 59;
+
+	static const int RADIX_TEN                            = 10;
+	static const int RADIX_HUNDRED                        = 100;
+	static const int STRING_TO_INT_ERROR                  = -1;
+	static const int LEAP_YEAR_CONSTANT_100               = 100;
+	static const int LEAP_YEAR_CONSTANT_400               = 400;
+	static const int LEAP_YEAR_CONSTANT_4                 = 4;
+
+	static const int DISPLAY_TYPE_ALL                     = 0;
+	static const int DISPLAY_TYPE_PENDING                 = 1;
+	static const int DISPLAY_TYPE_DONE                    = 2;
+	static const int DISPLAY_TYPE_TODAY                   = 3;
+	static const int POWER_SEARCH_PENDING_STATUS          = -1;
+	static const int POWER_SEARCH_DONE_STATUS             = 1;
+	static const int POWER_SEARCH_NO_STATUS               = 0;
+	static const int DAYS_IN_WEEK                         = 7;
+	static const int TWO_BIT_YEAR_LOWER                   = 0;
+	static const int TWO_BIT_YEAR_UPPER                   = 99;
+	static const int TWO_BIT_YEAR_BASE                    = 2000;
+
+	static const int EITHER_AS_START                      = 1;
+	static const int EITHER_AS_END                        = 2;
+	static const int INTERNAL_ERROR_CODE                  = -1;
+
+public:
+	Interpreter();
+	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
+	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretDisplay(const string& str, int& displayType);
+	int interpretRename(string str, string& oldTitle, string& newTitle, string& newComment);
+	int interpretRenameAfterSearch(string str, int& num, string& newtitle, string& newComment);
+	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end);
+	int interpretMark(string str, string& title, bool& status);
+	int interpretMarkAfterSearch(string str, vector<int>& vec, bool& status);
+	int interpretRemove(string str, string& title);
+	int stringToInt(string str);
+	vector<int> stringToIntVec(string str);
+	string toLowerCase(string input);
+	~Interpreter();
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//private functions related to date time checking                       //
+	//////////////////////////////////////////////////////////////////////////
+	int mapTodayDayOfWeek();
+	int mapDayOfWeekToInt(const string& str);
+	void setStartToNow();
+	void setDateParams(int yearValue, int monthValue, int dayValue, int either);
+	void setDefaultTimeParams(int either);
+	void setTimeParams(int hourValue, int minuteValue, int secondValue, int either);
+    void generalTranslationOfDateTime(const vector<string>& vec, bool& fromFlag, int either);
+	bool fromToCheck(string str);
+	bool byCheck(string str);
+	bool isLeapYear(int year);
+	bool validateYear(int year);
+	bool validateMonthDay(int month, int day, bool leap);
+	bool validateDate(int year, int month, int day);
+	bool validateTime(int hour, int month, int day);
+	bool isStartEarlierThanEnd();
+	bool checkSizeOfDateTimeStringVec(const vector<string>& vec);
+	bool translateDateTime(string str1, string str2, int either);
+	bool translateNaturalDateTime(string str1, string str2, string str3, int either);
+	bool translateOnlyDate(string str1, int either);
+	bool translateNaturalDate(string str1, string str2, int either);
+	bool interpretDate(string str1, int either);
+	bool interpretTime(string str1, int either);
+	bool dateStandardInput(string str, int either);
+	bool dateTodayOrTomorrow(string str, int either);
+	bool dateThisOrNextDateFormat(int day, int week, int either);
+	bool timeStandardInput(string str, char delim, int either);
+	bool timeSpecialNumsOnly(string str, int either);
+	bool timeDotAMOrPM(string str, int either);
+	bool timeNumsAMOrPM(string str, int either);
+	bool firstVerifyFromToOrBy(const string& str, bool& fromToFlag, bool& byFlag);
+	bool secondVerifyFromToOrBy(bool fromToFlag, bool byFlag, int& type, BasicDateTime& start, BasicDateTime& end);
+	//////////////////////////////////////////////////////////////////////////
+	//private functions related to strings                                  //
+	//////////////////////////////////////////////////////////////////////////
+	int findFirstOfWord(const string& source, const string& word);
+	int findLastOfWord(const string& source, const string& word);
+	bool containChar(string input, char ch);
+	bool isEqualToKeyWordWithoutCase(string str, const string& keyword);
+	bool containKeywordWithoutCase(string str, const string& keyword);
+	bool extractTitle(const string& str, string& title, int& pos1, int& pos2);
+	bool extractComment(const string& str, string& comment, int& pos);
+	bool extractFirstWord(string str, string& firstWord);
+	bool findStartingPosOfKeywordWithoutCase(string str, const string& keyword, int& pos);
+	string removeLeadingSpaces(string str);
+	string removeTailSpaces(string str);
+	string removeSpacesFromBothEnds(string str);
+	vector<int> pushNumsWithComma(const vector<string>& strVec);
+	vector<int> pushNumsWithDash(const vector<string>& strVec);
+	vector<string> extractKeywords(const string& str);
+	vector<string> breakStringWithDelim(string str, char delim);
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\UnitTesting\InterpreterTesting\InterpreterTesting.cpp
+	 */
+
+
+#include <string>
+#include <vector>
+#include <gtest\gtest.h>
+#include "Interpreter.h"
+#include "BasicDateTime.h"
+#include "Essential.h"
+
+using namespace std;
+
+//test for add
+TEST(AddTest, simpleTest1){
+	Interpreter inter;
+	string title, comment;
+	int type;
+	BasicDateTime start, end;
+
+	//standard input without comment
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this one' from 12/09/2012 12.05 to 12/12/2012 13.05", title, type, start, end, comment));  //-- passed
+	EXPECT_EQ("this one", title);
+	EXPECT_EQ(2, type);
+	EXPECT_EQ(12, start.getDay());
+	EXPECT_EQ(9, start.getMonth());
+	EXPECT_EQ(2012, start.getYear());
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	//multiple single quote
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' from 12/12/12 12.00 to 13/12/13 13.00", title, type, start, end, comment));  //-- passed
+	EXPECT_EQ(2, type);
+	EXPECT_EQ(12, start.getDay());
+	EXPECT_EQ(2012, start.getYear());
+	EXPECT_EQ(2013, end.getYear());
+	EXPECT_EQ(13, end.getHour());
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	//multiple single quotes with comment
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' from 12/12/12 12.00 to 13/12/13 13.00 -m this is comment", title, type, start, end, comment));  //-- passed
+	EXPECT_EQ(2, type);
+	EXPECT_EQ(12, start.getDay());
+	EXPECT_EQ(2012, start.getYear());
+	EXPECT_EQ(2013, end.getYear());
+	EXPECT_EQ(13, end.getHour());
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	//time with seconds
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' from today 14.00 to tomorrow 15.00.05 -m this is comment", title, type, start, end, comment));  // -- passed
+	EXPECT_EQ(2, type);
+	EXPECT_EQ("this is comment", comment);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	//special date input
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' from today 1500 to tomorrow 1600 -m this is comment", title, type, start, end, comment));  // -- passed
+	EXPECT_EQ(2, type);
+	EXPECT_EQ("this is comment", comment);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	//special date input
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by tomorrow 1500 -m this is comment", title, type, start, end, comment));  // -- passed
+	EXPECT_EQ(1, type);
+	EXPECT_EQ("this is comment", comment);
+	cout<<end.getDateTimeString()<<endl;
+	//special date input
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by next mon 1600 -m this is comment2", title, type, start, end, comment));
+	EXPECT_EQ(1, type);
+	EXPECT_EQ("this is comment2", comment);
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this's one' by this sun 1600 -m this is comment3", title, type, start, end, comment));
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD, inter.interpretAdd("'this' from today to tomorrow", title, type, start, end, comment));
+	//time out of boundary
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretAdd("'this's one' from 31/04/12 12.00 to 13/12/13 13.00", title, type, start, end, comment));
+	//empty input
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd("", title, type, start, end, comment));
+	//incomplete title
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd("' this from 30/04/12 to 20/05/13", title, type, start, end, comment));
+	//empty title
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd(" '' -m this", title, type, start, end, comment));
+	//boundary checking
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretAdd("'this's one' from today 15.00.00 to today 15.00.00 -m this is comment", title, type, start, end, comment));
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+}
+
+TEST(RenameTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	BasicDateTime start, end;
+
+	//standard
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME, inter.interpretRename(" 'this is old' to 'this is new'", title1, title2, comment));
+	EXPECT_EQ("this is old", title1);
+	EXPECT_EQ("this is new", title2);
+	//multiple single quotes
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RENAME, inter.interpretRename(" 'this 'is' old' to 'this is' new'", title1, title2, comment));
+	EXPECT_EQ("this 'is' old", title1);
+	EXPECT_EQ("this is' new", title2);
+	//return error code
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is is'", title1, title2, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'this is is ' to '", title1, title2, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT,inter.interpretRename("'this is is is' to ''", title1, title2, comment));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND,inter.interpretRename("'old title'to 'new title'", title1, title2, comment));
+}
+
+TEST(RenameAfterSearchTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	BasicDateTime start, end;
+	int num;
+
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 2 to 'this is new'", num, title1, comment));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("", comment);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 12 to 'this is new'", num, title1, comment));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("", comment);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 12 to 'this is new' -m comment", num, title1, comment));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("comment", comment);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RENAME, inter.interpretRenameAfterSearch(" 12 to 'this is new' -m 'comment", num, title1, comment));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ("this is new", title1);
+	EXPECT_EQ("'comment", comment);
+}
+
+TEST(RemoveTest, simpleTest1){
+	Interpreter inter;
+	string title1;
+
+	//extract title, not much to test
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE, inter.interpretRemove("'this is old'", title1));
+	EXPECT_EQ("this is old", title1);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_REMOVE, inter.interpretRemove(" 'this is' ' old'", title1)); 
+	EXPECT_EQ("this is' ' old", title1);
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretRemove(" 'this   ", title1));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretRemove(" this  ' ", title1));
+}
+
+TEST(MarkTest, simpleTest1){
+	Interpreter inter;
+	string title1;
+	bool status;
+
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK, inter.interpretMark("'title' done", title1, status));  // -- passed
+	EXPECT_EQ("title", title1);
+	EXPECT_TRUE(status);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_MARK, inter.interpretMark("'title' pending", title1, status));  // -- passed
+	EXPECT_EQ("title", title1);
+	EXPECT_FALSE(status);
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretMark("'title'", title1, status));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretMark("'title", title1, status));
+}
+
+TEST(PowerSearchTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	vector<string> vec;
+	int type, searchStatus;
+	bool slotEnabled;
+	BasicDateTime start, end;
+	//this method is not fully tested yet not all the situations have been covered
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_TRUE(slotEnabled);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'title1 title2'from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_FALSE(slotEnabled);
+	EXPECT_EQ("title1", vec.at(1));
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch(" slot from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_TRUE(slotEnabled);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'keyword1 keyword2'from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ("keyword2", vec.at(2));
+	EXPECT_FALSE(slotEnabled);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'keyword1 slot slot'from 12/12/2013 to 14/12/13", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ("slot", vec.at(3));
+	EXPECT_FALSE(slotEnabled);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("by 12/12/2013 12:13:13", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_TRUE(slotEnabled);
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH, inter.interpretPowerSearch("'title keyword'", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ("title", vec.at(1));
+	EXPECT_TRUE(!slotEnabled);
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretPowerSearch("random string", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND, inter.interpretPowerSearch("'random string", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretPowerSearch("from to ", slotEnabled, vec, searchStatus, type, start, end));
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretPowerSearch("by ", slotEnabled, vec, searchStatus, type, start, end));
+}
+
+TEST(DisplayTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	int type;
+	//simple for display as this is downgraded
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY, inter.interpretDisplay("all", type)); 
+	EXPECT_EQ(0, type);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY, inter.interpretDisplay("pending", type)); 
+	EXPECT_EQ(1, type);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY, inter.interpretDisplay(" done", type));
+	EXPECT_EQ(2, type);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_DISPLAY, inter.interpretDisplay(" today", type));
+	EXPECT_EQ(3, type);
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DISPLAY, inter.interpretDisplay(" tod", type));
+}
+
+TEST(RescheduleTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	int type;
+	BasicDateTime start, end;
+
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE, inter.interpretReschedule("'this is title'", title1, type, start, end));  // -- passed
+	EXPECT_EQ(0, type);
+	EXPECT_EQ("this is title", title1);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE, inter.interpretReschedule("'this is's title' from 12/12/12 12.00 to 12/12/12 13.00", title1, type, start, end));  // -- passed
+	EXPECT_EQ(2, type);
+	EXPECT_EQ("this is's title", title1);
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretReschedule("'this is title' by 12/12/12 12.00", title1, type, start, end));
+}
+
+TEST(RescheduleAfterSearchTest, simpleTest1){
+	Interpreter inter;
+	string title1, title2 , comment;
+	int type;
+	BasicDateTime start, end;
+	int num;
+
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 2 from tdy to tmr", num, type, start, end));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ(2, type);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 2 by tmr", num, type, start, end));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ(1, type);
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 2", num, type, start, end));
+	EXPECT_EQ(2, num);
+	EXPECT_EQ(0, type);
+	EXPECT_EQ(STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE, inter.interpretRescheduleAfterSearch(" 12", num, type, start, end));
+	EXPECT_EQ(12, num);
+	EXPECT_EQ(0, type);
+}
+
+TEST(StringToIntTest, simpleTes1){
+	Interpreter inter;
+	EXPECT_EQ(-1, inter.stringToInt("1/1"));
+	EXPECT_EQ(12, inter.stringToInt("12"));
+	EXPECT_EQ(-1, inter.stringToInt("this"));
+	EXPECT_EQ(2012, inter.stringToInt("2012"));
+	EXPECT_EQ(-1, inter.stringToInt("20a12"));
+}
+
+TEST(StringToIntVecTest, simpleTest1){
+	Interpreter inter;
+	vector<int> vec;
+	//simple method. not many tests here
+	vec=inter.stringToIntVec("1,2,3");
+	EXPECT_EQ(3, vec.size());
+	EXPECT_EQ(1, vec.at(0));
+	EXPECT_EQ(2, vec.at(1));
+	EXPECT_EQ(3, vec.at(2));
+	vec=inter.stringToIntVec("1-3");
+	EXPECT_EQ(3, vec.size());
+	EXPECT_EQ(1, vec.at(0));
+	EXPECT_EQ(2, vec.at(1));
+	EXPECT_EQ(3, vec.at(2));
+	vec=inter.stringToIntVec("12-13");
+	EXPECT_EQ(2, vec.size());
+	EXPECT_EQ(12, vec.at(0));
+	EXPECT_EQ(13, vec.at(1));
+	vec=inter.stringToIntVec("12");
+	EXPECT_EQ(1, vec.size());
+	EXPECT_EQ(12, vec.at(0));
+	vec=inter.stringToIntVec("1,1-1");
+	EXPECT_EQ(0, vec.size());
+	vec=inter.stringToIntVec("1-12a");
+	EXPECT_EQ(0, vec.size());
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\UnitTesting\InterpreterTesting\InterpreterTesting.cpp
+
+
+
+
+

@@ -1,0 +1,167 @@
+//@author: a0099016b
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\FileProcessing.h
+	 */
+
+
+#include <fstream>
+#include "Essential.h"
+#include "LogLibrary/Log.h"
+
+static const string _LOGNAME = "Tasky.txt";
+static const int TASKLINES = 6;
+
+class FileProcessing{
+private:
+	/**
+	* Purpose:
+	* Checks if the file Log is empty
+	*@return True - File Log is empty, False - File Log not empty
+	*/
+	bool emptyFile();
+	void readLines(ifstream& input, vector<string>& data);
+	void writeLines(ofstream& output, vector<string>& data);
+public:
+	/**
+	* Purpose:
+	* Checks if file Log exists
+	* If it exists, reads and load the tasks from file Log into vector<string> data
+	* @param data - vector to be loaded with tasks from Log
+	*@return Success in loading file; File Log does not exist; File Log is empty
+	*/
+	int load(vector<string>& data); 
+	/**
+	* Purpose:
+	* Checks if file Log exist
+	* If it exists, writes the task from vector<string> data into file Log
+	* If it does not exist, create a file Log
+	* @param data - vector containing all the tasks to be written
+	* @return Success in writing file; failure in writing file
+	*/
+	int save(vector<string>& data); //reads vector, writes to text file
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\FileProcessing.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\History.h
+	 */
+
+
+#include "Essential.h"
+#include "HistoryCommand.h"
+
+
+///record past sucessful operations and pop the last one when undo called
+class History{
+private:
+	static const int CHANGE_IN_HISTORY_SIZE = 1;
+	static const int HISTORY_MAX_SIZE = 5;
+	vector<HistoryCommand> _undoRecord;
+	vector<HistoryCommand> _redoRecord;
+	
+public:
+	/**
+	* Purpose:
+	*Clears the vector containing history actions upon start up
+	*/
+	History();
+	/**
+	* Purpose:
+	* Retrieves the last action from vector of history records
+	* @param hist - last action done will be passed back to calling function via this referenced string
+	* @return Success in retrival; Empty records, nothing to be undone; Failure
+	*/
+	int undo(HistoryCommand& hist);
+	/* Purpose:
+	* saves the successful action into vectory of history records
+	* @param hist - string containing successful user action preformed
+	*@return Success in putting the record into history; Failure
+	*/
+	int record(HistoryCommand hist);
+	/**
+	* Retrieves the previously undone action
+	* @param hist previously undone action will be stored here
+	*/
+	int redo(HistoryCommand& hist);
+	
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\History.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\UI.h
+	 */
+
+
+#include <iostream>
+#include <Windows.h>
+#include <assert.h>
+#include "Processor.h"
+
+using namespace std;
+using namespace System;
+
+static const string MESSAGE_WELCOME = "Welcome To Tasky! ";
+static const string MESSAGE_TASKS_TODAY = "\nThe tasks for today are as follows:\n";
+static const string MESSAGE_GOODBYE = "GoodBye!";
+static const string MESSAGE_COMMAND = "Command: ";
+
+static const string COMMAND_EXIT = "exit";
+static string COMMAND_DISPLAY_TASK_TODAY = "display today";
+
+class UI
+{
+private:
+	Processor _processor;
+	/**
+	* Purpose:
+	* Displays a welcome message to the user
+	* Displays the tasks of the day/pending tasks
+	*/
+	void displayWelcomeMessage(HANDLE hConsole);
+	/**
+	* Purpose:
+	* Takes in user command & put into string command
+	* @param command - stores the user input 
+	*/
+	void displayCommandMessage(string& command, HANDLE hConsole);
+	/**
+	* Purpose:
+	* Send the user's command to the Processor
+	*@param command - user input to be passed to Processor
+	*/
+	void displayProcessorMessage(string command,HANDLE hConsole,bool& statusFlag);
+public:
+	/**
+	* Purpose:
+	* Function called when program is started up
+	* Takes in user input/commands and passes to Processor
+	*Checks if user wishes to exit the program
+	*/
+	void UI_interface(); //takes in user input
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\UI.h
+
+
+
+
+

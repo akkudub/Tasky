@@ -1,0 +1,47 @@
+//@author: junchao
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+	 */
+
+ */
+//////////////////////////////////////////////////////////////////////////
+//all the Qt libraries                                                  //
+//////////////////////////////////////////////////////////////////////////
+#include <QtWidgets/QMainWindow>
+#include <QSystemTrayIcon>
+#include <QTimer>
+#include <QGraphicsOpacityEffect>
+#include <QMouseEvent>
+#include <QShortcut>
+#include <QCompleter>
+#include <QPalette>
+//////////////////////////////////////////////////////////////////////////
+//for global short cut key                                              //
+//////////////////////////////////////////////////////////////////////////
+#include "libqxt/qxtglobalshortcut.h"
+//////////////////////////////////////////////////////////////////////////
+//other header files to link to logic                                   //
+//////////////////////////////////////////////////////////////////////////
+#include <vector>
+#include "ui_taskydesign.h"
+#include "Processor.h"
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Qt\TaskyDesign1\taskydesign.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
+	 */
+
+ */
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\Interpreter.h
+
+
+
+
+

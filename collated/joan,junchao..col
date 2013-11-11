@@ -1,0 +1,58 @@
+//@author: joan,junchao.
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+	 */
+
+ */
+
+class HelpUser{
+private:
+	static const string HELP_GENERAL_MSG;
+	static const string HELP_ADD_MSG;
+	static const string HELP_REMOVE_MSG;
+	static const string HELP_SEARCH_MSG;
+	static const string HELP_MARK_MSG;
+	static const string HELP_RESCHEDULE_MSG;
+	static const string HELP_RENAME_MSG;
+	static const string HELP_DISPLAY_MSG;
+	static const string HELP_TITLE_MSG;
+	static const string HELP_DATE_MSG;
+	static const string HELP_TIME_MSG;
+	static const string HELP_COMMENT_MSG;
+	static const string HELP_OTHERS_MSG;
+	static const string HELP_ABOUT_MSG;
+
+	static const string GENERAL_STR;
+	static const string ADD_STR;
+	static const string REMOVE_STR;
+	static const string SEARCH_STR;
+	static const string MARK_STR;
+	static const string RESCHEDULE_STR;
+	static const string RENAME_STR;
+	static const string DISPLAY_STR;
+	static const string TITLE_STR;
+	static const string DATE_STR;
+	static const string TIME_STR;
+	static const string COMMENT_STR;
+	static const string OTHERS_STR;
+	static const string ABOUT_STR;
+
+public:
+	string getHelpMsg(string input);
+
+private:
+	string determineHelperString(const string& input);
+	bool equalWithoutCase(string input, const string& keyword);
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
+
+
+
+
+

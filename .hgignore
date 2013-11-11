@@ -6,8 +6,6 @@ syntax: glob
 *.docx
 *.pdf
 *.ipch
-*.exe
-*.zip
 *.obj
 *.pdb
 *.user

@@ -148,7 +148,6 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	Ui::TaskyDesignClass ui;
 	QStringList wordlist;
-	QGraphicsOpacityEffect* opacity;
 	QPoint windowPosition;
 	QPoint mousePressPosition;
 	QPoint mouseMovePosition;

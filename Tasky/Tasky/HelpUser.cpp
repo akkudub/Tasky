@@ -1,5 +1,5 @@
 #include "HelpUser.h"
-
+//@author A0105750N
 const string HelpUser::HELP_GENERAL_MSG      = "Welcome to the help panel.\n"
 	                                           "Tasky is a text-based task management software that helps you manage \nyour schedules.\n"
 											   "For your convenience, commands can be entered within a single line.\n\n"

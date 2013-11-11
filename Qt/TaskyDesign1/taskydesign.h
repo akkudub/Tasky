@@ -1,3 +1,4 @@
+//@author A0105750N
 #ifndef TASKYDESIGN1_H
 #define TASKYDESIGN1_H
 /**
@@ -27,7 +28,7 @@
 #include <vector>
 #include "ui_taskydesign.h"
 #include "Processor.h"
-
+//@author A0105750N
 class TaskyDesign : public QMainWindow
 {
 	Q_OBJECT

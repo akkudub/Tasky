@@ -157,7 +157,7 @@ void TaskyDesign::fillUpWordList(){
 }
 
 void TaskyDesign::setUpGlobalShortCutKey(){
-	QxtGlobalShortcut* scOpenMainWin = new QxtGlobalShortcut(QKeySequence("Ctrl+Home+t"), this);
+	QxtGlobalShortcut* scOpenMainWin = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+t"), this);
 	connect(scOpenMainWin, SIGNAL(activated()),this, SLOT(showMainWindow()));
 }
 
@@ -177,6 +177,7 @@ void TaskyDesign::setUpUI(){
 	this->setWindowIcon(QIcon(ICON_STRING));
 	ui.InputBox->setFocus();
 	ui.InputBox->installEventFilter(this);
+	setUpGlobalShortCutKey();
 }
 
 //////////////////////////////////////////////////////////////////////////

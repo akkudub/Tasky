@@ -1,3 +1,4 @@
+//@author A0099016B
 #include "ProcessorStub.h"
 
 int ProcessorStub::UImainProcessor(string input, string& message, vector<string>& list) {

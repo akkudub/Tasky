@@ -22,7 +22,7 @@ const string Messages::MESSAGE_SUCCESS_HELP 				  = "Success! Help displayed";
 const string Messages::MESSAGE_SUCCESS_RECORD 				  = "Success! Previous action recorded";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH_RENAME= "Success! Renamed after search";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH_RESCHEDULE
-	= "Success! Rescheduled after search";
+	                                                          = "Success! Rescheduled after search";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_SEARCH_MARK  = "Success! Marked after search";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_ADD      	  = "Success! Interpreted add";
 const string Messages::MESSAGE_SUCCESS_INTERPRET_REMOVE 	  = "Success! Interpreted remove";
@@ -61,13 +61,14 @@ const string Messages::MESSAGE_ERROR_RECORD 				  = "Error! Unexpected error whi
 const string Messages::MESSAGE_ERROR_INVALID_CHOICE       	  = "Error! Invalid Choice";
 const string Messages::MESSAGE_ERROR_NO_SEARCH_ACTION		  = "Error! Error not a valid action after search";
 const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_RENAME  = "Error! Error interpreting rename after search";
-const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_RESCHEDULE = "Error! Error interpreting reschedule after search";
-const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_MARK= "Error! Error interpreting mark after search";
+const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_RESCHEDULE 
+	                                                          = "Error! Error interpreting reschedule after search";
+const string Messages::MESSAGE_ERROR_INTERPRET_SEARCH_MARK    = "Error! Error interpreting mark after search";
 const string Messages::MESSAGE_ERROR_INTERPRET_EMPTY_INPUT    = "Error! Empty input! Type 'help' for more information";
 const string Messages::MESSAGE_ERROR_INTERPRET_TITLE_FORMAT   = "Error! Invalid title format! Type 'help' for more information";
 const string Messages::MESSAGE_ERROR_INTERPRET_DATETIME_FORMAT= "Error! Invalid input for datetime! Type 'help' for more information";
 const string Messages::MESSAGE_ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND  
-	= "Error! Missing essential components in command";
+	                                                          = "Error! Missing essential components in command";
 const string Messages::MESSAGE_ERROR_INTERPRET_MIXED_UP_INPUT = "Error! Command is not consistent";
 const string Messages::MESSAGE_ERROR_INTERPRET_ADD 			  = "Error! The interpretation for adding is not successful";
 const string Messages::MESSAGE_ERROR_INTERPRET_REMOVE 		  = "Error! The interpretation for removal is not successful";

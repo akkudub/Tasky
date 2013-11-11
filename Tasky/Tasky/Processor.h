@@ -24,6 +24,7 @@
 #include "Essential.h"
 #include "Messages.h"
 #include "HelpUser.h"
+#include "LogLibrary/log.h"
 
 class Processor{
 

@@ -77,6 +77,10 @@ TEST(AddTest, simpleTest1){
 	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd("' this from 30/04/12 to 20/05/13", title, type, start, end, comment));
 	//empty title
 	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_TITLE_FORMAT, inter.interpretAdd(" '' -m this", title, type, start, end, comment));
+	//boundary checking
+	EXPECT_EQ(STATUS_CODE_SET_ERROR::ERROR_INTERPRET_DATETIME_FORMAT, inter.interpretAdd("'this's one' from today 15.00.00 to today 15.00.00 -m this is comment", title, type, start, end, comment));
+	cout<<start.getDateTimeString()<<endl;
+	cout<<end.getDateTimeString()<<endl;
 }
 
 TEST(RenameTest, simpleTest1){

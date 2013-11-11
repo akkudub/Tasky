@@ -1004,7 +1004,7 @@ TEST(message_undo, undo){
 	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("undo", message, outStrings);
 
-	EXPECT_EQ("Success! Task removed", message);
+	EXPECT_EQ("Success! Undo successful", message);
 }
 
 TEST(outstrings_undo, undo){
@@ -1016,7 +1016,8 @@ TEST(outstrings_undo, undo){
 	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
 	statusCode = tempProcessor.UImainProcessor("undo", message, outStrings);
-	expected = "Undo Tasks removed:"
+	expected = 
+		"Undo Tasks removed:"
 		"Title:      test case 5\n"
 		"Status:     Pending\n"
 		"Start time: None\n"
@@ -1024,4 +1025,172 @@ TEST(outstrings_undo, undo){
 		"Comment:    ";
 	actual = outStrings[0]+outStrings[1];
 	EXPECT_EQ(expected, actual);
+}
+
+TEST(message_undoMultiple, undo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 4' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 15/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo 4", message, outStrings);
+
+	EXPECT_EQ("Success! Undo successful", message);
+}
+
+TEST(outstrings_undoMultiple, undo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 4' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 15/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo 4", message, outStrings);
+	expected = 
+		"Undo Tasks added:"
+		"Title:      test case 1\n"
+		"Status:     Pending\n"
+		"Start time: 21/11/2020 00:00:00\n"
+		"End time:   22/11/2020 23:59:59\n"
+		"Comment:    "
+		"Undo Tasks updated:"
+		"Title:      test case 4\n"
+		"Status:     Done\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    "
+		"Title:      test case 4\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    "
+		"Undo Tasks removed:"
+		"Title:      test case 4\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    "
+		"Undo Tasks removed:"
+		"Title:      test case 3\n"
+		"Status:     Pending\n"
+		"Start time: 24/11/2020 13:00:00\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3]+outStrings[4]+outStrings[5]+outStrings[6]+outStrings[7]+outStrings[8];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(message_undoInvalid, undo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("undo", message, outStrings);
+	EXPECT_EQ("Warning! There is nothing to undo", message);
+}
+
+/* test cases for redo */
+TEST(message_redo, redo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("redo", message, outStrings);
+
+	EXPECT_EQ("Success! Redo successful", message);
+}
+
+TEST(outstrings_redo, redo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 5'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("redo", message, outStrings);
+	expected = 
+		"Redo Tasks added:"
+		"Title:      test case 5\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   None\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(message_redoMultiple, redo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 4' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 15/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo 4", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("redo 3", message, outStrings);
+
+	EXPECT_EQ("Success! Redo successful", message);
+}
+
+TEST(outstrings_redoMultiple, redo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 2' from 23/11/2020 to 24/11/2020 12.00", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 3' from 24/11/2020 13.00 to 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("add 'test case 4' by 25/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("mark 'test case 4' done", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("remove 'test case 1'", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("reschedule 'test case 1' by 15/12/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("undo 4", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("redo 3", message, outStrings);
+	expected = 
+
+		"Redo Tasks added:"
+		"Title:      test case 3\n"
+		"Status:     Pending\n"
+		"Start time: 24/11/2020 13:00:00\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    "
+		"Redo Tasks added:"
+		"Title:      test case 4\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    "
+		"Redo Tasks updated:"
+		"Title:      test case 4\n"
+		"Status:     Pending\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    "
+		"Title:      test case 4\n"
+		"Status:     Done\n"
+		"Start time: None\n"
+		"End time:   25/11/2020 23:59:59\n"
+		"Comment:    ";
+	actual = outStrings[0]+outStrings[1]+outStrings[2]+outStrings[3]+outStrings[4]+outStrings[5]+outStrings[6];
+	EXPECT_EQ(expected, actual);
+}
+
+TEST(message_redoInvalid, redo){
+	remove("Tasky.txt");
+	Processor tempProcessor;
+	statusCode = tempProcessor.UImainProcessor("add 'test case 1' from 21/11/2020 to 22/11/2020", message, outStrings);
+	statusCode = tempProcessor.UImainProcessor("redo", message, outStrings);
+	EXPECT_EQ("Warning! There is nothing to redo", message);
 }

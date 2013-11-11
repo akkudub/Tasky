@@ -131,7 +131,6 @@ int Processor::UImainProcessor(string input, string& message, vector<string>& li
 			break;
 		}
 	}
-
 	return feedbackToUI(returnCode, message, list);
 }
 
@@ -483,7 +482,7 @@ int Processor::searchActionProcessor(string command, string input){
 int Processor::undoCommandProcessor(string input){
 	Task oldTask, newTask;
 	COMMAND_TYPES type = COMMAND_TYPES::ADD;//Just for initialization
-	int undoCount, returnCode;
+	int undoCount, returnCode, tempReturn;
 	HistoryCommand command(type, oldTask, newTask);
 	undoCount = _interpreter.stringToInt(input);
 	_tempTaskList.clear();
@@ -496,13 +495,13 @@ int Processor::undoCommandProcessor(string input){
 		if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_UNDO){
 			switch (command.getCommandTypeUndo()){
 			case COMMAND_TYPES::ADD:
-				returnCode = undoAdd(command);
+				tempReturn = undoAdd(command);
 				break;
 			case COMMAND_TYPES::REMOVE:
-				returnCode = undoRemove(command);
+				tempReturn = undoRemove(command);
 				break;
 			case COMMAND_TYPES::UPDATE:
-				returnCode = undoUpdate(command);
+				tempReturn = undoUpdate(command);
 				break;
 			default:
 				break;
@@ -516,7 +515,7 @@ int Processor::undoCommandProcessor(string input){
 int Processor::redoCommandProcessor(string input){
 	Task oldTask, newTask;
 	COMMAND_TYPES type = COMMAND_TYPES::ADD;//Just for initialization
-	int redoCount, returnCode;
+	int redoCount, returnCode, tempReturn;
 	HistoryCommand command(type, oldTask, newTask);
 	redoCount = _interpreter.stringToInt(input);
 	_tempTaskList.clear();
@@ -529,13 +528,13 @@ int Processor::redoCommandProcessor(string input){
 		if (returnCode == STATUS_CODE_SET_SUCCESS::SUCCESS_REDO){
 			switch (command.getCommandTypeRedo()){
 			case COMMAND_TYPES::ADD:
-				returnCode = redoAdd(command);
+				tempReturn = redoAdd(command);
 				break;
 			case COMMAND_TYPES::REMOVE:
-				returnCode = redoRemove(command);
+				tempReturn = redoRemove(command);
 				break;
 			case COMMAND_TYPES::UPDATE:
-				returnCode = redoUpdate(command);
+				tempReturn = redoUpdate(command);
 				break;
 			default:
 				break;

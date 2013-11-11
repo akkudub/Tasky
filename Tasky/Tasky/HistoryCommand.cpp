@@ -1,5 +1,7 @@
 #include "HistoryCommand.h"
 
+//@author A0103516U
+
 COMMAND_TYPES HistoryCommand::getCommandType(){
 	return _commandType;
 }

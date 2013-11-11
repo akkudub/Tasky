@@ -1,9 +1,13 @@
 #ifndef _Messages_H_
 #define _Messages_H_
 
-#include "Essential.h"
+/**
+*this class contains messages for feedback from different components
+*@author A0103516U Akshat Dubey
+*
+*/
 
-//@author A0103516U
+#include "Essential.h"
 
 class Messages{
 public:

@@ -142,7 +142,8 @@ int Processor::addCommandProcessor(string input){
 	BasicDateTime endingDateTime;
 	_tempTaskList.clear();
 
-	int returnCode = _interpreter.interpretAdd(input, title, type, startingDateTime, endingDateTime, comment);
+	int returnCode = _interpreter.interpretAdd(input, title, type,
+		startingDateTime, endingDateTime, comment);
 	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_ADD){
 		return returnCode;
 	}else{
@@ -309,7 +310,8 @@ int Processor::rescheduleCommandProcessor(string input){
 	case NOTHING_PENDING:
 		_tempTaskList.clear();
 
-		returnCode = _interpreter.interpretReschedule(input, _tempTitle, _tempType, _tempStart, _tempEnd);
+		returnCode = _interpreter.interpretReschedule(input, _tempTitle, 
+			_tempType, _tempStart, _tempEnd);
 		if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_RESCHEDULE){
 			return returnCode;
 		}else{
@@ -401,7 +403,8 @@ int Processor::searchCommandProcessor(string input){
 	vector<BasicDateTime> slots;
 	int type, status;
 	bool isPower;
-	int returnCode = _interpreter.interpretPowerSearch(input, isPower, keywords, status, type, start, end);
+	int returnCode = _interpreter.interpretPowerSearch(input, isPower, keywords,
+		status, type, start, end);
 
 	_tempTaskList.clear();
 	if (returnCode != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH){
@@ -432,17 +435,20 @@ int Processor::searchActionProcessor(string command, string input){
 		_tempTaskList.clear();
 
 	}else if(command == COMMAND_RENAME){
-		int interReturn = _interpreter.interpretRenameAfterSearch(input, choice, _tempTitle, _tempComment);
+		int interReturn = _interpreter.interpretRenameAfterSearch(
+			input, choice, _tempTitle, _tempComment);
 		searchRename(choice, interReturn, newTask, returnCode, oldTask);
 		_tempTaskList.clear();
 
 	}else if(command == COMMAND_RESCHEDULE){
-		int interReturn = _interpreter.interpretRescheduleAfterSearch(input, choice, _tempType, _tempStart, _tempEnd);
+		int interReturn = _interpreter.interpretRescheduleAfterSearch(
+			input, choice, _tempType, _tempStart, _tempEnd);
 		searchReschedule(choice, interReturn, newTask, returnCode, oldTask);
 		_tempTaskList.clear();
 
 	}else if(command == COMMAND_MARK){
-		int interReturn = _interpreter.interpretMarkAfterSearch(input, choiceVec, _tempStatus);
+		int interReturn = _interpreter.interpretMarkAfterSearch(
+			input, choiceVec, _tempStatus);
 		searchMark(choiceVec, interReturn, oldTask, returnCode, newTask, success, error);
 		_tempTaskList.clear();
 	}
@@ -607,7 +613,8 @@ int Processor::renameTask( Task &oldTask, Task &newTask )
 	checkComment(oldTask);
 	newTask.setTitle(_tempTitle);
 	newTask.setComment(_tempComment);
-	tempReturn = recordAndFeedbackUpdate(oldTask, newTask, TASK_RENAMED, TASK_RENAME_ERROR);
+	tempReturn = 
+		recordAndFeedbackUpdate(oldTask, newTask, TASK_RENAMED, TASK_RENAME_ERROR);
 
 	return tempReturn;
 }
@@ -620,7 +627,8 @@ int Processor::rescheduleTask( Task &oldTask, Task &newTask )
 	newTask.setStartDate(_tempStart);
 	newTask.setEndDate(_tempEnd);
 	newTask.setType(_tempType);
-	tempReturn = recordAndFeedbackUpdate(oldTask, newTask, TASK_RESCHEDULED, TASK_RESCHEDULED_ERROR);
+	tempReturn = 
+		recordAndFeedbackUpdate(oldTask, newTask, TASK_RESCHEDULED, TASK_RESCHEDULED_ERROR);
 	return tempReturn;
 }
 
@@ -644,7 +652,7 @@ int Processor::recordAndFeedbackUpdate( Task &oldTask, Task &newTask, string suc
 	return tempReturn;
 }
 
-int Processor::markTask( Task &newTask, Task oldTask, vector<Task> &markedTasks, vector<Task> &errorTasks )
+int Processor::markTask(Task &newTask, Task oldTask, vector<Task> &markedTasks, vector<Task> &errorTasks)
 {
 	newTask = oldTask;
 	int tempReturn=_taskList.mark(_tempStatus, oldTask);
@@ -691,7 +699,8 @@ int Processor::undoRemove( HistoryCommand command )
 
 int Processor::undoUpdate( HistoryCommand command )
 {
-	int tempReturn = _taskList.update(command.getNew(), command.getOld(), _tempTaskList);
+	int tempReturn = 
+		_taskList.update(command.getNew(), command.getOld(), _tempTaskList);
 	if (tempReturn != STATUS_CODE_SET_ERROR::ERROR_UPDATE){
 		_tempStringList.push_back(UNDO_TASK_UPDATED);
 	}else{
@@ -753,7 +762,8 @@ int Processor::redoUpdate( HistoryCommand command )
 }
 
 
-void Processor::searchRemove( vector<int> &choiceVec, Task &newTask, int &returnCode, Task oldTask, vector<Task> success, vector<Task> error )
+void Processor::searchRemove(vector<int> &choiceVec, Task &newTask, int &returnCode,
+							 Task oldTask, vector<Task> success, vector<Task> error)
 {
 	if (choiceIsValidVec(choiceVec)){
 		for (unsigned int i = 0; i<choiceVec.size(); i++){
@@ -779,7 +789,8 @@ void Processor::searchRename( int choice, int interReturn, Task &newTask, int &r
 }
 
 
-void Processor::searchReschedule( int choice, int interReturn, Task &newTask, int &returnCode, Task oldTask )
+void Processor::searchReschedule( int choice, int interReturn, 
+								 Task &newTask, int &returnCode, Task oldTask )
 {
 	if (choiceIsValid(choice)){
 		if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE){
@@ -792,7 +803,8 @@ void Processor::searchReschedule( int choice, int interReturn, Task &newTask, in
 }
 
 
-void Processor::searchMark( vector<int> &choiceVec, int interReturn, Task &oldTask, int &returnCode, Task newTask, vector<Task> success, vector<Task> error )
+void Processor::searchMark(vector<int> &choiceVec, int interReturn, Task &oldTask, int &returnCode, 
+						   Task newTask, vector<Task> success, vector<Task> error)
 {
 	if(choiceIsValidVec(choiceVec)){
 		if (interReturn != STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_MARK){

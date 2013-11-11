@@ -1,9 +1,7 @@
 #ifndef _Processor_H_
 #define _Processor_H_
 
-//@author A0103516U
-
-/*
+/**
 *This class is the central controlling unit. It will take string from UI and process it, acknowledge UI
 *if input format is not suitable or it will go ahead and extract command out of input string and call methods
 *in TaskList/history/FileProcessing to carry out the command.
@@ -13,7 +11,7 @@
 *Additional notice: this class will take the pointer of the _itemList in TaskList class to ease the cost of
 *displaying. But the author of this class will only read from _itemList. This method is more like data-binding
 *with only programmers' protection.
-*
+*@author A0103516U
 */
 
 #include <sstream>
@@ -28,23 +26,9 @@
 #include "HelpUser.h"
 
 class Processor{
-	/*
-	*_tempTaskList: hold the tasks returned by _taskList.search and _taskList.display
-	*_stringList: hold tasks in string format, used to pass to fileProcessing
-	*            for it to perform read/write file
-	*_taskListPointer: a pointer pointing to _taskList.tasklist. will only read
-	*_taskList: an instance of TaskList
-	*_history: an instance of History
-	*_fileProcessing: an instance of FileProcessing
-	*_wordList: a temporary way to help to parse command, will be changed later
-	*_statusFlag: 0--last operation ended properly;
-	*             1--remove operation has not ended;
-	*             2--rename operation has not ended;
-	*             3--reschedule operation has not ended;
-	*			  4--mark operation has not ended;
-	*/
-private:
 
+private:
+	///enum STATUSES contains various statuses of the program can be in at a given time
 	enum STATUSES{
 		NOTHING_PENDING,
 		REMOVE_PENDING,
@@ -52,28 +36,29 @@ private:
 		RESCHEDULE_PENDING,
 		MARK_PENDING,
 	};
+	
+	vector<Task> _tempTaskList;			//<a list containing previously shown tasks
+	vector<string> _tempStringList;		//<a list to give feedback in strings to IU
+	STATUSES _statusFlag;				//<status flag for the status of the program
+	bool _searched;						//<flag to check if the previous action was search
 
-	vector<Task> _tempTaskList;
-	vector<string> _tempStringList; 
-	STATUSES _statusFlag;
-	bool _searched;
+	string _tempTitle;					//<temporary title to be put in a task being modified
+	string _tempComment;				//<temporary comment to be put in a task being modified
+	bool _tempStatus;					//<temporary status to be put in a task being modified
+	int _tempType;						//<temporary type to be put in a task being modified
+	BasicDateTime _tempStart;			//<temporary start date to be put in a task being modified
+	BasicDateTime _tempEnd;				//<temporary end date to be put in a task being modified
 
-	string _tempTitle;
-	string _tempComment;
-	bool _tempStatus;
-	int _tempType;
-	BasicDateTime _tempStart;
-	BasicDateTime _tempEnd;
-
-	TaskList _taskList;
-	History _history;
-	Interpreter _interpreter;
-	FileProcessing _fileProcessing;
-	Messages _messages;
-	HelpUser _help;
+	TaskList _taskList;					//<object of the TaskList class
+	History _history;					//<object of the History class
+	Interpreter _interpreter;			//<object of the Interpreter class
+	FileProcessing _fileProcessing;		//<object of the FileProcessing class
+	Messages _messages;					//<object of the Messages class
+	HelpUser _help;						//<object of the HelpUser class
 
 private:
 
+	///chars for use in string creation and processing
 	static const char NEW_LINE;
 	static const char SLASH;
 	static const char BACK_SLASH;
@@ -87,6 +72,7 @@ private:
 	static const string NEW_LINE_STRING;
 	static const string NONE;
 
+	///strings of the command types available
 	static const string COMMAND_ADD;
 	static const string COMMAND_REMOVE;
 	static const string COMMAND_DISPLAY;
@@ -99,6 +85,7 @@ private:
 	static const string COMMAND_HELP;
 	static const string COMMAND_EXIT;
 
+	///strings for feedbacks specific to Processor
 	static const string TASK_ADDED;
 	static const string TASK_ADD_ERROR;
 	static const string CLASHES;
@@ -129,7 +116,7 @@ private:
 
 public:
 	Processor();
-	/*
+	/**
 	* Purpose:
 	* Handle user input based on first keyword
 	* and call appropriate functions to handle the command
@@ -141,139 +128,125 @@ public:
 	*/
 	int UImainProcessor(string input, string& message, vector<string>& list);
 
-	int GUImainProcessor(string);
 	~Processor();
 
 private:
-	//level 1 abstraction
+	/************************************************************************/
+	/* Level 1 abstraction                                                  */
+	/************************************************************************/
 
-	/*
-	* Purpose:
-	* Handle add commands
+	/**
+	* Purpose: Handle add commands
 	*
 	* @param input the input passed in from the main processor without the add keyword
 	* @return status code
 	*/
 	int addCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle remove commands
+	/**
+	* Purpose: Handle remove commands
 	*
 	* @param input the input passed in from the main processor without the remove keyword
 	* @return status code
 	*/
 	int removeCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle display commands
+	/**
+	* Purpose: Handle display commands
 	*
 	* @param input the input passed in from the main processor without the display keyword
 	* @return status code
 	*/
 	int displayCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle rename commands from update
+	/**
+	* Purpose: Handle rename commands from update
 	*
 	* @param input the input passed in from the main processor without the update keyword
 	* @return status code
 	*/
 	int renameCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle reschedule commands from update
+	/**
+	* Purpose: Handle reschedule commands from update
 	*
 	* @param input the input passed in from the main processor without the update keyword
 	* @return status code
 	*/
 	int rescheduleCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle mark commands
+	/**
+	* Purpose: Handle mark commands
 	*
 	* @param input the input passed in from the main processor without the mark keyword
 	* @return status code
 	*/
 	int markCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle search commands
+	/**
+	* Purpose: Handle search commands
 	*
 	* @param input the input passed in from the main processor without the search keyword
 	* @return status code
 	*/
 	int searchCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle search actions
+	/**
+	* Purpose: Handle search actions
 	*
 	* @param input the input passed in from the main processor with the command
 	* @return status code
 	*/
 	int searchActionProcessor(string command, string input);
 
-	/*
-	* Purpose:
-	* Handle undo commands
+	/**
+	* Purpose: Handle undo commands
 	*
-	* @param input the input passed in from the main processor without the undo keyword(single undo)
+	* @param input the input passed in from the main processor without the undo keyword
 	* @return status code
 	*/
 	int undoCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle redo commands
+	/**
+	* Purpose: Handle redo commands
 	*
-	* @param input the input passed in from the main processor without the redo keyword(single redo)
+	* @param input the input passed in from the main processor without the redo keyword
 	* @return status code
 	*/
 	int redoCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle help commands
+	/**
+	* Purpose: Handle help commands
 	*
 	* @param input the input passed in from the main processor without the help keyword
 	* @return status code
 	*/
 	int helpCommandProcessor(string input);
 
-	/*
-	* Purpose:
-	* Handle wrong/invalid commands
+	/**
+	* Purpose: Handle wrong/invalid commands
 	*
 	* @param input the input passed in from the main processor
 	* @return status code(always WARNING_WRONG_INPUT)
 	*/
 	int otherCommandProcessor();
 
-	/*
-	* Purpose:
-	* Handle save command
+	/**
+	* Purpose: Handle save command
 	*
 	* @return status code
 	*/
 	int saveFile();
 
-	/*
-	* Purpose:
-	* Handle load command
+	/**
+	* Purpose: Handle load command
 	*
 	* @return status code
 	*/
 	int loadFile();
 
-	/*
-	* Purpose:
-	* To return feedback to the user and give the overall status of the operation
+	/**
+	* Purpose: To return feedback to the user and give the overall status of the operation
 	*
 	* @param returnCode feedback from commandProcessors
 	* @param message message to be passed to the UI
@@ -283,111 +256,45 @@ private:
 	*/
 	int feedbackToUI(int returnCode, string& message, vector<string>& list);
 
-	//for add command processing
-	/*
-	* Purpose:
-	* add tasks, put any clashes in _tempTaskList
-	*
-	* @param title name of task
-	* @param type type of task
-	* @param start start time of task
-	* @param end end time of task
-	* @param comment additional description
-	* @return status code
-	*/
+	/************************************************************************/
+	/* Level 2 abstraction                                                  */
+	/************************************************************************/
+	
 	int addTask(string title, int type, BasicDateTime start, BasicDateTime end, string comment);
-
 	void recordAndFeedbackAdd( Task oldTask, Task newTask );
-
 	int removeTask( Task newTask, Task oldTask, vector<Task>& removed, vector<Task>& error);
-
 	int renameTask( Task &oldTask, Task &newTask );
-
 	int recordAndFeedbackUpdate( Task &oldTask, Task &newTask, string success, string error );
-
 	int rescheduleTask( Task &oldTask, Task &newTask );
-
 	int markTask( Task &newTask, Task oldTask, vector<Task> &markedTasks, vector<Task> &errorTasks );
-
+	
+	///helper functions for undo
 	int undoAdd( HistoryCommand command );
-
 	int undoRemove( HistoryCommand command );
-
 	int undoUpdate( HistoryCommand command );
 
+	///helper functions for redo
 	int redoAdd( HistoryCommand command );
-
 	int redoRemove( HistoryCommand command );
-
 	int redoUpdate( HistoryCommand command );
 
+	///helper functions for searchActions
 	void searchMark( vector<int> &choiceVec, int interReturn, Task &oldTask, int &returnCode, Task newTask, vector<Task> success, vector<Task> error );
-
 	void searchReschedule( int choice, int interReturn, Task &newTask, int &returnCode, Task oldTask );
-
 	void searchRename( int choice, int interReturn, Task &newTask, int &returnCode, Task oldTask );
-
 	void searchRemove( vector<int> &choiceVec, Task &newTask, int &returnCode, Task oldTask, vector<Task> success, vector<Task> error );
-
+	
+	///other helper functions
 	string getCommand(string& input);
-
 	bool canProceed( string command, string input, int& returnCode );
-
-	/*
-	* Purpose:
-	* checks to see if the user wanted to escape out of a ambiguous situation that required a choice
-	*
-	* @param command command from the UI
-	* @return true if the user wanted to escape, else return false
-	*/
 	bool isEscape(string command);
-
-	/*
-	* Purpose:
-	* record command to assist with undo and redo
-	*
-	* @param commandType the command type that was performed
-	* @param oldTask the task that was changed(empty in case of add)
-	* @param newTask the task that the old task was changed to(empty in case of remove)
-	* @return void
-	*/
 	int recordCommand(COMMAND_TYPES commandType, Task oldTask, Task newTask);
-
-	/*
-	* Purpose:
-	* break a string into a vector of words by space
-	*
-	* @param longStr the command type that was performed
-	* @param outputVector the task that was changed(empty in case of add)
-	* @return nothing
-	*/
 	bool choiceIsValidVec(vector<int> choice);
-
 	bool choiceIsValid(unsigned int choice);
-
-	/*
-	* Purpose:
-	* converts a vector of tasks into a vector of strings and pushes them in another vector
-	*
-	* @param taskList the vector of the Tasks passed in
-	* @param stringList the vector of string that the strings have to be pushed in
-	* @return a vector of strings based on the vector of tasks
-	*/
 	void taskVecToStringVec(vector<Task> taskList, vector<string>& stringList);
-
 	void dateTimeVecToStringVec(vector<BasicDateTime>slots, vector<string>& stringList);
-
-	/*
-	* Purpose:
-	* checks if the command entered is one of the acceptable commands
-	*
-	* @param command the command that needs to be checked
-	* @return true if the command is a normal command, false otherwise
-	*/
 	bool commandIsNormal(string command);
-
 	void pushFeedackToStringVec(vector<Task> taskVector, string message);
-
 	void checkComment(Task task);
 };
 

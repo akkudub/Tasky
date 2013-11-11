@@ -1,6 +1,5 @@
-#include "Messages.h"
 
-//@author A0103516U
+#include "Messages.h"
 
 const string Messages::MESSAGE_OVERALL_SUCCESS 				  = "Success!";
 const string Messages::MESSAGE_OVERALL_WARNING 			      = "Warning!";

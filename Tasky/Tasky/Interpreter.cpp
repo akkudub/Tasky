@@ -1,4 +1,5 @@
 #include "Interpreter.h"
+#include "LogLibrary/Log.h"
 #include <assert.h>
 #include <algorithm>
 
@@ -34,6 +35,10 @@ const string Interpreter::SUN_KEY_WORD               = "sun";
 const string Interpreter::SUN_FULL_KEY_WORD          = "sunday";
 const string Interpreter::AM_KEY_WORD                = "am";
 const string Interpreter::PM_KEY_WORD                = "pm";
+
+const string Interpreter::BUG_REPORT_PART1           = "translateDateTime";
+const string Interpreter::BUG_REPORT_PART2           = "translateNaturalDate";
+const string Interpreter::LOG_INTERPRETER            = "interpreter.log";
 
 const char Interpreter::SLASH                        = '/';
 const char Interpreter::DOT                          = '.';
@@ -131,7 +136,7 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MIXED_UP_INPUT;
 	}
 	if (traditionalSearchFlag){
-		slotEnabled=false;  //having passed the previous test means this should be false
+		slotEnabled=false;  
 	}else{
 		if (!timeFlag){
 			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
@@ -581,6 +586,7 @@ bool Interpreter::translateDateTime(string str1, string str2, int either){
 		timeFlag=true;
 		setDefaultTimeParams(either);
 	}else{
+		LogLibrary::Log::writeLog(ERROR_INTERPRET_SEARCH_RESCHEDULE,BUG_REPORT_PART1, LOG_INTERPRETER);
 		return false;  //if reach here, a bug found
 	}
 	return dateFlag&&timeFlag;
@@ -604,6 +610,7 @@ bool Interpreter::translateNaturalDate(string str1, string str2, int either){
 	}else if (str1 == NEXT_KEY_WORD){
 		return dateThisOrNextDateFormat(thatOfWeek-todayOfWeek, 1, either);
 	}else{
+		LogLibrary::Log::writeLog(ERROR_INTERPRET_SEARCH_RESCHEDULE,BUG_REPORT_PART2, LOG_INTERPRETER);
 		return false;  //possibly a bug or wrong input from the user
 	}
 }
@@ -630,8 +637,8 @@ bool Interpreter::dateStandardInput(string str, int either){
 		year=stringToInt(vec.at(2));
 		month=stringToInt(vec.at(1));
 		day=stringToInt(vec.at(0));
-		if (year>=0&&year<=99){
-			year=year+2000;
+		if (year>=TWO_BIT_YEAR_LOWER&&year<=TWO_BIT_YEAR_UPPER){
+			year=year+TWO_BIT_YEAR_BASE;
 		}
 		dateFlag=validateDate(year, month, day);
 	}else if(size==2){
@@ -673,9 +680,9 @@ bool Interpreter::dateThisOrNextDateFormat(int day, int week, int either){
 	time_t time1=time(NULL);
 	struct tm time2;
 	localtime_s(&time2, &time1);
-	int incremental=week*7+day;
+	int incremental=week*DAYS_IN_WEEK+day;
 	if (incremental < 0){
-		incremental+=7;
+		incremental+=DAYS_IN_WEEK;
 	}
 	time2.tm_mday=time2.tm_mday+incremental;
 	mktime(&time2);
@@ -714,8 +721,8 @@ bool Interpreter::timeStandardInput(string str, char delim, int either){
 
 bool Interpreter::timeSpecialNumsOnly(string str, int either){
 	int num=stringToInt(str);
-	int hour=num/100;
-	int minute=num%100;
+	int hour=num/RADIX_HUNDRED;
+	int minute=num%RADIX_HUNDRED;
 	bool timeFlag=false;
 	timeFlag=validateTime(hour, minute, SECOND_LOWER_BOUND);
 	if (timeFlag){
@@ -950,7 +957,7 @@ int Interpreter::findFirstOfWord(const string& source, const string& word){
 int Interpreter::findLastOfWord(const string& source, const string& word){
 	int num=source.find(word);
 	int prev=num;
-	while(num!=-1){
+	while(num!=INTERNAL_ERROR_CODE){
 		prev=num;
 		num=source.find(word, num+1);
 	}

@@ -56,6 +56,13 @@ private:
 	static const string AM_KEY_WORD;
 	static const string PM_KEY_WORD;
 
+	//////////////////////////////////////////////////////////////////////////
+	//logging strings                                                       //
+	//////////////////////////////////////////////////////////////////////////
+	static const string BUG_REPORT_PART1;
+	static const string BUG_REPORT_PART2;
+	static const string LOG_INTERPRETER;
+
 	static const char SLASH;
 	static const char DOT;
     static const char COMMA;
@@ -117,6 +124,10 @@ private:
 	static const int POWER_SEARCH_PENDING_STATUS          = -1;
 	static const int POWER_SEARCH_DONE_STATUS             = 1;
 	static const int POWER_SEARCH_NO_STATUS               = 0;
+	static const int DAYS_IN_WEEK                         = 7;
+	static const int TWO_BIT_YEAR_LOWER                   = 0;
+	static const int TWO_BIT_YEAR_UPPER                   = 99;
+	static const int TWO_BIT_YEAR_BASE                    = 2000;
 
 	static const int EITHER_AS_START                      = 1;
 	static const int EITHER_AS_END                        = 2;
@@ -124,65 +135,19 @@ private:
 
 public:
 	Interpreter();
-	/**
-	 * Purpose: for add operation. Not useful part will be neglected.
-	 * @param string str: input from another class
-	 * @param string(ref) title: this will contain title of the task
-	 * @param int(ref) type: timed/deadline/floating
-	 * @param BasicDateTime(ref) start: contain the start date time--will be now by default
-	 * @param BasicDateTime(ref) end: contain the end date time
-	 * @param string(ref) comment: contain comment of the task
-	 * @returns 
-	 */
 	//@author A0105750N
 	int interpretAdd(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end, string& comment);
-	/**
-	 *                                                                  
-	 */
 	int interpretPowerSearch(string str, bool& slotEnabled, vector<string>& keywords, int& searchStatus, int& type, BasicDateTime& start, BasicDateTime& end);
-	/**
-	 *                                                                  
-	 */
 	int interpretDisplay(const string& str, int& displayType);
-	/**
-	 *                                                                  
-	 */
 	int interpretRename(string str, string& oldTitle, string& newTitle, string& newComment);
-	/**
-	 *                                                                  
-	 */
 	int interpretRenameAfterSearch(string str, int& num, string& newtitle, string& newComment);
-	/**
-	 *                                                                  
-	 */
 	int interpretReschedule(string str, string& title, int& type, BasicDateTime& start, BasicDateTime& end);
-	/**
-	 *                                                                  
-	 */
 	int interpretRescheduleAfterSearch(string str, int& num,int& type, BasicDateTime& start, BasicDateTime& end);
-	/**
-	 *                                                                  
-	 */
 	int interpretMark(string str, string& title, bool& status);
-	/**
-	 *                                                                  
-	 */
 	int interpretMarkAfterSearch(string str, vector<int>& vec, bool& status);
-	/**
-	 *                                                                  
-	 */
 	int interpretRemove(string str, string& title);
-	/**
-	 *                                                                  
-	 */
 	int stringToInt(string str);
-	/**
-	 *                                                                  
-	 */
 	vector<int> stringToIntVec(string str);
-	/**
-	 *                                                                  
-	 */
 	string toLowerCase(string input);
 	~Interpreter();
 

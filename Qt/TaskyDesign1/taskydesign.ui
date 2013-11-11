@@ -84,6 +84,9 @@ padding: 0px 0px 5px 0px;
          <pointsize>10</pointsize>
         </font>
        </property>
+       <property name="toolTip">
+        <string>DisplayPanel</string>
+       </property>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
@@ -189,6 +192,9 @@ border: 0px solid white;</string>
            <pointsize>11</pointsize>
           </font>
          </property>
+         <property name="toolTip">
+          <string>InputBox</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">QLineEdit#InputBox{
 color: #FFFFFF;
@@ -220,6 +226,9 @@ background-color: #2E534C;
     </property>
     <property name="focusPolicy">
      <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="toolTip">
+     <string>Close</string>
     </property>
     <property name="styleSheet">
      <string notr="true">QToolButton#CloseButton{	
@@ -260,6 +269,9 @@ QToolButton#CloseButton:hover{
     </property>
     <property name="focusPolicy">
      <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="toolTip">
+     <string>Hide</string>
     </property>
     <property name="styleSheet">
      <string notr="true">QToolButton#MinimizeButton{
@@ -306,6 +318,9 @@ QToolButton#MinimizeButton:hover{
       <weight>75</weight>
       <bold>true</bold>
      </font>
+    </property>
+    <property name="toolTip">
+     <string>StatusBar</string>
     </property>
     <property name="text">
      <string/>

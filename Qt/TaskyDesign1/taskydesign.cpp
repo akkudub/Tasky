@@ -139,6 +139,7 @@ void TaskyDesign::setUpTrayIcon(){
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon(QIcon(ICON_STRING));
 	trayIcon->show();
+	trayIcon->setToolTip(TRAY_MSG_TITLE);
 }
 
 void TaskyDesign::setUpCompleter(){

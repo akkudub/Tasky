@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 #include <QSharedMemory>
 
+//@author A0105750N
 int main(int argc, char *argv[])
 {
 	const int ONE_INSTANCE_MODE = 1;

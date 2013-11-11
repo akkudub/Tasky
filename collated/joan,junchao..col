@@ -41,6 +41,15 @@ private:
 	static const string ABOUT_STR;
 
 public:
+	string getHelpMsg(string input);
+
+private:
+	string determineHelperString(const string& input);
+	bool equalWithoutCase(string input, const string& keyword);
+};
+
+#endif
+
 	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\HelpUser.h
 
 

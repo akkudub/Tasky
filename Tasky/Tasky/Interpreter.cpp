@@ -3,7 +3,6 @@
 #include "LogLibrary/Log.h"
 #include <assert.h>
 #include <algorithm>
-//@a0105750n
 
 const string Interpreter::EMPTY_STRING               = "";
 const string Interpreter::FROM_KEY_WORD              = "from ";

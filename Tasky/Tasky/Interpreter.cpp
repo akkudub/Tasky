@@ -245,13 +245,9 @@ int Interpreter::interpretRescheduleAfterSearch(string str, int& num,int& type, 
 	int pos=0;
 	bool fromToFlag=false;
 	bool byFlag=false;
-
-	if (!findStartingPosOfKeywordWithoutCase(str, FROM_KEY_WORD, pos)
-		&& !findStartingPosOfKeywordWithoutCase(str, BY_KEY_WORD, pos)){
-		return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_SEARCH_RESCHEDULE;
-	}
-	num=stringToInt(str.substr(0, pos-1));
-	if (!firstVerifyFromToOrBy(str.substr(pos-1), fromToFlag, byFlag)){
+    vector<string> strVec=breakStringWithDelim(str, SPACE);
+	num=stringToInt(strVec.at(0));
+	if (!firstVerifyFromToOrBy(str, fromToFlag, byFlag)){
 		type=NO_DATETIME;
 		return STATUS_CODE_SET_SUCCESS::SUCCESS_INTERPRET_SEARCH_RESCHEDULE;
 	}
@@ -473,7 +469,8 @@ bool Interpreter::byCheck(string str){
 	bool byFlag=false;
 	string tempStr;
 	vector<string> vec;
-	tempStr=str.substr(3);
+	int pos=str.find(BY_KEY_WORD);
+	tempStr=str.substr(pos+3);
 	vec=breakStringWithDelim(tempStr, SPACE);
 	if (!checkSizeOfDateTimeStringVec(vec)){
 		return false;

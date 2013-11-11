@@ -89,6 +89,7 @@ private:
 	static const QString NEW_LINE;
 	static const QString NEW_LINE_HTML;
 	static const QString ICON_STRING;
+	static const QString TRAY_ICON_STRING;
 
 	static const std::string SUCCESS_STR;
 	static const std::string ERROR_STR;

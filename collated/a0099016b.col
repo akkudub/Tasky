@@ -1,0 +1,910 @@
+//@author: a0099016b
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.cpp
+	 */
+
+#include "BasicDateTime.h"
+
+const string BasicDateTime::DASH = "/";
+const string BasicDateTime::SPACE = " ";
+const string BasicDateTime::COLON = ":";
+const string BasicDateTime::ZERO_STRING = "0";
+
+BasicDateTime::BasicDateTime(){
+	_year=1;
+	_month=1;
+	_day=1;
+	_hour=0;
+	_minute=0;
+	_sec=0;
+}
+
+BasicDateTime::~BasicDateTime(){
+}
+
+BasicDateTime::BasicDateTime(int year, int month, int day){
+	_year=year;
+	_month=month;
+	_day=day;
+	_hour=0;
+	_minute=0;
+	_sec=0;
+}
+
+BasicDateTime::BasicDateTime(int year, int month, int day, int hour, int minute){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec=0;
+}
+
+BasicDateTime::BasicDateTime(int year, int month, int day, int hour, int minute, int sec){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec=sec;
+}
+
+void BasicDateTime::setDateTime(int year, int month, int day){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = 0;
+	_minute = 0;
+	_sec = 0;
+}
+
+void BasicDateTime::setDateTime(int year, int month, int day, int hour, int minute){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec = 0;
+}
+
+void BasicDateTime::setDateTime(int year, int month, int day, int hour, int minute, int sec){
+	_year = year;
+	_month = month;
+	_day = day;
+	_hour = hour;
+	_minute = minute;
+	_sec=sec;
+}
+
+int BasicDateTime::getYear(){ 
+	return _year;
+}
+
+void BasicDateTime::setYear(int year){
+	_year=year;
+}
+
+int BasicDateTime::getMonth(){ 
+	return _month;
+}
+
+void BasicDateTime::setMonth(int month){
+	_month=month;
+}
+
+int BasicDateTime::getDay(){
+	return _day;
+}
+
+void BasicDateTime::setDay(int day){
+	_day=day;
+}
+
+int BasicDateTime::getHour(){ 
+	return _hour;
+}
+
+void BasicDateTime::setHour(int hour){
+	_hour=hour;
+}
+
+int BasicDateTime::getMinute(){
+	return _minute;
+}
+
+void BasicDateTime::setMinute(int minute){
+	_minute=minute;
+}
+
+int BasicDateTime::getSec(){
+	return _sec;
+}
+
+void BasicDateTime::setSec(int sec){
+	_sec=sec;
+}
+
+string BasicDateTime::getDateTimeString(){
+	string syear=addZeroFromFront(to_string(_year)), smonth=addZeroFromFront(to_string(_month)), sday=addZeroFromFront(to_string(_day));
+	string shour=addZeroFromFront(to_string(_hour)), sminute=addZeroFromFront(to_string(_minute)), ssec=addZeroFromFront(to_string(_sec));
+	return sday+DASH+smonth+DASH+syear+SPACE+shour+COLON+sminute+COLON+ssec;
+}
+
+int BasicDateTime::compareTo(BasicDateTime another){
+	if (this->getYear() != another.getYear()){
+		return this->getYear() - another.getYear();
+	}else if(this->getMonth() != another.getMonth()){
+		return this->getMonth() - another.getMonth();
+	}else if(this->getDay() != another.getDay()){
+		return this->getDay() - another.getDay();
+	}else if(this->getHour() != another.getHour()){
+		return this->getHour() - another.getHour();
+	}else if(this->getMinute() != another.getMinute()){
+		return this->getMinute() - another.getMinute();
+	}else if(this->getSec() != another.getSec()){
+		return this->getSec() - another.getSec();
+	}else{
+		return ZERO;
+	}
+}
+
+string BasicDateTime::addZeroFromFront(string str){
+	if (str.size()==1){
+		return ZERO_STRING+str;
+	}else if (str.size()==0){
+		return ZERO_STRING+ZERO_STRING;
+	}else{
+		return str;
+	}
+}
+
+string BasicDateTime::dayOfWeek(){
+	struct tm time2;
+	time2.tm_year=_year-1900;
+	time2.tm_mon=_month-1;
+	time2.tm_mday=_day;
+	mktime(&time2);
+	return "";
+}
+
+string BasicDateTime::mapDayOfWeekToString(int dayOfWeek){
+	return "";
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.h
+	 */
+
+/**
+* Tasky's version of storing date and time 
+* 1. able to set based on date, month, year ,  hour , min , sec
+* 2. able to compare to another BasicDateTime object based on contained DateTime object
+* 3. format the date and time to be inclusive of 0s
+*/
+
+class BasicDateTime
+{
+private:
+	int _year;
+	int _month;
+	int _day;
+	int _hour;
+	int _minute;
+	int _sec;
+
+private:
+	static const string DASH;
+	static const string SPACE;
+	static const string COLON;
+	static const string ZERO_STRING;
+	static const int ZERO=0;
+
+public:
+	BasicDateTime();
+	BasicDateTime(int year, int month, int day);
+	BasicDateTime(int year, int month, int day, int hour, int minute);
+	BasicDateTime(int year,int month,int day,int hour,int minute,int sec);
+	~BasicDateTime();
+	void setDateTime(int year, int month, int day);
+	void setDateTime(int year, int month, int day, int hour, int minute);
+	void setDateTime(int year, int month, int day, int hour, int minute, int sec);
+	void setYear(int year);	
+	void setMonth(int month);	
+	void setDay(int day);	
+	void setHour(int hour);	
+	void setMinute(int minute);	
+	void setSec(int sec);
+	int getYear();
+	int getMonth();
+	int getDay();
+	int getHour();
+	int getMinute();
+	int getSec();
+	string getDateTimeString();
+	/**
+	 * compare to another BasicDateTime object based on internal DateTime object comparison
+	 * @param another BasicDateTime Object to be compared to
+	 * @return value of comparision(compareTo)
+	 */
+	int compareTo(BasicDateTime another);
+
+private:
+	string addZeroFromFront(string str);
+	string dayOfWeek();
+	string mapDayOfWeekToString(int dayOfWeek);
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\BasicDateTime.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\FileProcessing.cpp
+	 */
+
+#include "FileProcessing.h"
+
+
+int FileProcessing::load(vector<string>& data){
+	try{
+		ifstream input(_LOGNAME);
+		if(!input.is_open()) 
+			return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
+		if (!input.good()){
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR, "Error in opening file","FileProcessingLog");
+			return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
+		}
+		if (emptyFile()){
+			input.close();
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_WARNING,"Empty file","FileProcessingLog");
+			return STATUS_CODE_SET_WARNING::WARNING_LOAD_EMPTY_FILE;	
+		}
+		readLines(input,data);
+		input.close();
+		if (data.size() % TASKLINES != 0) {
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR, "Corrupted data while loading file","FileProcessingLog");
+			return STATUS_CODE_SET_ERROR::ERROR_LOAD_CORRUPTED_DATA;
+		}
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_LOAD;
+	}catch(exception e) {
+		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in opening file","FileProcessingLog");
+		return STATUS_CODE_SET_ERROR::ERROR_LOAD_OPENFILE;
+	}
+}
+
+void FileProcessing::readLines(ifstream& input, vector<string>& data){
+	data.clear();
+	while(input) {
+		string line;
+		getline(input, line);
+		if (line != "\n" && line != ""){
+			data.push_back(line);
+		}
+	}
+}
+
+
+int FileProcessing::save(vector<string>& data){
+	try{
+		ofstream output(_LOGNAME);
+		if (!output.is_open()) {
+			output.clear();
+			output.open(_LOGNAME, ofstream::out|ofstream::trunc);
+		}
+		if (!output.good()){
+			output.close();
+			LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in saving file","FileProcessingLog");
+			return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;
+		}
+		writeLines(output,data);
+
+		output.close();
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_SAVE;
+	}catch(exception e){
+		LogLibrary::Log::writeLog(LogLibrary::STATUS_CODE_SET_LOG::LOG_ERROR,"Error in saving file","FileProcessingLog");
+		return STATUS_CODE_SET_ERROR::ERROR_SAVE_SAVEFILE;
+	}
+}
+
+void FileProcessing::writeLines(ofstream& output, vector<string>& data){
+	int countLine = 0;
+	for(string s:data) {
+		output << s << endl;
+		countLine++;
+		if (countLine >= TASKLINES){
+			output << endl;
+			countLine = 0;
+		}
+	}
+}
+
+
+bool FileProcessing::emptyFile() {
+	bool isEmpty = false;
+	ifstream inf;
+	inf.open(_LOGNAME);
+	if(inf.peek() == ifstream::traits_type::eof())
+		isEmpty = true;
+	inf.close();
+	return isEmpty;
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\FileProcessing.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\FileProcessing.h
+	 */
+
+
+#include <fstream>
+#include "Essential.h"
+#include "LogLibrary/Log.h"
+
+static const string _LOGNAME = "Tasky.txt";
+static const int TASKLINES = 6;
+
+class FileProcessing{
+private:
+	/**
+	* Purpose:
+	* Checks if the file Log is empty
+	*@return True - File Log is empty, False - File Log not empty
+	*/
+	bool emptyFile();
+	void readLines(ifstream& input, vector<string>& data);
+	void writeLines(ofstream& output, vector<string>& data);
+public:
+	/**
+	* Purpose:
+	* Checks if file Log exists
+	* If it exists, reads and load the tasks from file Log into vector<string> data
+	* @param data - vector to be loaded with tasks from Log
+	*@return Success in loading file; File Log does not exist; File Log is empty
+	*/
+	int load(vector<string>& data); 
+	/**
+	* Purpose:
+	* Checks if file Log exist
+	* If it exists, writes the task from vector<string> data into file Log
+	* If it does not exist, create a file Log
+	* @param data - vector containing all the tasks to be written
+	* @return Success in writing file; failure in writing file
+	*/
+	int save(vector<string>& data); //reads vector, writes to text file
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\FileProcessing.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\History.cpp
+	 */
+
+#include "History.h"
+
+
+History::History() {
+	_undoRecord.clear();
+	_redoRecord.clear();
+}
+
+
+int History::undo(HistoryCommand& hist) {
+	int currentSize = _undoRecord.size();
+	if(currentSize > 0) {
+		hist = _undoRecord.back();
+		_redoRecord.push_back(_undoRecord.back());
+		_undoRecord.pop_back();
+		if (currentSize - _undoRecord.size() == CHANGE_IN_HISTORY_SIZE){
+			return STATUS_CODE_SET_SUCCESS::SUCCESS_UNDO;
+		}
+	} else {
+		return STATUS_CODE_SET_WARNING::WARNING_UNDO_NO_TASKS;
+	}
+	return STATUS_CODE_SET_ERROR::ERROR_UNDO;
+}
+
+
+int History::record(HistoryCommand hist) {
+	int currentSize = _undoRecord.size();
+	_undoRecord.push_back(hist);
+	while (_undoRecord.size() > HISTORY_MAX_SIZE) {
+		_undoRecord.erase(_undoRecord.begin());
+	}
+	if (_undoRecord.size() <= HISTORY_MAX_SIZE){
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_RECORD;
+	}
+	return STATUS_CODE_SET_ERROR::ERROR_RECORD;
+}
+
+int History::redo(HistoryCommand& hist) {
+	int currentSize = _redoRecord.size();
+	if(currentSize > 0) {
+		hist = _redoRecord.back();
+		_undoRecord.push_back(_redoRecord.back());
+		_redoRecord.pop_back();
+		return STATUS_CODE_SET_SUCCESS::SUCCESS_REDO;
+	} else {
+		return STATUS_CODE_SET_WARNING::WARNING_REDO_NO_TASKS;
+	}
+	return STATUS_CODE_SET_ERROR::ERROR_REDO;
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\History.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\History.h
+	 */
+
+
+#include "Essential.h"
+#include "HistoryCommand.h"
+
+
+///record past sucessful operations and pop the last one when undo called
+class History{
+private:
+	static const int CHANGE_IN_HISTORY_SIZE = 1;
+	static const int HISTORY_MAX_SIZE = 5;
+	vector<HistoryCommand> _undoRecord;
+	vector<HistoryCommand> _redoRecord;
+	
+public:
+	/**
+	* Purpose:
+	*Clears the vector containing history actions upon start up
+	*/
+	History();
+	/**
+	* Purpose:
+	* Retrieves the last action from vector of history records
+	* @param hist - last action done will be passed back to calling function via this referenced string
+	* @return Success in retrival; Empty records, nothing to be undone; Failure
+	*/
+	int undo(HistoryCommand& hist);
+	/* Purpose:
+	* saves the successful action into vectory of history records
+	* @param hist - string containing successful user action preformed
+	*@return Success in putting the record into history; Failure
+	*/
+	int record(HistoryCommand hist);
+	/**
+	* Retrieves the previously undone action
+	* @param hist previously undone action will be stored here
+	*/
+	int redo(HistoryCommand& hist);
+	
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\History.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\UI.cpp
+	 */
+
+
+void UI::UI_interface(){
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	string command;
+	bool statusFlag = false;
+	displayWelcomeMessage(hConsole);
+	while (!statusFlag) {
+		displayCommandMessage(command, hConsole);
+		displayProcessorMessage(command, hConsole, statusFlag);
+	}
+}
+
+
+void UI::displayWelcomeMessage(HANDLE hConsole){
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	cout << MESSAGE_WELCOME;
+	string message;
+	vector<string> feedback;
+	int output = _processor.UImainProcessor(COMMAND_DISPLAY_TASK_TODAY, message, feedback);
+	if (output == STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS) {
+		cout << MESSAGE_TASKS_TODAY << endl;
+		for (string str:feedback){
+			cout << str << endl;
+			cout << endl;
+		}
+	}
+	cout << endl;
+}
+
+
+void UI::displayCommandMessage(string& command, HANDLE hConsole){
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	cout << MESSAGE_COMMAND;
+	getline(cin, command);
+}
+
+
+void UI::displayProcessorMessage(string command, HANDLE hConsole, bool& statusFlag){
+	string message;
+	vector<string> feedback;
+	int output = _processor.UImainProcessor(command, message, feedback);
+	switch(output){
+	case STATUS_CODE_SET_OVERALL::OVERALL_ERROR:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+		break;
+	case STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		break;
+	case STATUS_CODE_SET_OVERALL::OVERALL_WARNING:
+	case STATUS_CODE_SET_OVERALL::OVERALL_PROMPT:
+		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN |FOREGROUND_RED | FOREGROUND_INTENSITY);
+		break;
+	case STATUS_CODE_SET_OVERALL::OVERALL_EXIT:
+		statusFlag = true;
+		break;
+	}
+
+	assert(!message.empty());
+	cout << endl;
+	cout << message << endl;
+
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE |FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	for (string str:feedback){
+		cout << str << endl;
+		cout << endl;
+	}
+	cout << endl;
+
+
+}
+
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\UI.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\UI.h
+	 */
+
+
+#include <iostream>
+#include <Windows.h>
+#include <assert.h>
+#include "Processor.h"
+
+using namespace std;
+using namespace System;
+
+static const string MESSAGE_WELCOME = "Welcome To Tasky! ";
+static const string MESSAGE_TASKS_TODAY = "\nThe tasks for today are as follows:\n";
+static const string MESSAGE_GOODBYE = "GoodBye!";
+static const string MESSAGE_COMMAND = "Command: ";
+
+static const string COMMAND_EXIT = "exit";
+static string COMMAND_DISPLAY_TASK_TODAY = "display today";
+
+class UI
+{
+private:
+	Processor _processor;
+	/**
+	* Purpose:
+	* Displays a welcome message to the user
+	* Displays the tasks of the day/pending tasks
+	*/
+	void displayWelcomeMessage(HANDLE hConsole);
+	/**
+	* Purpose:
+	* Takes in user command & put into string command
+	* @param command - stores the user input 
+	*/
+	void displayCommandMessage(string& command, HANDLE hConsole);
+	/**
+	* Purpose:
+	* Send the user's command to the Processor
+	*@param command - user input to be passed to Processor
+	*/
+	void displayProcessorMessage(string command,HANDLE hConsole,bool& statusFlag);
+public:
+	/**
+	* Purpose:
+	* Function called when program is started up
+	* Takes in user input/commands and passes to Processor
+	*Checks if user wishes to exit the program
+	*/
+	void UI_interface(); //takes in user input
+};
+
+#endif
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\Tasky\Tasky\UI.h
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\Main.cpp
+	 */
+
+#include "UI.h"
+#include "testHistory.h"
+#include "testFileProcessing.h"
+
+int main()
+{
+	testHistory testHist;
+	testHist.testHistoryClass();
+
+	testFileProcessing testFP;
+	testFP.testFileProcessingClass();
+
+	UI uiTest;
+	uiTest.UI_interface();
+	system("pause");
+
+	return 0;
+}
+
+
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\Main.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\ProcessorStub.cpp
+	 */
+
+#include "ProcessorStub.h"
+
+int ProcessorStub::UImainProcessor(string input, string& message, vector<string>& list) {
+	message = "returning from stub"; 
+
+	string list1 = "list1";
+	string list2 = "list2";
+	string list3 = "list3";
+
+	list.push_back(list1);
+	list.push_back(list2);
+	list.push_back(list3);
+
+	string yellow = "yellow";
+	string red = "red";
+	string green = "green";
+	string blue = "blue";
+	string exit = "exit";
+	if (input.compare(yellow) == 0){
+		return STATUS_CODE_SET_OVERALL::OVERALL_WARNING;
+	}else if (input.compare(red) == 0){
+		return STATUS_CODE_SET_OVERALL::OVERALL_ERROR;
+	}else if (input.compare(blue) == 0){
+		return STATUS_CODE_SET_OVERALL::OVERALL_PROMPT;
+	}else if (input.compare(exit) == 0){
+		return STATUS_CODE_SET_OVERALL::OVERALL_EXIT;
+	}else{
+		return STATUS_CODE_SET_OVERALL::OVERALL_SUCCESS;
+	}
+}
+	// End of segment: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\ProcessorStub.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\testFileProcessing.cpp
+	 */
+
+#include "testFileProcessing.h"
+
+void testFileProcessing::testFileProcessingClass(){
+	normalTestCase();
+	lessDataTestCase();
+	moreDataTestCase();
+}
+
+/*normal test case, expected to return all correct values*/
+void testFileProcessing::normalTestCase(){
+	vector<string> testData;
+	testData.push_back("data line 1");
+	testData.push_back("data line 2");
+	testData.push_back("data line 3");
+	testData.push_back("data line 4");
+	testData.push_back("data line 5");
+	testData.push_back("data line 6");
+
+	testData.push_back("data line 7");
+	testData.push_back("data line 8");
+	testData.push_back("data line 9");
+	testData.push_back("data line 10");
+	testData.push_back("data line 11");
+	testData.push_back("data line 12");
+
+
+	FileProcessing fP;
+	int result;
+
+	result = fP.save(testData);
+	if (result != SUCCESS_SAVE) {
+		cout << result;
+		cout << "Not a successful save" << endl;
+	}
+
+	vector<string> output;
+	result = fP.load(output);
+	if (result != SUCCESS_LOAD && result != WARNING_LOAD_EMPTY_FILE){
+		cout << result;
+		cout << "Not a successful load"<< endl;
+	}
+
+	int count = 0;
+	for(string str:output){
+		cout << str << endl;
+		count++;
+		if (count == 6) {
+			cout<<endl;
+			count = 0;
+		}
+	}
+}
+
+/*boundary case for more data lines not in multiple of 6*/
+void testFileProcessing::moreDataTestCase(){
+	vector<string> testData;
+	
+	testData.push_back("data line 1");
+	testData.push_back("data line 2");
+	testData.push_back("data line 3");
+	testData.push_back("data line 4");
+	testData.push_back("data line 5");
+	testData.push_back("data line 6");
+
+	testData.push_back("data line 7");
+
+	FileProcessing fP;
+	int result;
+
+	result = fP.save(testData);
+	if (result != SUCCESS_SAVE) {
+		cout << result;
+		cout << "Not a successful save" << endl;
+	}
+
+	vector<string> output;
+	result = fP.load(output);
+	if (result != SUCCESS_LOAD && result != WARNING_LOAD_EMPTY_FILE){
+		cout << result;
+		cout << "Not a successful load"<< endl;
+	}
+}
+
+/*boundary case for less data lines not in multiple of 6*/
+void testFileProcessing::lessDataTestCase(){
+	vector<string> testData;
+	
+	testData.push_back("data line 1");
+	testData.push_back("data line 2");
+	testData.push_back("data line 3");
+	testData.push_back("data line 4");
+	testData.push_back("data line 5");
+
+	FileProcessing fP;
+	int result;
+
+	result = fP.save(testData);
+	if (result != SUCCESS_SAVE) {
+		cout << result;
+		cout << "Not a successful save" << endl;
+	}
+
+	vector<string> output;
+	result = fP.load(output);
+	if (result != SUCCESS_LOAD && result != WARNING_LOAD_EMPTY_FILE){
+		cout << result;
+		cout << "Not a successful load"<< endl;
+	}
+}
+
+	// End of segment: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\testFileProcessing.cpp
+
+
+
+
+
+	/**
+	 * origin: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\testHistory.cpp
+	 */
+
+#include "testHistory.h"
+
+void testHistory::testHistoryClass(){
+
+	History hT;
+	//--------DEFAULT-----------------
+	BasicDateTime DoldBDTStart(0,0,0);
+	BasicDateTime DoldBDTEnd(0,0,0);
+	Task DoldTask("DoldTask1",DoldBDTStart,DoldBDTEnd,2,false,"");
+
+	BasicDateTime DnewBDTStart(0,0,0);
+	BasicDateTime DnewBDTEnd(0,0,0);
+	Task DnewTask("DnewTask1",DnewBDTStart,DnewBDTEnd,2,false,"");
+
+	HistoryCommand DhCommand(COMMAND_TYPES::ADD,DoldTask,DnewTask);
+
+	//---------END OF DEFAULT----------
+
+	cout<< DhCommand.getOld().getTitle() <<endl;
+	cout<< DhCommand.getNew().getTitle() <<endl;
+	cout<< endl;
+
+
+	BasicDateTime oldBDTStart(2012,10,10);
+	BasicDateTime oldBDTEnd(2012,11,11);
+	Task oldTask("oldTask1",oldBDTStart,oldBDTEnd,2,false,"");
+
+	BasicDateTime newBDTStart(2013,10,10);
+	BasicDateTime newBDTEnd(2013,12,12);
+	Task newTask("newTask1",newBDTStart,newBDTEnd,2,false,"");
+
+	HistoryCommand hCommand(COMMAND_TYPES::ADD,oldTask,newTask);
+
+	BasicDateTime oldBDTStart2(2012,10,10);
+	BasicDateTime oldBDTEnd2(2012,11,11);
+	Task oldTask2("oldTask2",oldBDTStart2,oldBDTEnd2,2,false,"");
+
+	BasicDateTime newBDTStart2(2013,10,10);
+	BasicDateTime newBDTEnd2(2013,12,12);
+	Task newTask2("newTask2",newBDTStart2,newBDTEnd2,2,false,"");
+
+	HistoryCommand hCommand2(COMMAND_TYPES::ADD,oldTask2,newTask2);
+
+
+	hT.record(hCommand);
+	hT.record(hCommand2);
+	hT.undo(DhCommand);
+	//hT.redo(DhCommand);
+	hT.undo(DhCommand);
+	
+	cout<< DhCommand.getOld().getTitle() <<endl;
+	cout<< DhCommand.getNew().getTitle() <<endl;
+	
+}
+	// End of segment: D:\Mercurial\cs2103-f09-2c\UnitTesting\UFHUnitTesting\testHistory.cpp
+
+
+
+
+

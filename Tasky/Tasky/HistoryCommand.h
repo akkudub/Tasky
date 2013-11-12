@@ -4,8 +4,8 @@
 *This class contains the HistoryCommand class, which is a container
 *for the commands to be stored by the History class and retrieved
 *by the Processor class
-*@author A0103516U Akshat Dubey
 */
+//@author A0103516U
 enum COMMAND_TYPES{
 	ADD,
 	REMOVE,

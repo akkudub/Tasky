@@ -24,7 +24,6 @@
 #include "Essential.h"
 #include "Messages.h"
 #include "HelpUser.h"
-#include "LogLibrary/log.h"
 
 class Processor{
 
@@ -114,6 +113,7 @@ private:
 	static const string EMPTY_SLOTS;
 	static const string SLOT_FROM;
 	static const string SLOT_TO;
+	static const string PROCESSOR_LOG_FILE;
 
 public:
 	Processor();

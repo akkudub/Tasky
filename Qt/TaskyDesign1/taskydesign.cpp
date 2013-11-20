@@ -318,7 +318,7 @@ QString TaskyDesign::formatString(int num){
 }
 
 QString TaskyDesign::singleLineInDisplayPanel(std::string str){
-	return QString::fromStdString(str);
+	return QString::fromStdString(str)+NEW_LINE;
 }
 
 QString TaskyDesign::multipleLinesInDisplayPanel(std::string str){

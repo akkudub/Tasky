@@ -141,8 +141,6 @@ int Interpreter::interpretPowerSearch(string str, bool& slotEnabled, vector<stri
 	}else{
 		if (!timeFlag){
 			return STATUS_CODE_SET_ERROR::ERROR_INTERPRET_MISSING_ESSENTIAL_COMPONENTS_IN_COMMAND;
-		}else{
-			slotEnabled=true;
 		}
 	}
 

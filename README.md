@@ -1,8 +1,8 @@
-#Tasky: A task management application  made in CS2013
+# Tasky: A task management application  made in CS2103
 
 Authors: Group F09-2C Aug 2013 (cs2103aug2013-f09-2c)
 
--Akshat Dubey, Joan Tan, Junchao Gu, Kaiwen Huang
+- Akshat Dubey, Joan Tan, Junchao Gu, Kaiwen Huang
 
 Trouble managing your to-do tasks? Tasky helps you to manage them in a simple and efficient way using only text inputs.
 
